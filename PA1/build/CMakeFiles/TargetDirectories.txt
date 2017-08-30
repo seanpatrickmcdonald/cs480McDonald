@@ -1,0 +1,2 @@
+/home/gylindril/Desktop/computer-graphics/PA1/build/CMakeFiles/Tutorial.dir
+/home/gylindril/Desktop/computer-graphics/PA1/build/CMakeFiles/Tutorial_SUCCESSFUL.dir
