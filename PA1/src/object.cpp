@@ -82,7 +82,7 @@ void Object::Update(unsigned int dt)
   
   angle += dt * M_PI/2000;
 
-  float radius = 4;
+  float radius = 7;
   scale += float(dt) / 1000;
 
   if (scale >= 2 * M_PI)

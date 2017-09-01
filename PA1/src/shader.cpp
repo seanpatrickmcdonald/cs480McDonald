@@ -1,5 +1,7 @@
 #include "shader.h"
 
+std::string defaultVertexShader = "/nfs/home/spmcdonald/Desktop/cs480McDonald/PA1/shaders/vshader.vx";
+
 Shader::Shader()
 {
   m_shaderProg = 0;
@@ -37,8 +39,23 @@ bool Shader::AddShader(GLenum ShaderType)
 {
   std::string s;
 
+  std::fstream vertexShaderStream, fragmentShaderStream;  
+
   if(ShaderType == GL_VERTEX_SHADER)
   {
+    vertexShaderStream.open("asdf", std::fstream::in);    	          
+
+    if (!vertexShaderStream)
+    { 
+		vertexShaderStream.open(defaultVertexShader, std::fstream::in);
+    }
+
+    if (!vertexShaderStream)
+	{
+		std::cout << "Failed to open Default Vertex Shader" << std::endl;
+    }
+
+
     s = "#version 330\n \
           \
           layout (location = 0) in vec3 v_position; \
@@ -57,6 +74,8 @@ bool Shader::AddShader(GLenum ShaderType)
             color = v_color; \
           } \
           ";
+
+    vertexShaderStream.close();
   }
   else if(ShaderType == GL_FRAGMENT_SHADER)
   {
