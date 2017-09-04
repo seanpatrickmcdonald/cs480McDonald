@@ -35,31 +35,48 @@ bool Shader::Initialize()
   return true;
 }
 
-std::string getShaderString(GLenum ShaderType)
+std::string getShaderString(GLenum ShaderType, int shaderIndex, char** argv)
 {
-  std::fstream shaderStream;  
-  std::string streamOpenString;
+    std::fstream shaderStream;  
+    std::string streamOpenString;
 
-  	if(ShaderType == GL_VERTEX_SHADER)
-  	{
-	    streamOpenString = defaultVertexShader;
+    if (shaderIndex != -1)
+    { 
+        streamOpenString = argv[shaderIndex];
+    }
 
-	}
-
-    if (ShaderType == GL_FRAGMENT_SHADER)
-    {
-        streamOpenString = defaultFragmentShader;
-    }          
-
-    shaderStream.open("asdf", std::fstream::in | std::fstream::ate);
+    shaderStream.open(streamOpenString, std::fstream::in);
 
     if (!shaderStream)
-    { 
+    {
+        if (shaderIndex != -1)
+        {
+            std::cout << "Failed to open Shader File: " << std::endl 
+                      << streamOpenString << std::endl << std::endl
+                      << "Trying Default Shader instead..." << std::endl;
+        }
+
+        if(ShaderType == GL_VERTEX_SHADER)
+        {
+        streamOpenString = defaultVertexShader;
+
+        }
+
+        if (ShaderType == GL_FRAGMENT_SHADER)
+        {
+        streamOpenString = defaultFragmentShader;
+        }          
+
         shaderStream.open(streamOpenString, std::fstream::in);
 
         if (!shaderStream) //if default directory fails
         {
             std::cout << "Failed to open default shader: " << streamOpenString << std::endl;
+        }
+
+        else if (shaderIndex != -1)
+        {
+            std::cout << "Default Shader load successful." << std::endl;
         }
     }
 
@@ -68,7 +85,7 @@ std::string getShaderString(GLenum ShaderType)
 
     buffer << shaderStream.rdbuf();
     shaderString = buffer.str();    
-   
+
     shaderStream.close();
 
     return shaderString;
@@ -76,9 +93,9 @@ std::string getShaderString(GLenum ShaderType)
 
 
 // Use this method to add shaders to the program. When finished - call finalize()
-bool Shader::AddShader(GLenum ShaderType)
+bool Shader::AddShader(GLenum ShaderType, int shaderIndex, char** argv)
 {
-  std::string s = getShaderString(ShaderType);
+  std::string s = getShaderString(ShaderType, shaderIndex, argv);
 
   GLuint ShaderObj = glCreateShader(ShaderType);
 

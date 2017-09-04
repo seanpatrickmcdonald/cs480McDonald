@@ -56,39 +56,42 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv)
     return false;
   }
 
+  int vertexFileIndex = -1;
+  int fragmentFileIndex = -1;
+
   if (argc > 1)
   {
-      // Add the vertex shader
-    if(!m_shader->AddShader(GL_VERTEX_SHADER))
+    for (int i = 0; i < argc; i++)
     {
-      printf("Vertex Shader failed to Initialize\n");
-      return false;
-    }
+      if (argv[i][0] == '-' && i + 1 < argc && argv[i + 1][0] != '-')
+      {
+        if (argv[i][1] == 'v')
+        {
+          vertexFileIndex = i + 1;
+        }
 
-    // Add the fragment shader
-    if(!m_shader->AddShader(GL_FRAGMENT_SHADER))
-    {
-      printf("Fragment Shader failed to Initialize\n");
-      return false;
+        if (argv[i][1] == 'f')
+        {
+          fragmentFileIndex = i + 1;
+        }
+      }
     }
   }
 
-  else
+  // Add the vertex shader
+  if(!m_shader->AddShader(GL_VERTEX_SHADER, vertexFileIndex, argv))
   {
-    // Add the vertex shader
-    if(!m_shader->AddShader(GL_VERTEX_SHADER))
-    {
-      printf("Vertex Shader failed to Initialize\n");
-      return false;
-    }
-
-    // Add the fragment shader
-    if(!m_shader->AddShader(GL_FRAGMENT_SHADER))
-    {
-      printf("Fragment Shader failed to Initialize\n");
-      return false;
-    }
+    printf("Vertex Shader failed to Initialize\n");
+    return false;
   }
+
+  // Add the fragment shader
+  if(!m_shader->AddShader(GL_FRAGMENT_SHADER, fragmentFileIndex, argv))
+  {
+    printf("Fragment Shader failed to Initialize\n");
+    return false;
+  }
+  
 
   // Connect the program
   if(!m_shader->Finalize())
