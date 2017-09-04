@@ -6,9 +6,12 @@
 #include "graphics_headers.h"
 
 #include <fstream>
+#include <sstream>
+
 
 class Shader
 {
+
   public:
     Shader();
     ~Shader();
