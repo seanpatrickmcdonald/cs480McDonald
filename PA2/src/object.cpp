@@ -82,37 +82,37 @@ Object::~Object()
   Indices.clear();
 }
 
-void Object::FlipRotation()
+void Object::FlipRotation(Object* objectToFlip)
 {
-  rotDirection *= -1;
-  rotationAngle = 2 * M_PI - rotationAngle;
+  objectToFlip->rotDirection *= -1;
+  objectToFlip->rotationAngle = 2 * M_PI - objectToFlip->rotationAngle;
 }
 
-void Object::SetRotationSpeed()
+void Object::FlipOrbit(Object* objectToFlip)
 {
-
-}
-
-void Object::FlipOrbit()
-{
-	orbitDirection *= -1;
+	objectToFlip->orbitDirection *= -1;
     
-    orbitAngle = 2 * M_PI - orbitAngle;	
+  objectToFlip->orbitAngle = 2 * M_PI - objectToFlip->orbitAngle;	
 }
 
-void Object::SetOrbitRadius(float radiusIn)
+void Object::SetRotationSpeed(Object* objectToChange)
+{
+
+}
+
+void Object::SetOrbitRadius(Object* objectToChange, float radiusIn)
 {
 	if (radiusIn > 0)
 	{
-		orbitRadius = radiusIn;		
+		objectToChange->orbitRadius = radiusIn;		
 	}
 }
 
-void Object::SetOrbitSpeed(float speedIn)
+void Object::SetOrbitSpeed(Object* objectToChange, float speedIn)
 {
 	if (speedIn > 0)
 	{
-		orbitSpeed = speedIn;
+		objectToChange->orbitSpeed = speedIn;
 	}
 }
 

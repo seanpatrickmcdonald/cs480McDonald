@@ -12,11 +12,11 @@ class Object
     void Update(unsigned int dt);
     void Render();
 
-    void FlipRotation();
-    void FlipOrbit();
-    void SetRotationSpeed();
-    void SetOrbitRadius(float radius);
-    void SetOrbitSpeed(float orbitSpeed );
+    static void FlipRotation(Object* objectToFlip);
+    static void FlipOrbit(Object* objectToFlip);
+    static void SetRotationSpeed(Object* objectToChange);
+    static void SetOrbitRadius(Object* objectToChange, float radius);
+    static void SetOrbitSpeed(Object* objectToChange, float orbitSpeed );
 
     glm::mat4 GetModel();
 

@@ -46,6 +46,8 @@ bool Engine::Initialize(int argc, char **argv)
   // Set the time
   m_currentTimeMillis = GetCurrentTimeMillis();
 
+  m_pauseState = false;
+
   // No errors
   return true;
 }
@@ -66,7 +68,10 @@ void Engine::Run()
     }
 
     // Update and render the graphics
-    m_graphics->Update(m_DT);
+    if (!m_pauseState)
+    {
+    	m_graphics->Update(m_DT);    	
+    }
     m_graphics->Render();
 
     // Swap to the Window
@@ -90,12 +95,17 @@ void Engine::Keyboard()
 
     if (m_event.key.keysym.sym == SDLK_a)
     {
-    	m_graphics->getCube()->FlipRotation();
+    	Object::FlipRotation(m_graphics->getCube());
     }
 
     if (m_event.key.keysym.sym == SDLK_d)
     {
-    	m_graphics->getCube()->FlipOrbit();
+    	Object::FlipOrbit(m_graphics->getCube());
+    }
+
+    if (m_event.key.keysym.sym == SDLK_SPACE)
+    {
+    	m_pauseState ^= true;
     }
   }
 }
