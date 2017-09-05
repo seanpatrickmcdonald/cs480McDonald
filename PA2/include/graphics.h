@@ -18,6 +18,8 @@ class Graphics
     void Update(unsigned int dt);
     void Render();
 
+    Object* getCube();
+
   private:
     std::string ErrorString(GLenum error);
 

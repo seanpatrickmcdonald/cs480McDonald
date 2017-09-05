@@ -12,10 +12,11 @@ class Object
     void Update(unsigned int dt);
     void Render();
 
-    void flipRotation();
-    void flipOrbit();
-    void setOrbitRadius(float radius);
-    void setOrbitSpeed(float orbitSpeed );
+    void FlipRotation();
+    void FlipOrbit();
+    void SetRotationSpeed();
+    void SetOrbitRadius(float radius);
+    void SetOrbitSpeed(float orbitSpeed );
 
     glm::mat4 GetModel();
 
@@ -26,9 +27,11 @@ class Object
     GLuint VB;
     GLuint IB;
 
-    float angle;
+    float rotationAngle;
+    float rotationSpeed;
+    float orbitRadius;
     float orbitAngle;
-    float orbitchange;
+    float orbitSpeed;
 
     signed char orbitDirection;
     signed char rotDirection;

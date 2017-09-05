@@ -87,6 +87,16 @@ void Engine::Keyboard()
     {
       m_running = false;
     }
+
+    if (m_event.key.keysym.sym == SDLK_a)
+    {
+    	m_graphics->getCube()->FlipRotation();
+    }
+
+    if (m_event.key.keysym.sym == SDLK_d)
+    {
+    	m_graphics->getCube()->FlipOrbit();
+    }
   }
 }
 

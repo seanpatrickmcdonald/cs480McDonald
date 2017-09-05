@@ -60,7 +60,11 @@ Object::Object()
     Indices[i] = Indices[i] - 1;
   }
 
-  angle = 0.0f;
+  rotationAngle = 0.0f;
+  rotDirection = 1;
+  orbitDirection = 1;
+  orbitRadius = 7;
+  orbitSpeed = 1;
 
   glGenBuffers(1, &VB);
   glBindBuffer(GL_ARRAY_BUFFER, VB);
@@ -70,9 +74,6 @@ Object::Object()
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * Indices.size(), &Indices[0], GL_STATIC_DRAW);
 
-  orbitDirection = 1;
-  rotDirection = 1;
-
 }
 
 Object::~Object()
@@ -81,34 +82,54 @@ Object::~Object()
   Indices.clear();
 }
 
-void Object::flipRotation()
+void Object::FlipRotation()
 {
   rotDirection *= -1;
+  rotationAngle = 2 * M_PI - rotationAngle;
+}
+
+void Object::SetRotationSpeed()
+{
+
+}
+
+void Object::FlipOrbit()
+{
+	orbitDirection *= -1;
+    
+    orbitAngle = 2 * M_PI - orbitAngle;	
+}
+
+void Object::SetOrbitRadius(float radiusIn)
+{
+	if (radiusIn > 0)
+	{
+		orbitRadius = radiusIn;		
+	}
+}
+
+void Object::SetOrbitSpeed(float speedIn)
+{
+	if (speedIn > 0)
+	{
+		orbitSpeed = speedIn;
+	}
 }
 
 void Object::Update(unsigned int dt)
 {
   
-  angle += dt * M_PI/2000;
+  rotationAngle += dt * M_PI/2000;
 
-  float radius = 7;
-  orbitAngle += float(dt) / 1000;
-
-  orbitchange += dt;
-
-  if (orbitchange >= 2000)
-  {
-      flipRotation();
-      orbitchange = 0;
-  }
+  orbitAngle += orbitSpeed * float(dt) / 2000;
 
   if (orbitAngle >= 2 * M_PI)
   {
   	orbitAngle -= 2 * M_PI;
   }
 
-  glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(sin(orbitDirection * orbitAngle) * radius, 0.0f, cos(orbitDirection * orbitAngle) * radius));
-  glm::mat4 RotationMatrix = glm::rotate(glm::mat4(1.0f), (rotDirection * angle), glm::vec3(0.0, 1.0, 0.0));
+  glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(sin(orbitDirection * orbitAngle) * orbitRadius, 0.0f, cos(orbitDirection * orbitAngle) * orbitRadius));
+  glm::mat4 RotationMatrix = glm::rotate(glm::mat4(1.0f), (rotDirection * rotationAngle), glm::vec3(0.0, 1.0, 0.0));
   glm::mat4 ScaleMatrix = glm::scale(glm::vec3(1.01f, 1.0f, 1.0f));
 
   model = TranslationMatrix * RotationMatrix * ScaleMatrix;

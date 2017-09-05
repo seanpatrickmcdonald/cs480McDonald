@@ -1,4 +1,4 @@
-PA1 code writen by....
+PA2 code writen by....
 Modified by Sean McDonald
 
 
@@ -7,3 +7,9 @@ To pass Shaders use respective argument, followed by the string without quotatio
 -v vertex shader
 
 -f fragment shader
+
+
+To change Rotation or Orbit direction press the indicated key
+
+a - reverses rotation
+d - reverses orbit

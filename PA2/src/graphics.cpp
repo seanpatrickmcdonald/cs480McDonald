@@ -193,5 +193,11 @@ std::string Graphics::ErrorString(GLenum error)
   {
     return "None";
   }
+  
+}
+
+Object* Graphics::getCube()
+{
+  return m_cube;
 }
 
