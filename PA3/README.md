@@ -1,0 +1,16 @@
+PA3 code writen by....
+Modified by Sean McDonald
+ <br />
+ <br />
+ <br />
+To pass Shaders use respective argument, followed by the string without quotation marks.
+
+-v vertex shader <br />
+-f fragment shader <br />
+ <br />
+ <br />
+To modify orbit or rotation of the planet press the indicated key
+
+a     - reverses rotation <br />
+d     - reverses orbit <br />
+space - pauses engine state <br />
