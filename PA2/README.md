@@ -7,12 +7,12 @@ To pass Shaders use respective argument, followed by the string without quotatio
 
 -v vertex shader
 
--f fragment shader
+-f fragment shader_
 
 
 
 To modify orbit or rotation press the indicated key
 
-a     - reverses rotation
-d     - reverses orbit
+a     - reverses rotation_
+d     - reverses orbit_
 space - pauses engine state
