@@ -60,7 +60,9 @@ Object::Object()
     Indices[i] = Indices[i] - 1;
   }
 
-  angle = 0.0f;
+  rotationAngle = 0.0f;
+  orbitAngle = 0.0f;
+  orbitRadius = 6.5f;
 
   glGenBuffers(1, &VB);
   glBindBuffer(GL_ARRAY_BUFFER, VB);
@@ -79,19 +81,11 @@ Object::~Object()
 
 void Object::Update(unsigned int dt)
 {
-  
-  angle += dt * M_PI/2000;
+  rotationAngle += dt * M_PI/2000;
+  orbitAngle += dt * M_PI/2000;
 
-  float radius = 7;
-  scale += float(dt) / 1000;
-
-  if (scale >= 2 * M_PI)
-  {
-  	scale -= 2 * M_PI;
-  }
-
-  glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(sin(scale) * radius, 0.0f, cos(scale) * radius));
-  glm::mat4 RotationMatrix = glm::rotate(glm::mat4(1.0f), (angle), glm::vec3(0.0, 1.0, 0.0));
+  glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(orbitRadius * cos(orbitAngle), 0.0f, orbitRadius * sin(orbitAngle) ));
+  glm::mat4 RotationMatrix = glm::rotate(glm::mat4(1.0f), (rotationAngle), glm::vec3(0.0, 1.0, 0.0));
   glm::mat4 ScaleMatrix = glm::scale(glm::vec3(1.01f, 1.0f, 1.0f));
 
   model = TranslationMatrix * RotationMatrix * ScaleMatrix;

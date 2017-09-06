@@ -21,8 +21,9 @@ class Object
     GLuint VB;
     GLuint IB;
 
-    float angle;
-    float scale;
+    float rotationAngle;
+    float orbitAngle;
+    float orbitRadius;
 };
 
 #endif /* OBJECT_H */
