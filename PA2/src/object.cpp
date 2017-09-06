@@ -61,6 +61,7 @@ Object::Object()
   }
 
   rotationAngle = 0.0f;
+  orbitAngle = 0.0f;
   rotDirection = 1;
   orbitDirection = 1;
   orbitRadius = 7;
