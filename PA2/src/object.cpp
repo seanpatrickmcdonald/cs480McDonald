@@ -85,14 +85,11 @@ Object::~Object()
 void Object::FlipRotation(Object* objectToFlip)
 {
   objectToFlip->rotDirection *= -1;
-  objectToFlip->rotationAngle = 2 * M_PI - objectToFlip->rotationAngle;
 }
 
 void Object::FlipOrbit(Object* objectToFlip)
 {
 	objectToFlip->orbitDirection *= -1;
-    
-  objectToFlip->orbitAngle = 2 * M_PI - objectToFlip->orbitAngle;	
 }
 
 void Object::SetRotationSpeed(Object* objectToChange)
@@ -102,7 +99,7 @@ void Object::SetRotationSpeed(Object* objectToChange)
 
 void Object::SetOrbitRadius(Object* objectToChange, float radiusIn)
 {
-	if (radiusIn > 0)
+	if (radiusIn >= 0) //zero moves object to its center
 	{
 		objectToChange->orbitRadius = radiusIn;		
 	}
@@ -110,7 +107,7 @@ void Object::SetOrbitRadius(Object* objectToChange, float radiusIn)
 
 void Object::SetOrbitSpeed(Object* objectToChange, float speedIn)
 {
-	if (speedIn > 0)
+	if (speedIn >= 0) //zero stops orbit
 	{
 		objectToChange->orbitSpeed = speedIn;
 	}
@@ -119,17 +116,12 @@ void Object::SetOrbitSpeed(Object* objectToChange, float speedIn)
 void Object::Update(unsigned int dt)
 {
   
-  rotationAngle += dt * M_PI/2000;
+  rotationAngle += rotDirection * dt * M_PI/2000;
 
-  orbitAngle += orbitSpeed * float(dt) / 2000;
+  orbitAngle += orbitDirection * orbitSpeed * dt * M_PI / 2000;
 
-  if (orbitAngle >= 2 * M_PI)
-  {
-  	orbitAngle -= 2 * M_PI;
-  }
-
-  glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(sin(orbitDirection * orbitAngle) * orbitRadius, 0.0f, cos(orbitDirection * orbitAngle) * orbitRadius));
-  glm::mat4 RotationMatrix = glm::rotate(glm::mat4(1.0f), (rotDirection * rotationAngle), glm::vec3(0.0, 1.0, 0.0));
+  glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(cos(orbitAngle) * orbitRadius, 0.0f, sin(orbitAngle) * orbitRadius));
+  glm::mat4 RotationMatrix = glm::rotate(glm::mat4(1.0f), (rotationAngle), glm::vec3(0.0, 1.0, 0.0));
   glm::mat4 ScaleMatrix = glm::scale(glm::vec3(1.01f, 1.0f, 1.0f));
 
   model = TranslationMatrix * RotationMatrix * ScaleMatrix;

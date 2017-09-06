@@ -33,8 +33,8 @@ class Object
     float orbitAngle;
     float orbitSpeed;
 
-    signed char orbitDirection;
-    signed char rotDirection;
+    float orbitDirection;
+    float rotDirection;
 };
 
 #endif /* OBJECT_H */

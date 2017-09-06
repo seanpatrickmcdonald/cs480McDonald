@@ -93,7 +93,6 @@ Object::~Object()
 void Object::FlipRotation(Object* objectToFlip)
 {
   objectToFlip->rotDirection *= -1;
-  objectToFlip->rotationAngle = 2 * M_PI - objectToFlip->rotationAngle;
 }
 
 void Object::FlipOrbit(Object* objectToFlip)
@@ -142,14 +141,9 @@ void Object::SetParent(Object* objectToChange, Object* parentIn)
 void Object::Update(unsigned int dt)
 {
   
-  rotationAngle += dt * M_PI/2000;
+  rotationAngle += rotationSpeed * rotDirection * dt * M_PI / 2000;
 
-  orbitAngle += orbitDirection * orbitSpeed * float(dt) / 2000;
-
-  if (orbitAngle >= 2 * M_PI)
-  {
-  	orbitAngle -= 2 * M_PI;
-  }
+  orbitAngle += orbitDirection * orbitSpeed * dt * M_PI / 2000;
 
   glm::vec3 translationVector = glm::vec3(cos(orbitAngle) * orbitRadius, 
                                           0.0f, 
@@ -166,7 +160,7 @@ void Object::Update(unsigned int dt)
     child->Update(dt);
   }
 
-  glm::mat4 RotationMatrix = glm::rotate(glm::mat4(1.0f), (rotationSpeed * rotDirection * rotationAngle), glm::vec3(0.0, 1.0, 0.0));
+  glm::mat4 RotationMatrix = glm::rotate(glm::mat4(1.0f), (rotationAngle), glm::vec3(0.0, 1.0, 0.0));
   glm::mat4 ScaleMatrix = glm::scale(scale);
 
   model = TranslationMatrix * RotationMatrix * ScaleMatrix;
