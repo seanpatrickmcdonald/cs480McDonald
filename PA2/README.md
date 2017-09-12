@@ -19,12 +19,13 @@ Running the make in a separate directory will allow easy cleanup of the build da
 
 The building of the project is done using CMake, installation with apt-get or brew may be necessary. Currently shaders must reside in a separate folder in the source directory, i.e. not in the build folder.
 
+```bash
 mkdir build
 cd build
 cmake ..
 make
 ./Tutorial
-
+```
 
 
 ### Makefile Instructions
