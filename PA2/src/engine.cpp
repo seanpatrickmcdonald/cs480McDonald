@@ -98,14 +98,38 @@ void Engine::Keyboard()
     	Object::FlipRotation(m_graphics->getCube());
     }
 
+    if (m_event.key.keysym.sym == SDLK_q)
+    {
+      Object::ToggleRotationPause(m_graphics->getCube());
+    }
+
     if (m_event.key.keysym.sym == SDLK_d)
     {
     	Object::FlipOrbit(m_graphics->getCube());
     }
 
+    if (m_event.key.keysym.sym == SDLK_e)
+    {
+      Object::ToggleOrbitPause(m_graphics->getCube());
+    }
+    /*
     if (m_event.key.keysym.sym == SDLK_SPACE)
     {
     	m_pauseState ^= true;
+    }
+    */
+  }
+
+  else if (m_event.type == SDL_MOUSEBUTTONDOWN)
+  {
+    if (m_event.button.button == 1)
+    {
+      Object::FlipRotation(m_graphics->getCube());
+    }
+
+    if (m_event.button.button == 3)
+    {
+      Object::FlipOrbit(m_graphics->getCube());
     }
   }
 }

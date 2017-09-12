@@ -15,8 +15,11 @@ class Object
     static void FlipRotation(Object* objectToFlip);
     static void FlipOrbit(Object* objectToFlip);
     static void SetRotationSpeed(Object* objectToChange);
+    static void ToggleRotationPause(Object* objectToChange);
     static void SetOrbitRadius(Object* objectToChange, float radius);
     static void SetOrbitSpeed(Object* objectToChange, float orbitSpeed );
+    static void ToggleOrbitPause(Object* objectToChange);
+
 
     glm::mat4 GetModel();
 
@@ -29,12 +32,16 @@ class Object
 
     float rotationAngle;
     float rotationSpeed;
+    float rotDirection;
+
+    bool rotationPaused;
+
     float orbitRadius;
     float orbitAngle;
     float orbitSpeed;
-
     float orbitDirection;
-    float rotDirection;
+
+    bool orbitPaused;
 };
 
 #endif /* OBJECT_H */

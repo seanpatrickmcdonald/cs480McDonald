@@ -61,11 +61,17 @@ Object::Object()
   }
 
   rotationAngle = 0.0f;
-  orbitAngle = 0.0f;
   rotDirection = 1;
+  rotationSpeed = 1;
+
+  rotationPaused = false;
+
+  orbitAngle = 0.0f;
   orbitDirection = 1;
   orbitRadius = 7;
   orbitSpeed = 1;
+
+  orbitPaused = false;
 
   glGenBuffers(1, &VB);
   glBindBuffer(GL_ARRAY_BUFFER, VB);
@@ -114,12 +120,28 @@ void Object::SetOrbitSpeed(Object* objectToChange, float speedIn)
 	}
 }
 
+void Object::ToggleRotationPause(Object *objectToChange)
+{
+  objectToChange->rotationPaused = !objectToChange->rotationPaused;
+}
+
+void Object::ToggleOrbitPause(Object *objectToChange)
+{
+  objectToChange->orbitPaused = !objectToChange->orbitPaused;
+
+}
+
 void Object::Update(unsigned int dt)
 {
-  
-  rotationAngle += rotDirection * dt * M_PI/2000;
+  if (!rotationPaused)
+  {
+    rotationAngle += rotationSpeed * rotDirection * dt * M_PI/2000;
+  }
 
-  orbitAngle += orbitDirection * orbitSpeed * dt * M_PI / 2000;
+  if (!orbitPaused)
+  {
+    orbitAngle += orbitDirection * orbitSpeed * dt * M_PI / 2000;
+  }
 
   glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(cos(orbitAngle) * orbitRadius, 0.0f, sin(orbitAngle) * orbitRadius));
   glm::mat4 RotationMatrix = glm::rotate(glm::mat4(1.0f), (rotationAngle), glm::vec3(0.0, 1.0, 0.0));
