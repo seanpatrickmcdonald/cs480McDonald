@@ -98,15 +98,58 @@ void Engine::Keyboard()
     	Object::FlipRotation(m_graphics->getCube());
     }
 
+    if (m_event.key.keysym.sym == SDLK_q)
+    {
+      Object::ToggleRotationPause(m_graphics->getCube());
+    }
+
     if (m_event.key.keysym.sym == SDLK_d)
     {
     	Object::FlipOrbit(m_graphics->getCube());
     }
-    
 
+    if (m_event.key.keysym.sym == SDLK_e)
+    {
+      Object::ToggleOrbitPause(m_graphics->getCube());
+    }
+
+    if (m_event.key.keysym.sym == SDLK_LEFT)
+    {
+      Object::SetOrbitDirection(m_graphics->getCube(), -1);
+    }
+
+    if (m_event.key.keysym.sym == SDLK_RIGHT)
+    {
+      Object::SetOrbitDirection(m_graphics->getCube(), 1);
+    }
+
+    if (m_event.key.keysym.sym == SDLK_DOWN)
+    {
+      Object::SetRotationDirection(m_graphics->getCube(), -1);
+    }
+
+    if (m_event.key.keysym.sym == SDLK_UP)
+    {
+      Object::SetRotationDirection(m_graphics->getCube(), 1);
+    }
+    /*
     if (m_event.key.keysym.sym == SDLK_SPACE)
     {
-    	m_pauseState ^= true;
+      m_pauseState ^= true;
+    }
+    */
+  }
+
+  else if (m_event.type == SDL_MOUSEBUTTONDOWN)
+  {
+    if (m_event.button.button == 1)
+    {
+      Object::FlipRotation(m_graphics->getCube());
+    }
+
+    if (m_event.button.button == 3)
+    {
+      Object::FlipOrbit(m_graphics->getCube());
     }
   }
 }

@@ -12,12 +12,19 @@ class Object
     void Update(unsigned int dt);
     void Render();
 
-    static void FlipRotation(Object* objectToFlip);
     static void FlipOrbit(Object* objectToFlip);
-    static void SetRotationSpeed(Object* objectToChange, float speedIn);
+    static void SetOrbitDirection(Object* objectToFlip, signed int orbitDirectionIn);
+    static void SetOrbitSpeed(Object* objectToChange, float orbitSpeed);
+    static void ToggleOrbitPause(Object* objectToChange);
     static void SetOrbitRadius(Object* objectToChange, float radius);
-    static void SetOrbitSpeed(Object* objectToChange, float orbitSpeed );
+
+    static void FlipRotation(Object* objectToFlip);
+    static void SetRotationDirection(Object* objectToFlip, signed int rotationDirectionIn);
+    static void SetRotationSpeed(Object* objectToChange, float speedIn);
+    static void ToggleRotationPause(Object* objectToChange);
+    
     static void SetScale(Object* objectToChange, float scaleIn);
+
     static void SetParent(Object* objectToChange, Object* parentIn);
  
     float orbitRadius;
@@ -42,8 +49,11 @@ class Object
     Object* parent;
     Object* child;
 
-    signed char orbitDirection;
-    signed char rotDirection;
+    signed int orbitDirection;
+    signed int rotDirection;
+
+    bool orbitPaused;
+    bool rotationPaused;
 };
 
 #endif /* OBJECT_H */

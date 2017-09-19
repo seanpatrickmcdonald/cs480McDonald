@@ -11,7 +11,7 @@ This project uses OpenGL 3.3.
 
 ## Building and Running
 
-To build this project there are two options. One is to use CMake which makes including new libraries easier, and handles new files added automatically to the src and include directory. CMake is a small new learning curve but makes things easier in the future. The second option is to use the provided Makefile which is used as usual.
+To build this project there are two options. One is to use CMake which makes including new libraries easier, and handles new files added automatically to the src and include directory. The second option is to use the provided Makefile which is used as usual.
 
 Running the make in a separate directory will allow easy cleanup of the build data, and an easy way to prevent unnecessary data to be added to the git repository.
 

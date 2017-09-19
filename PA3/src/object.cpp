@@ -61,12 +61,17 @@ Object::Object()
   }
 
   rotationAngle = 0.0f;
-  orbitAngle = 0.0f;
-  rotDirection = 1;
   rotationSpeed = 1.0f;
-  orbitDirection = 1;
-  orbitRadius = 2;
+  orbitAngle = 0.0f;
   orbitSpeed = 1;
+
+  rotDirection = 1;
+  orbitDirection = 1;
+
+  orbitRadius = 2;
+
+  orbitPaused = false;
+  rotationPaused = false;
 
   scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
@@ -139,12 +144,38 @@ void Object::SetParent(Object* objectToChange, Object* parentIn)
   parentIn->child = objectToChange;
 }
 
+void Object::SetOrbitDirection(Object* objectToChange, signed int orbitDirectionIn)
+{
+  objectToChange->orbitDirection = orbitDirectionIn;
+}
+
+void Object::SetRotationDirection(Object* objectToChange, signed int rotationDirectionIn)
+{
+  objectToChange->rotDirection = rotationDirectionIn;
+}
+
+void Object::ToggleRotationPause(Object *objectToChange)
+{
+  objectToChange->rotationPaused = !objectToChange->rotationPaused;
+}
+
+void Object::ToggleOrbitPause(Object *objectToChange)
+{
+  objectToChange->orbitPaused = !objectToChange->orbitPaused;
+
+}
+
 void Object::Update(unsigned int dt)
 {
-  
-  rotationAngle += rotationSpeed * rotDirection * dt * M_PI / 2000;
+  if (!rotationPaused)
+  {
+      rotationAngle += rotationSpeed * rotDirection * dt * M_PI / 2000;
+  }
 
-  orbitAngle += orbitDirection * orbitSpeed * dt * M_PI / 2000;
+  if (!orbitPaused)
+  {
+      orbitAngle += orbitDirection * orbitSpeed * dt * M_PI / 2000;
+  }
 
   glm::vec3 translationVector = glm::vec3(cos(orbitAngle) * orbitRadius, 
                                           0.0f, 
