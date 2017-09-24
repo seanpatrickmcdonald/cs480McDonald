@@ -13,13 +13,11 @@ This project uses OpenGL 3.3.
 
 ## Building and Running
 
-To build this project there are two options. One is to use CMake, the second option is to use the provided Makefile which is used as usual.
-
-Running the make in a separate directory will allow easy cleanup of the build data, and an easy way to prevent unnecessary data to be added to the git repository.
+The building of the project is done using CMake, installation with apt-get or brew may be necessary.
 
 ### CMake Instructions
 
-The building of the project is done using CMake, installation with apt-get or brew may be necessary. Currently shaders must reside in a separate folder in the source directory, i.e. not in the build folder. See Command-Line Argument/Shaders for more.
+Currently shaders must reside in a separate folder in the source directory, i.e. not in the build folder. See Command-Line Argument/Shaders for more.
 
 ```bash
 mkdir build
@@ -28,10 +26,6 @@ cmake ..
 make
 ./Tutorial
 ```
-
-### Makefile Instructions
-
-The makefile works as expected and must be updated with new files added in.
 
 # Command-Line Arguments
 
