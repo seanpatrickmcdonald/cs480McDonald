@@ -1,7 +1,7 @@
 PA4 Engine, and other code, and Dependency ReadMe writen by Daniel Lopez, Kurt Andersen, Dustin Barnes, and others?
 Modified by Sean McDonald
 
-##This Project will display a coffin esque box, with red walls and orange base
+## This Project will display a coffin esque box, with red walls and orange base
 
 # Dependencies, Building, and Running
 
