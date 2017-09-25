@@ -46,7 +46,7 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv)
   }
 
   // Create the object
-  m_object = new Object("Coffin.obj");
+  m_object = new Object("../assets/Coffin.obj");
 
   // Set up the shaders
   m_shader = new Shader();
