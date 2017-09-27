@@ -3,6 +3,9 @@
 
 #include <vector>
 #include "graphics_headers.h"
+#include "assimp/scene.h"
+#include "assimp/Importer.hpp"
+#include "assimp/postprocess.h"
 
 class Object
 {
@@ -21,6 +24,8 @@ class Object
     std::vector<unsigned int> Indices;
     GLuint VB;
     GLuint IB;
+
+    Assimp::Importer *modelImporter;
 
     float rotationAngle;
     float orbitAngle;
