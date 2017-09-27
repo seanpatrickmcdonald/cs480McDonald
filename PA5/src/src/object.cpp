@@ -75,6 +75,49 @@ Object::Object()
 
 Object::Object(std::string objFilename)
 {
+    //Use assimp namespace for this function only
+    using namespace Assimp;
+
+    //Create Assimp Importer
+    modelImporter = new Importer();
+    const aiScene* modelScene = modelImporter->ReadFile(objFilename, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate);
+    
+    for (unsigned int i = 0; i < modelScene->mMeshes[0]->mNumVertices; i++)
+    {
+        glm::vec3 vertexVec;
+
+        vertexVec.x = modelScene->mMeshes[0]->mVertices[i].x;
+        vertexVec.y = modelScene->mMeshes[0]->mVertices[i].y;
+        vertexVec.z = modelScene->mMeshes[0]->mVertices[i].z;
+
+        glm::vec3 color(1.0f, 1.0f, 1.0f);
+	        
+        Vertex dummyVertex(vertexVec, color);
+        Vertices.push_back(dummyVertex);        
+    }
+
+    for (unsigned int i = 0; i < modelScene->mMeshes[0]->mNumFaces; i++)
+    {
+        if (modelScene->mMeshes[0]->mFaces[i].mNumIndices == 3)
+        {
+            for (unsigned int j = 0; j < 3; j++)
+            {
+                Indices.push_back(modelScene->mMeshes[0]->mFaces[i].mIndices[j]);
+            }
+        }
+    }
+
+   for (unsigned int i = 0; i < Indices.size(); i++)
+
+
+  glGenBuffers(1, &VB);
+  glBindBuffer(GL_ARRAY_BUFFER, VB);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * Vertices.size(), &Vertices[0], GL_STATIC_DRAW);
+
+  glGenBuffers(1, &IB);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * Indices.size(), &Indices[0], GL_STATIC_DRAW);
+
 }
 
 Object::~Object()
@@ -85,7 +128,7 @@ Object::~Object()
 
 void Object::Update(unsigned int dt)
 {
-/*
+
   rotationAngle += dt * M_PI/2000;
   //orbitAngle += dt * M_PI/2000;
 
@@ -94,7 +137,7 @@ void Object::Update(unsigned int dt)
   glm::mat4 ScaleMatrix = glm::scale(glm::vec3(1.01f, 1.0f, 1.0f));
 
   model = TranslationMatrix * RotationMatrix * ScaleMatrix;
-*/
+
 }
 
 glm::mat4 Object::GetModel()
@@ -104,7 +147,7 @@ glm::mat4 Object::GetModel()
 
 void Object::Render()
 {
-/*
+
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
 
@@ -118,6 +161,6 @@ void Object::Render()
 
   glDisableVertexAttribArray(0);
   glDisableVertexAttribArray(1);
-*/
+
 }
 
