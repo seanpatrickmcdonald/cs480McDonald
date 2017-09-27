@@ -68,6 +68,7 @@ void ObjLoader::getIndexFromLine(std::string indexLine)
 
 	for(int i = 2; i < indexLine.length(); i++)
 	{		
+		//if it's a space our next number is index 2 or 3
 		if (indexLine[i] == ' ')
 		{
 			Indices.push_back(stoi(intString));
@@ -75,6 +76,20 @@ void ObjLoader::getIndexFromLine(std::string indexLine)
 			continue;
 		}
 
+		//we want to skip numbers 2/3 if there are slashes
+		if (indexLine[i] == '\\')
+		{
+		        Indices.push_back(stoi(intString)); //save number one
+			intString.clear();
+			
+			while(indexLine[i] != ' ')
+			{
+				i++;
+			}
+                        continue;
+		}
+
+		//if we're at the end of the line, we're done
 		else if (i == indexLine.length() - 1)
 		{
 			intString.push_back(indexLine[i]);
@@ -102,7 +117,7 @@ ObjLoader::ObjLoader(std::string objFile)
 
 	if (!objBuffer)
 	{
-		std::cout << "oops" << std::endl;
+		std::cout << "Error, object file path: " << objFile << " not valid." << std::endl;
 	}
 
 	else
@@ -112,12 +127,12 @@ ObjLoader::ObjLoader(std::string objFile)
 			std::string dummyString;
 			getline(objBuffer, dummyString);
 			
-			if (dummyString[0] == 'v' && dummyString[1] == ' ')
+			if (dummyString[0] == 'v' && dummyString[1] == ' ') //only want v, not vt or vn
 			{
 				Vertices.push_back(getVertexFromLine(dummyString));
 			}
 
-			else if (dummyString[0] == 'f')
+			else if (dummyString[0] == 'f')		//face
 			{
 				getIndexFromLine(dummyString);
 			}
