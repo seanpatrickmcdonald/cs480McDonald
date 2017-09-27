@@ -3,4 +3,4 @@
 ## Current Finished Projects
 PA1, PA2, PA3, PA4
 
-PA5 - I will be using cs480Martin - Bruce Martin's repository
+PA5 - Bruce Martin and I will be using this Repository
