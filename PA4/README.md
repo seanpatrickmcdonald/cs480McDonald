@@ -1,6 +1,8 @@
 PA4 Engine, and other code, and Dependency ReadMe writen by Daniel Lopez, Kurt Andersen, Dustin Barnes, and others?
 Modified by Sean McDonald
 
+### This program uses Coffin.obj in /assets. It will load this asset, so do not remove it. The coffin rotates and has red walls, with an orange base.
+
 # Dependencies, Building, and Running
 
 ## Dependency Instructions
