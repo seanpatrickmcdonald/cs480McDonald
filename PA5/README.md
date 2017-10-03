@@ -2,7 +2,7 @@
 
 # Building and Running
 ## Makefile
-### This program is build using makefile. Create a new directory and run "make && ./Tutorial"
+### This program is built using makefile. Create a new directory, copy the makefile into the directy, and run "make && ./Tutorial"
 
 # CommandLine Arguments
 ## Shaders
