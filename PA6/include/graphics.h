@@ -29,7 +29,7 @@ class Graphics
     GLint m_modelMatrix;
     GLint m_mySampler;
 
-    Object *m_cube;
+    Object **m_objects;
 };
 
 #endif /* GRAPHICS_H */

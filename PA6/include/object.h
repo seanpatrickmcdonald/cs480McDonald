@@ -12,7 +12,7 @@ class Object
 {
   public:
     Object();
-    Object(std::string objFilename);
+    Object(std::string objFilename, float radiusIn);
     ~Object();
     void Update(unsigned int dt);
     void Render(GLint);
@@ -26,8 +26,6 @@ class Object
     GLuint VB;
     GLuint IB;
     GLuint texture_int;
-
-    Assimp::Importer *modelImporter;
 
     float rotationAngle;
     float orbitAngle;

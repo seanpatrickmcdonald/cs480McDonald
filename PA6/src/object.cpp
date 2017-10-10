@@ -5,39 +5,62 @@ Object::Object()
 
 }
 
-GLuint loadBMP()
-{
-    
+GLuint loadBMP(std::string textureName)
+{    
     BMPLoader loader;
-    loader.loadFromFile("../assets/earth.bmp");
-     
+    loader.loadFromFile(textureName);
+
     GLuint tex;
     glCreateTextures(GL_TEXTURE_2D, 1, &tex);
+        
     glTextureStorage2D(tex, 1, GL_RGBA32F, loader.width, loader.height);
     glBindTexture(GL_TEXTURE_2D, tex);
+   
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+    glGenerateMipmap(GL_TEXTURE_2D);
 
     glTextureSubImage2D(tex,
-                        0,
-                        0, 0,
-                        loader.width, loader.height,
-                        GL_RGB,
-                        GL_UNSIGNED_BYTE,
-                        loader.data);
+		        0,
+		        0, 0,
+		        loader.width, loader.height,
+		        GL_RGB,
+		        GL_UNSIGNED_BYTE,
+		        loader.data);
  
     return tex;
 }
 
-Object::Object(std::string objFilename)
+const aiMesh* LoadAssimp(std::string objFilename)
 {
-    texture_int = loadBMP();
-
     //Use assimp namespace for this function only
     using namespace Assimp;
+
+    Importer *modelImporter;
 
     //Create Assimp Importer
     modelImporter = new Importer();
     const aiScene* modelScene = modelImporter->ReadFile(objFilename, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate);
     const aiMesh *modelMesh = modelScene->mMeshes[0];
+
+    return modelMesh;
+}
+
+Object::Object(std::string objFilename, float radiusIn)
+{
+    rotationAngle = 0.0f;
+    orbitAngle = 0.0f;
+    orbitRadius = radiusIn;
+
+    //bring in textures and load to opengl
+    texture_int = loadBMP("../assets/earth.bmp");
+
+    //build our aimesh object
+    const aiMesh *modelMesh = LoadAssimp(objFilename);
+
+
+
+    //Load Vertex Positions and TextureCoords
     for (unsigned int i = 0; i < modelMesh->mNumVertices; i++)
     {
         glm::vec3 vertexVec;
@@ -54,18 +77,17 @@ Object::Object(std::string objFilename)
         Vertex dummyVertex(vertexVec, uv);
         Vertices.push_back(dummyVertex);        
     }
-
+    //Load Indices
     for (unsigned int i = 0; i < modelMesh->mNumFaces; i++)
     {
-        if (modelMesh->mFaces[i].mNumIndices == 3)
+        if (modelMesh->mFaces[i].mNumIndices == 3)  //only if it's a triangle
         {
             for (unsigned int j = 0; j < 3; j++)
             {
-                Indices.push_back(modelScene->mMeshes[0]->mFaces[i].mIndices[j]);
+                Indices.push_back(modelMesh->mFaces[i].mIndices[j]);
             }
         }
     }
-
 
   glGenBuffers(1, &VB);
   glBindBuffer(GL_ARRAY_BUFFER, VB);
@@ -87,11 +109,11 @@ void Object::Update(unsigned int dt)
 {
 
   rotationAngle += dt * M_PI/2000;
-  //orbitAngle += dt * M_PI/2000;
+  orbitAngle += dt * M_PI/2000;
 
   glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(orbitRadius * cos(orbitAngle), 0.0f, orbitRadius * sin(orbitAngle) ));
-  glm::mat4 RotationMatrix = glm::rotate(glm::mat4(1.0f), (rotationAngle), glm::vec3(0.0, 1.0, 0.0));
-  glm::mat4 ScaleMatrix = glm::scale(glm::vec3(1.01f, 1.0f, 1.0f));
+  glm::mat4 RotationMatrix = glm::rotate(glm::mat4(1.0f), rotationAngle, glm::vec3(0.0, 1.0, 0.0));
+  glm::mat4 ScaleMatrix = glm::scale(glm::vec3(1.0f, 1.0f, 1.0f));
 
   model = TranslationMatrix * RotationMatrix * ScaleMatrix;
 
@@ -104,11 +126,9 @@ glm::mat4 Object::GetModel()
 
 void Object::Render(GLint location)
 {
-  /*
-  glActiveTexture(GL_TEXTUREi);
+
   glBindTexture(GL_TEXTURE_2D, texture_int);
-  glUniform1i(location, 0);
-  */
+  
 
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);

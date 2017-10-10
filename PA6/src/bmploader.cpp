@@ -3,11 +3,12 @@
 
 BMPLoader::BMPLoader()
 {
-
+    num_textures = 0;
 }
 
 BMPLoader::~BMPLoader()
 {
+    if(data)
     delete[] data;
 }
 
@@ -18,7 +19,7 @@ int BMPLoader::loadFromFile(std::string filename)
     
     if(!filestream)
     {
-        std::cout << "Invalid BMP: " << filename << std::endl;
+        std::cout.flush() << "Invalid BMP: " << filename << std::endl;
         return -1;
     }
 
@@ -26,7 +27,7 @@ int BMPLoader::loadFromFile(std::string filename)
 
     if (header[0] != 'B' || header[1] != 'M')
     {
-        std::cout << "Invalid BMP:" << filename << std::endl;
+        std::cout.flush() << "Invalid BMP:" << filename << std::endl;
         return -1;
     }
 
@@ -34,6 +35,12 @@ int BMPLoader::loadFromFile(std::string filename)
     imageSize  = *(int*)&(header[0x22]);
     width      = *(int*)&(header[0x12]);
     height     = *(int*)&(header[0x16]);
+
+    if (imageSize <= 0)
+    {
+        std::cout.flush() << "Invalid BMP:" << filename << std::endl;
+        return -1;
+    }
 
     data = new char[imageSize];
 
@@ -44,5 +51,21 @@ int BMPLoader::loadFromFile(std::string filename)
  
     filestream.close();
 
-    return true;
+    dataVector.push_back(data);
+    num_textures++;
+
+    return 1;
+}
+
+int BMPLoader::loadFromFile(std::vector<std::string> filenameArray)
+{
+    for (unsigned int i = 0; i < filenameArray.size(); i++)
+    {
+        if (loadFromFile(filenameArray[i]) < 0)
+        {
+            return -1;
+        }
+    }
+
+    return 1;
 }

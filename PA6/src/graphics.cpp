@@ -9,6 +9,8 @@ Graphics::Graphics()
 Graphics::~Graphics()
 {
 
+
+
 }
 
 bool Graphics::Initialize(int width, int height, int argc, char **argv)
@@ -45,8 +47,14 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv)
     return false;
   }
 
-  // Create the object
-  m_cube = new Object("../assets/Sphere.obj");
+  // Create the objects
+  unsigned int num_objects = 2;
+
+  m_objects = new Object*[num_objects];
+  for (unsigned int i = 0; i < num_objects; i++)
+  {     
+      m_objects[i] = new Object("../assets/Sphere.obj", i * 4.0f);
+  }
 
   // Set up the shaders
   m_shader = new Shader();
@@ -141,13 +149,16 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv)
 void Graphics::Update(unsigned int dt)
 {
   // Update the object
-  m_cube->Update(dt);
+  for (unsigned int i = 0; i < 2; i++)
+  {
+    m_objects[i]->Update(dt);
+  }
 }
 
 void Graphics::Render()
 {
   //clear the screen
-  glClearColor(0.0, 0.0, 0.2, 1.0);
+  glClearColor(0.0, 0.0, 0.0, 0.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Start the correct program
@@ -158,8 +169,13 @@ void Graphics::Render()
   glUniformMatrix4fv(m_viewMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetView())); 
 
   // Render the object
-  glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_cube->GetModel()));
-  m_cube->Render(m_mySampler);
+
+
+  for (unsigned int i = 0; i < 2; i++)
+  {
+    glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_objects[i]->GetModel()));
+    m_objects[i]->Render(m_mySampler);
+  }
 
   // Get any errors from OpenGL
   auto error = glGetError();
