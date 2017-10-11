@@ -29,6 +29,10 @@ GLuint loadBMP()
 
 Object::Object(std::string objFilename)
 {
+    rotationAngle = 0.0f;
+    orbitAngle = 0.0f;
+    orbitRadius = 0.0f;
+    
     texture_int = loadBMP();
 
     //Use assimp namespace for this function only
