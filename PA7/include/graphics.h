@@ -17,11 +17,14 @@ class Graphics
     bool Initialize(int width, int height, int argc, char **argv);
     void Update(unsigned int dt);
     void Render();
+    Object ** getObjects();
+    Camera *m_camera;
+
+    unsigned int simulationSpeed;
 
   private:
     std::string ErrorString(GLenum error);
 
-    Camera *m_camera;
     Shader *m_shader;
     Object *root;
 

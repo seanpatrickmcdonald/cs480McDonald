@@ -10,22 +10,49 @@ Camera::~Camera()
 
 }
 
+
 bool Camera::Initialize(int w, int h)
 {
-  //--Init the view and projection matrices
-  //  if you will be having a moving camera the view matrix will need to more dynamic
-  //  ...Like you should update it before you render more dynamic 
-  //  for this project having them static will be fine
-  view = glm::lookAt( glm::vec3(0.0, 8.0, -16.0), //Eye Position
-                      glm::vec3(0.0, 0.0, 0.0), //Focus point
-                      glm::vec3(0.0, 1.0, 0.0)); //Positive Y is up
+  scaledView = false;
+  orbitAngle = 0.0f;
+  parentEnum = 0;
+ 
+  view = glm::lookAt( detail_eye, detail_foc, y_up); 
 
-  projection = glm::perspective( 45.0f, //the FoV typically 90 degrees is good which is what this is set to
-                                 float(w)/float(h), //Aspect Ratio, so Circles stay Circular
-                                 0.01f, //Distance to the near plane, normally a small value like this
-                                 100.0f); //Distance to the far plane, 
+  projection = glm::perspective( 45.0f, 
+                                 float(w)/float(h),
+                                 0.01f, 
+                                 100000.0f);
   return true;
 }
+
+
+void Camera::Update(Object *focusObject)
+{
+  if (!scaledView)
+  {
+    cur_eye = focusObject->trans_vector + glm::vec3(0.0f, focusObject->scale + 1.0f, 2.0f);
+    cur_foc = focusObject->trans_vector;
+    view = lookAt(cur_eye, cur_foc, y_up);
+  }
+}
+
+void Camera::toggleView()
+{
+  if (scaledView)
+  {
+    view = glm::lookAt(detail_eye, detail_foc, y_up);
+    scaledView = false;
+  }
+
+  else
+  {    
+    view = glm::lookAt(scaled_eye, scaled_foc, y_up);
+    scaledView = true;
+  }
+
+}
+
 
 glm::mat4 Camera::GetProjection()
 {

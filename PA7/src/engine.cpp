@@ -27,6 +27,7 @@ Engine::~Engine()
 
 bool Engine::Initialize(int argc, char **argv)
 {
+  m_pauseState = false;
   // Start a window
   m_window = new Window();
   if(!m_window->Initialize(m_WINDOW_NAME, &m_WINDOW_WIDTH, &m_WINDOW_HEIGHT))
@@ -66,6 +67,7 @@ void Engine::Run()
     }
 
     // Update and render the graphics
+    if (!m_pauseState)
     m_graphics->Update(m_DT);
     m_graphics->Render();
 
@@ -86,6 +88,36 @@ void Engine::Keyboard()
     if (m_event.key.keysym.sym == SDLK_ESCAPE)
     {
       m_running = false;
+    }
+
+    if (m_event.key.keysym.sym == SDLK_SPACE)
+    {
+      m_pauseState = !m_pauseState;
+    }
+
+    //we only want camera to update when not paused
+    else if (!m_pauseState)
+    {
+      if (m_event.key.keysym.sym >= SDLK_1 && m_event.key.keysym.sym <= SDLK_9)
+      { 
+        m_graphics->simulationSpeed = m_event.key.keysym.sym - SDLK_0;
+      }
+
+      if (m_event.key.keysym.sym == SDLK_LEFT)
+      {
+        m_graphics->m_camera->parentEnum = ((m_graphics->m_camera->parentEnum - 1) + 11) % 11;
+      }
+
+      if (m_event.key.keysym.sym == SDLK_RIGHT)
+      {
+        m_graphics->m_camera->parentEnum = ((m_graphics->m_camera->parentEnum + 1) + 11) % 11;
+      }
+
+      if (m_event.key.keysym.sym == SDLK_BACKQUOTE)
+      {
+        m_graphics->m_camera->toggleView();
+      }
+      
     }
   }
 }

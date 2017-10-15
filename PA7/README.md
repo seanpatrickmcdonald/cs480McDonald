@@ -1,10 +1,10 @@
-## PA6 Sean McDonald and Bruce Martin
+## PA7 Sean McDonald and Bruce Martin
 
 
 # Dependencies, Building, and Running
 
 ## Dependency Instructions
-For both of the operating systems to run this project installation of these three programs are required [GLEW](http://glew.sourceforge.net/), [GLM](http://glm.g-truc.net/0.9.7/index.html), and [SDL2](https://wiki.libsdl.org/Tutorials), [ASSIMP] (sudo apt-get install libassimp-dev)
+For both of the operating systems to run this project installation of these three programs are required [GLEW](http://glew.sourceforge.net/), [GLM](http://glm.g-truc.net/0.9.7/index.html), and [SDL2](https://wiki.libsdl.org/Tutorials), [ASSIMP] sudo apt-get install libassimp-dev
 
 This project uses OpenGL 3.3.
 
@@ -31,3 +31,19 @@ make && ./Tutorial
 ```bash
 ./Tutorial -v "vertex shader name" -f "fragment shader name"
 ```
+
+# Input
+## Modes
+### Use the ` - grave key - to toggle between Scaled and Detailed views. 
+
+## Scaled View
+
+Number Keys = change speed proportionally, e.g. 1 = 1x, 2 = 2x, 3 = 3x, etc.  
+Space       = pause all motion. Note: While paused no other actions are processed. (Can only unpaused)  
+
+## Detailed View
+### Detailed View is a center on the target planet, with fixed translational offset. So, rotations will be equal to their actual values.
+
+Number Keys = change speed proportionally, e.g. 1 = 1x, 2 = 2x, 3 = 3x, etc.  
+Space       = pause all motion. Note: While paused no other actions are processed. (Can only unpaused)  
+Left/Right Arrow = change target planet, e.g. Right moves from Sun->Mercury->Venus, Left moves from Mercury->Sun->Pluto  

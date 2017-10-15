@@ -13,6 +13,8 @@ Graphics::~Graphics()
 
 bool Graphics::Initialize(int width, int height, int argc, char **argv)
 {
+  simulationSpeed = 1;
+  
   // Used for the linux OS
   #if !defined(__APPLE__) && !defined(MACOSX)
     // cout << glewGetString(GLEW_VERSION) << endl;
@@ -182,7 +184,8 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv)
 void Graphics::Update(unsigned int dt)
 {
   // Update the object
-  root->Update(dt);
+  root->Update(dt * simulationSpeed);
+  m_camera->Update(m_objects[m_camera->parentEnum]);
 }
 
 void Graphics::Render()
@@ -212,6 +215,11 @@ void Graphics::Render()
     string val = ErrorString( error );
     std::cout<< "Error initializing OpenGL! " << error << ", " << val << std::endl;
   }
+}
+
+Object** Graphics::getObjects()
+{
+    return m_objects;
 }
 
 std::string Graphics::ErrorString(GLenum error)

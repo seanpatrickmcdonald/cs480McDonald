@@ -18,7 +18,7 @@ GLuint loadBMP(std::string filename)
      
     GLuint tex;
     glCreateTextures(GL_TEXTURE_2D, 1, &tex);
-    glTextureStorage2D(tex, 1, GL_RGBA32F, loader.width, loader.height);
+    glTextureStorage2D(tex, 10, GL_RGBA32F, loader.width, loader.height);
     glBindTexture(GL_TEXTURE_2D, tex);
 
     glTextureSubImage2D(tex,
@@ -28,6 +28,12 @@ GLuint loadBMP(std::string filename)
                         GL_RGB,
                         GL_UNSIGNED_BYTE,
                         loader.data);
+
+    glGenerateMipmap(GL_TEXTURE_2D);  
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
 
     return tex;
@@ -112,17 +118,18 @@ void Object::Update(unsigned int dt)
   }
 }
 
+//children update/chain
 void Object::Update(unsigned int dt, glm::vec3 parentCenter)
 {
 
   rotationAngle += rotationSpeed * dt * M_PI/2000;
   orbitAngle += orbitSpeed * dt * M_PI/20000;
 
-  glm::vec3 translationVector = glm::vec3(orbitRadius * cos(orbitAngle) + parentCenter.x, 
+  trans_vector = glm::vec3(orbitRadius * sin(orbitAngle) + parentCenter.x, 
                                                  0.0f, 
-                                                 orbitRadius * sin(orbitAngle) + parentCenter.z);
+                                                 orbitRadius * cos(orbitAngle) + parentCenter.z);
 
-  glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), translationVector);
+  glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), trans_vector);
   glm::mat4 RotationMatrix = glm::rotate(glm::mat4(1.0f), (rotationAngle), glm::vec3(0.0, 1.0, 0.0));
   glm::mat4 ScaleMatrix = glm::scale(glm::vec3(scale, scale, scale));
 
@@ -132,7 +139,7 @@ void Object::Update(unsigned int dt, glm::vec3 parentCenter)
   {
     for (unsigned int i = 0; i < childPtr.size(); i++)
     {
-        childPtr[i]->Update(dt, translationVector);
+        childPtr[i]->Update(dt, trans_vector);
     }
   }
 }

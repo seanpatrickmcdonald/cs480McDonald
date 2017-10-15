@@ -51,9 +51,12 @@ class Object
 
     Object *parentPtr;
     std::vector <Object *> childPtr;
-    GLuint texture_int;
 
+    glm::vec3 trans_vector;
+
+    GLuint texture_int;
     std::string obj_name;
+    float scale;
 
   private:
     glm::mat4 model;
@@ -70,7 +73,6 @@ class Object
     float rotationSpeed;
     float orbitSpeed;
     float orbitRadius;
-    float scale;
 };
 
 #endif /* OBJECT_H */
