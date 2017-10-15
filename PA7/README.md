@@ -11,7 +11,7 @@ This project uses OpenGL 3.3.
 
 ## Makefile
 
-### This program is built using makefile. Create a new directory, copy the makefile into the directory, and run "make && ./Tutorial"
+This program is built using makefile. Create a new directory, copy the makefile into the directory, and run "make && ./Tutorial"
 
 ```bash
 mkdir build
@@ -34,16 +34,16 @@ make && ./Tutorial
 
 # Input
 ## Modes
-### Use the ` - grave key - to toggle between Scaled and Detailed views. 
+Use the ` - grave key - to toggle between Scaled and Detailed views.   
 
 ## Scaled View
 
 Number Keys = change speed proportionally, e.g. 1 = 1x, 2 = 2x, 3 = 3x, etc.  
-Space       = pause all motion. Note: While paused no other actions are processed. (Can only unpaused)  
+Space       = pause all motion. Note: While paused no other actions are processed. (Can only unpause)  
 
 ## Detailed View
 ### Detailed View is a center on the target planet, with fixed translational offset. So, rotations will be equal to their actual values.
 
 Number Keys = change speed proportionally, e.g. 1 = 1x, 2 = 2x, 3 = 3x, etc.  
-Space       = pause all motion. Note: While paused no other actions are processed. (Can only unpaused)  
+Space       = pause all motion. Note: While paused no other actions are processed. (Can only unpause)  
 Left/Right Arrow = change target planet, e.g. Right moves from Sun->Mercury->Venus, Left moves from Mercury->Sun->Pluto  
