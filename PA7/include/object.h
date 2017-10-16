@@ -7,6 +7,8 @@
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 #include "bmploader.h"
+#include <GL/gl.h>
+#include <math.h>
 
 enum ObjectName
 {
@@ -57,6 +59,7 @@ class Object
     GLuint texture_int;
     std::string obj_name;
     float scale;
+	float returnRadius();
 
   private:
     glm::mat4 model;

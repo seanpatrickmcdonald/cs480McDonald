@@ -4,12 +4,13 @@ Object::Object()
 {  
 
 }
-
+//
 Object::Object(int asdf)
 {
   parentPtr = nullptr;
 }
 
+//loads bmp image files to use as texture on objects
 GLuint loadBMP(std::string filename)
 {
     
@@ -38,7 +39,7 @@ GLuint loadBMP(std::string filename)
 
     return tex;
 }
-
+//creates object using obj file
 Object::Object(ObjInit objectStruct, int index)
 {
     rotationAngle = 0.0f;
@@ -55,9 +56,9 @@ Object::Object(ObjInit objectStruct, int index)
     //Use assimp namespace for this function only
     using namespace Assimp;
 
-    //Create Assimp Importer
+    //Create Assimp Importer 
     modelImporter = new Importer();
-    const aiScene* modelScene = modelImporter->ReadFile(objectStruct.obj_filename[index], aiProcess_JoinIdenticalVertices | aiProcess_Triangulate);
+    const aiScene* modelScene = modelImporter->ReadFile(objectStruct.obj_filename[index], aiProcess_JoinIdenticalVertices | aiProcess_Triangulate); 
     const aiMesh *modelMesh = modelScene->mMeshes[0];
     for (unsigned int i = 0; i < modelMesh->mNumVertices; i++)
     {
@@ -148,7 +149,7 @@ glm::mat4 Object::GetModel()
 {
   return model;
 }
-
+//render object using model matrix
 void Object::Render(GLint location, GLint model_matrix_int)
 {  
   glUniformMatrix4fv(model_matrix_int, 1, GL_FALSE, glm::value_ptr(model));
@@ -212,4 +213,9 @@ int Object::readFromConfig(std::string configPath, ObjInit &obj)
 
      return 1;
 		
+}
+
+float Object::returnRadius()
+{
+	return orbitRadius;
 }

@@ -54,7 +54,7 @@ bool Engine::Initialize(int argc, char **argv)
 void Engine::Run()
 {
   m_running = true;
-
+	m_graphics->drawOrbits();
   while(m_running)
   {
     // Update the DT

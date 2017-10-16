@@ -8,6 +8,7 @@ using namespace std;
 #include "camera.h"
 #include "shader.h"
 #include "object.h"
+#include "GL/glu.h"
 
 class Graphics
 {
@@ -19,6 +20,7 @@ class Graphics
     void Render();
     Object ** getObjects();
     Camera *m_camera;
+	void drawOrbits();
 
     unsigned int simulationSpeed;
 
