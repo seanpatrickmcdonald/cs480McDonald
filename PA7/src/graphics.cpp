@@ -256,12 +256,12 @@ std::string Graphics::ErrorString(GLenum error)
 
 void Graphics::drawOrbits()
 {
-	GLUquadricObj disk[10];
+	GLUquadricObj *disk[10];
 	int index; 
 	for (index = 1; index<11; index++)
 	{
 		disk[index] = gluNewQuadric();
-		gluDisk(disk, m_objects[index]->returnRadius(), m_objects[index]->returnRadius(), 12, 1);
+		gluDisk((disk[index]*), m_objects[index]->returnRadius(), m_objects[index]->returnRadius(), 12, 1);
 	}
 
 }
