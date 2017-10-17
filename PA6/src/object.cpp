@@ -33,6 +33,15 @@ GLuint loadBMP(std::string textureName)
 
 const aiMesh* LoadAssimp(std::string objFilename)
 {
+<<<<<<< HEAD
+=======
+    rotationAngle = 0.0f;
+    orbitAngle = 0.0f;
+    orbitRadius = 0.0f;
+    
+    texture_int = loadBMP();
+
+>>>>>>> bd4a2de1d00b6819d2356aad50d028c131b01c24
     //Use assimp namespace for this function only
     using namespace Assimp;
 
