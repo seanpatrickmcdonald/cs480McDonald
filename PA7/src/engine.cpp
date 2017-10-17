@@ -116,6 +116,19 @@ void Engine::Keyboard()
       if (m_event.key.keysym.sym == SDLK_BACKQUOTE)
       {
         m_graphics->m_camera->toggleView();
+
+        for (int i = 0; i < 11; i++)
+        {
+          m_graphics->getObjects()[i]->toggleFixedScale();
+        }
+      }
+
+      if (m_event.key.keysym.sym == SDLK_o)
+      {
+        for (int i = 1; i < 11; i++)
+        {
+          m_graphics->getObjects()[i]->drawOrbitPath = !m_graphics->getObjects()[i]->drawOrbitPath;
+        }
       }
       
     }
