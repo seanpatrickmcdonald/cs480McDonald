@@ -4,7 +4,7 @@ UNAME_S := $(shell uname -s)
 # Linux
 ifeq ($(UNAME_S), Linux)
 	CC=g++
-	LIBS=-lSDL2 -lGLEW -lGL -lassimp -lGLU -lMesaGLU -lMesaGL -lXext -lX11 -lm -lglut -lXi -lXmu
+	LIBS=-lSDL2 -lGLEW -lGL -lassimp
 # Mac
 else
 	CC=clang++
