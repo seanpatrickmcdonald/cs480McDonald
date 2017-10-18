@@ -8,7 +8,6 @@ using namespace std;
 #include "camera.h"
 #include "shader.h"
 #include "object.h"
-#include "glu.h"
 
 class Graphics
 {

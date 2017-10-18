@@ -8,7 +8,7 @@ ifeq ($(UNAME_S), Linux)
 # Mac
 else
 	CC=clang++
-	LIBS=-lSDL2 -framework OpenGL -framework Cocoa -lGLEW -stdlib=libc++ -lglu
+	LIBS=-lSDL2 -framework OpenGL -framework Cocoa -lGLEW -stdlib=libc++
 endif
 
 # Paths, use this to set Include directories, or library directories; uncomment in all: if used

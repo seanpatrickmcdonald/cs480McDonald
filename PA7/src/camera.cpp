@@ -48,7 +48,7 @@ void Camera::toggleView()
 
   else
   {    
-    view = glm::lookAt(scaled_eye, scaled_foc, y_up);
+    view = glm::lookAt(scaled_all_eye, scaled_all_foc, y_up);
     scaledView = true;
   }
 

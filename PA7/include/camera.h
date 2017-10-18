@@ -6,8 +6,11 @@
 
 const glm::vec3 y_up = glm::vec3(0.0, 1.0, 0.0);
 
-const glm::vec3 scaled_eye = glm::vec3(0.0, 400.0, 0.0125);
-const glm::vec3 scaled_foc = glm::vec3(0.0, 0.0, 0.0);
+const glm::vec3 scaled_all_eye = glm::vec3(0.0, 800.0, 0.0025);
+const glm::vec3 scaled_all_foc = glm::vec3(0.0, 0.0, 0.0);
+
+const glm::vec3 scaled_inn_eye = glm::vec3(0.0, 35.0, 0.0025);
+const glm::vec3 scaled_inn_foc = glm::vec3(0.0, 0.0, 0.0);
 
 const glm::vec3 detail_eye = glm::vec3(0.0, 3.0, -16);
 const glm::vec3 detail_foc = glm::vec3(0.0, 0.0, 0.0);

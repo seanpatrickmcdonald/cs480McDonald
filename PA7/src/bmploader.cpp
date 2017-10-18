@@ -15,6 +15,7 @@ BMPLoader::~BMPLoader()
 
 int BMPLoader::loadFromFile(std::string filename)
 {
+    /*
     std::fstream filestream;
     filestream.open(filename, std::ios::in);
     
@@ -37,7 +38,7 @@ int BMPLoader::loadFromFile(std::string filename)
     width      = *(int*)&(header[0x12]);
     height     = *(int*)&(header[0x16]);
     
-    /*
+    
     data = new unsigned char[imageSize];
 
     for (unsigned int i = 0; i < imageSize; i++)
@@ -50,6 +51,10 @@ int BMPLoader::loadFromFile(std::string filename)
     stbi_set_flip_vertically_on_load(true);
     data = stbi_load(filename.c_str(), &x, &y, &n, 3);
     
+    width = x;
+    height = y;
+
+    /*
     if (!data)
     {
       std::cout << "failed to load: " << filename << " - Loading with bmploader..." << std::endl;
@@ -64,7 +69,7 @@ int BMPLoader::loadFromFile(std::string filename)
 
 
     filestream.close();
-    
+    */
 
     return true;
 }
