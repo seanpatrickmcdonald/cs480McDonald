@@ -48,17 +48,16 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv)
   }
 
   // Create the object
-  unsigned int numObjects = 11;
 
   ObjInit asdf;
   //create the root object
   root = new Object(21);
-  m_objects = new Object *[numObjects]; //initialize the array of pointers
+  m_objects = new Object *[numBodies]; //initialize the array of pointers
 
   //read the config file and create the new objects
   if ( Object::readFromConfig("../assets/solarsysConfig.config", asdf) >= 0)
   {   
-    for (unsigned int i = 0; i < numObjects; i++)
+    for (unsigned int i = 0; i < numBodies; i++)
     {
       m_objects[i] = new Object(asdf, i); //construct the object with parameters
 
@@ -81,7 +80,7 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv)
         }
 
         index++;
-        if (index > 10) //failsafe in case we're outside of array dimensions
+        if (index > numBodies - 1) //failsafe in case we're outside of array dimensions
         {
           std::cout << "uhoh: " << m_objects[i]->obj_name << std::endl;
           break;
@@ -202,7 +201,7 @@ void Graphics::Render()
   glUniformMatrix4fv(m_viewMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetView())); 
 
   // Render the object
-  for (unsigned int i = 0; i < 11; i++)
+  for (unsigned int i = 0; i < numBodies; i++)
   {
     m_objects[i]->Render(m_mySampler, m_modelMatrix);
   }

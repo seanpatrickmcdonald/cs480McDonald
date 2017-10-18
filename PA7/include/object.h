@@ -8,7 +8,7 @@
 #include "assimp/postprocess.h"
 #include "bmploader.h"
 
-const int numBodies = 11;
+const int numBodies = 15;
 
 enum ObjectName
 {

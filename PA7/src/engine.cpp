@@ -27,6 +27,8 @@ Engine::~Engine()
 
 bool Engine::Initialize(int argc, char **argv)
 {
+  srand(99); //Same random numbers every time
+
   m_pauseState = false;
   // Start a window
   m_window = new Window();
@@ -117,7 +119,7 @@ void Engine::Keyboard()
       {
         m_graphics->m_camera->toggleView();
 
-        for (int i = 0; i < 11; i++)
+        for (int i = 0; i < numBodies; i++)
         {
           m_graphics->getObjects()[i]->toggleFixedScale();
         }
@@ -125,7 +127,7 @@ void Engine::Keyboard()
 
       if (m_event.key.keysym.sym == SDLK_o)
       {
-        for (int i = 1; i < 11; i++)
+        for (int i = 1; i < numBodies; i++)
         {
           m_graphics->getObjects()[i]->drawOrbitPath = !m_graphics->getObjects()[i]->drawOrbitPath;
         }

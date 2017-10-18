@@ -133,8 +133,8 @@ void Object::buildOrbitPath(float radius)
   //while we're below a full circle - 2PI radians
   while(angle < 2 * M_PI)
   {
-    glm::vec3 v1 = glm::vec3(sin(angle) * (radius + 0.125), 0.0, cos(angle) * (radius + 0.125));
-    glm::vec3 v2 = glm::vec3(sin(angle) * (radius - 0.125), 0.0, cos(angle) * (radius - 0.125));
+    glm::vec3 v1 = glm::vec3(sin(angle) * (radius + scale * 0.125), 0.0, cos(angle) * (radius + scale * 0.125));
+    glm::vec3 v2 = glm::vec3(sin(angle) * (radius - scale * 0.125), 0.0, cos(angle) * (radius - scale * 0.125));
 
     glm::vec2 uv = glm::vec2(0.0f, 0.0f);
 
@@ -185,7 +185,7 @@ void Object::buildOrbitPath(float radius)
 Object::Object(ObjInit objectStruct, int index)
 {
     rotationAngle = 0.0f;
-    orbitAngle = 0.0f;
+    orbitAngle = float(rand())/ RAND_MAX * 2 * M_PI;
     
     orbitRadius = objectStruct.orbitRadius[index] * 2;
     orbitSpeed = objectStruct.orbitSpeed[index];
@@ -426,7 +426,7 @@ int Object::readFromConfig(std::string configPath, ObjInit &obj)
 		//check fr invalid
 		configFile >> obj.orbitRadius[index];
 
-                configFile >> obj.scale[index];
+    configFile >> obj.scale[index];
         
 	}
 
