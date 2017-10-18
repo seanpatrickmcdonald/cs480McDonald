@@ -10,6 +10,8 @@
 #include <GL/gl.h>
 #include <math.h>
 
+const int numBodies = 15;
+
 enum ObjectName
 {
     sun = 0,
@@ -26,14 +28,22 @@ enum ObjectName
 };
 
 struct ObjInit{
-    std::string obj_filename[11];
-    std::string tex_filename[11];
-    std::string obj_name[11];  //This is for creating the parent child relationships
-    std::string parent_name[11];
-    float rotationSpeed[11];
-    float orbitSpeed[11];
-    float orbitRadius[11];
-    float scale[11];
+    std::string obj_filename[numBodies];
+    std::string tex_filename[numBodies];
+    std::string obj_name[numBodies];  //This is for creating the parent child relationships
+    std::string parent_name[numBodies];
+    float rotationSpeed[numBodies];
+    float orbitSpeed[numBodies];
+    float orbitRadius[numBodies];
+    float scale[numBodies];
+};
+
+struct modelObject{
+  glm::mat4 model;
+  std::vector<Vertex> Vertices;
+  std::vector<unsigned int> Indices;
+  GLuint VB;
+  GLuint IB;
 };
 
 class Object
@@ -47,6 +57,9 @@ class Object
     void Update(unsigned int dt);
     void Update(unsigned int dt, glm::vec3 parentCenter);
     void Render(GLint, GLint);
+  
+    bool drawOrbitPath = false;
+    void buildOrbitPath(float radius);
 
     glm::mat4 GetModel();
     static int readFromConfig(std::string configPath, ObjInit &obj);
@@ -58,8 +71,11 @@ class Object
 
     GLuint texture_int;
     std::string obj_name;
+    void toggleFixedScale();
+
     float scale;
 	float returnRadius();
+
 
   private:
     glm::mat4 model;
@@ -68,7 +84,18 @@ class Object
     GLuint VB;
     GLuint IB;
 
+    glm::mat4 orbitmodel;
+    std::vector<Vertex> orbitVertices;
+    std::vector<unsigned int> orbitIndices;
+    GLuint orbitVB;
+    GLuint orbitIB;
+
+    modelObject *ringModel;
+
     Assimp::Importer *modelImporter;
+
+    float fixedScale = 3;
+    bool fixedScaleTog = false;
 
     float rotationAngle;
     float orbitAngle;
