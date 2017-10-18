@@ -30,7 +30,9 @@ class Camera
     void Update(Object *focusObject);
     void toggleView();
     bool scaledView;
-    bool detailUp; 
+    void setUp();
+    void setDown();
+    bool scaledUp; 
     int parentEnum;
 
   private:

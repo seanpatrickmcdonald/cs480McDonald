@@ -38,6 +38,7 @@ bool Engine::Initialize(int argc, char **argv)
     return false;
   }
 
+
   // Start the graphics
   m_graphics = new Graphics();
   if(!m_graphics->Initialize(m_WINDOW_WIDTH, m_WINDOW_HEIGHT, argc, argv))
@@ -115,13 +116,17 @@ void Engine::Keyboard()
         m_graphics->m_camera->parentEnum = ((m_graphics->m_camera->parentEnum + 1) + 11) % 11;
       }
 
-      if (m_event.key.keysym.sym == SDLK_BACKQUOTE)
+      if (m_event.key.keysym.sym == SDLK_TAB)
       {
         m_graphics->m_camera->toggleView();
 
         for (int i = 0; i < numBodies; i++)
         {
-          m_graphics->getObjects()[i]->toggleFixedScale();
+          if (m_graphics->m_camera->scaledView && m_graphics->m_camera->scaledUp)
+          m_graphics->getObjects()[i]->chooseScale(true);
+
+          else
+          m_graphics->getObjects()[i]->chooseScale(false);
         }
       }
 
@@ -131,6 +136,27 @@ void Engine::Keyboard()
         {
           m_graphics->getObjects()[i]->drawOrbitPath = !m_graphics->getObjects()[i]->drawOrbitPath;
         }
+      }
+
+      if (m_event.key.keysym.sym == SDLK_UP)
+      {
+        m_graphics->m_camera->setUp();
+
+      	for (int i = 0; i < numBodies; i++)
+        {
+          if (m_graphics->m_camera->scaledView && m_graphics->m_camera->scaledUp)
+      	  m_graphics->getObjects()[i]->chooseScale(true);
+      	}
+      }
+
+      if (m_event.key.keysym.sym == SDLK_DOWN)
+      {
+      	m_graphics->m_camera->setDown();
+
+      	for (int i = 0; i < numBodies; i++)
+        {
+      	  m_graphics->getObjects()[i]->chooseScale(false);
+      	}
       }
       
     }

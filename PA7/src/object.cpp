@@ -385,9 +385,9 @@ void Object::Render(GLint location, GLint model_matrix_int)
   
 }
 
-void Object::toggleFixedScale()
+void Object::chooseScale(bool setScale)
 {
-  fixedScaleTog = !fixedScaleTog;
+  fixedScaleTog = setScale;
 }
 
 

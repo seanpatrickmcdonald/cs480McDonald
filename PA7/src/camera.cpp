@@ -14,7 +14,7 @@ Camera::~Camera()
 bool Camera::Initialize(int w, int h)
 {
   scaledView = false;
-  detailUp = true;
+  scaledUp = true;
   orbitAngle = 0.0f;
   parentEnum = 0;
  
@@ -48,12 +48,34 @@ void Camera::toggleView()
 
   else
   {    
+    if (scaledUp)
     view = glm::lookAt(scaled_all_eye, scaled_all_foc, y_up);
+
+    else
+    view = glm::lookAt(scaled_inn_eye, scaled_inn_foc, y_up);
+
     scaledView = true;
   }
 
 }
 
+void Camera::setUp()
+{
+  if (!scaledUp && scaledView)
+  {
+    view = glm::lookAt(scaled_all_eye, scaled_all_foc, y_up);
+    scaledUp = true;
+  }
+}
+
+void Camera::setDown()
+{
+  if (scaledUp && scaledView)
+  {
+    view = glm::lookAt(scaled_inn_eye, scaled_inn_foc, y_up);
+    scaledUp = false;
+  }
+}
 
 glm::mat4 Camera::GetProjection()
 {

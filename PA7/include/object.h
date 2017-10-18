@@ -69,7 +69,7 @@ class Object
 
     GLuint texture_int;
     std::string obj_name;
-    void toggleFixedScale();
+    void chooseScale(bool );
 
     float scale;
 
