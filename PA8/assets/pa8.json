@@ -1,0 +1,35 @@
+{ "object":{
+
+	"name":"table", 
+  	"mesh":"table.obj",
+  	"texture":"blue.jpg", 
+  	"mass":0,
+  	"inertia":0,
+ 	"scale":3, 
+	},
+
+	"name":"ball",
+  	"mesh":"sphere.obj",
+  	"texture":"green.jpg",
+  	"mass":0,
+  	"inertia":0,
+ 	"scale":1
+	},
+
+	"name":"cylinder", 
+  	"mesh":"cylinder.obj",
+  	"texture":"wood.jpg", 
+  	"mass":0, 
+  	"inertia":0, 
+ 	"scale":1 
+	},
+
+	"name":"cube", 
+  	"mesh":"cube.obj", 
+  	"texture":"crate.jpg", 
+  	"mass":0, 
+  	"inertia":0,
+ 	"scale":1 
+	}
+
+}
