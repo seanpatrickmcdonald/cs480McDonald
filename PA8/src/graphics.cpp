@@ -53,7 +53,7 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv)
   m_objects = new Object*[num_objects];
   for (unsigned int i = 0; i < num_objects; i++)
   {     
-      m_objects[i] = new Object("../assets/Sphere.obj", i * 4.0f);
+     // m_objects[i] = new Object("../assets/Sphere.obj", i * 4.0f);
   }
 
   // Set up the shaders

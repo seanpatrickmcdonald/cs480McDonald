@@ -7,12 +7,13 @@
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 #include "bmploader.h"
+#include "json.hpp"
 
 class Object
 {
   public:
     Object();
-    Object(std::string objFilename, float radiusIn);
+    Object(std::string objFilename);
     ~Object();
     void Update(unsigned int dt);
     void Render(GLint);
@@ -27,9 +28,9 @@ class Object
     GLuint IB;
     GLuint texture_int;
 
-    float rotationAngle;
-    float orbitAngle;
-    float orbitRadius;
+   // float rotationAngle;
+    //float orbitAngle;
+    //float orbitRadius;
 };
 
 #endif /* OBJECT_H */
