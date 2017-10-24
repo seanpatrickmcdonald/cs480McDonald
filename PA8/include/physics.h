@@ -2,6 +2,7 @@
 #define __PHYSICS__H
 
 #include <btBulletDynamicsCommon.h>
+#include "json.hpp"
 
 enum collisionTypes
 {
@@ -26,7 +27,7 @@ class PhysicsManager
         glm::mat4 GetModelMatrixAtIndex(int index);
         int GetNumObjects();
 
-        void Update();
+        void Update(//pass engine dt );
 
         void ApplyForceAtIndex(btVector3 force, int index);
 

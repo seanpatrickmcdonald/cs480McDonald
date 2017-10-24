@@ -37,8 +37,9 @@ physics::~physics()
 
 }
 
+//restitution is the difference in velocity after a collision of an object new velocity/prev velocity
 void physics::AddRigidBody(btCollisionShape* collisionShape, btVector3 origin, btScalar mass, btScalar restitution, btVector3 inertia, bool kinematic)
-{
+{ 
     btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), origin));
     if(mass > 0)
         collisionShape->calculateLocalInertia(mass, inertia);
@@ -81,7 +82,7 @@ void physics::Update()
 	
     dynamicsWorld->stepSimulation(Engine::->GetTimeDelta(), 1);
 }
-
+//applies force in direction
 void physics::ApplyForceAtIndex(btVector3 force, int index)
 {
     if(index < 0 || index >= GetNumObjects())

@@ -6,6 +6,7 @@
 
 #include "window.h"
 #include "graphics.h"
+#include "physics.h"
 
 class Engine
 {
