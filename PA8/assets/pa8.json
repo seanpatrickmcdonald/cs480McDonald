@@ -5,7 +5,8 @@
   	"texture":"blue.jpg", 
   	"mass":0,
   	"inertia":0,
- 	"scale":3, 
+ 	"scale":3,
+	"kinematic":0 
 	},
 
 	"name":"ball",
@@ -13,7 +14,8 @@
   	"texture":"green.jpg",
   	"mass":0,
   	"inertia":0,
- 	"scale":1
+ 	"scale":1,
+	"kinematic":1
 	},
 
 	"name":"cylinder", 
@@ -21,7 +23,8 @@
   	"texture":"wood.jpg", 
   	"mass":0, 
   	"inertia":0, 
- 	"scale":1 
+ 	"scale":1,
+	"kinematic":0
 	},
 
 	"name":"cube", 
@@ -29,7 +32,8 @@
   	"texture":"crate.jpg", 
   	"mass":0, 
   	"inertia":0,
- 	"scale":1 
+ 	"scale":1,
+	"kinematic":0 
 	}
 
 }

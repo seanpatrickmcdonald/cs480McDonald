@@ -8,6 +8,7 @@
 #include "assimp/postprocess.h"
 #include "bmploader.h"
 #include "json.hpp"
+#include "physics.h"
 
 class Object
 {
@@ -27,7 +28,7 @@ class Object
     GLuint VB;
     GLuint IB;
     GLuint texture_int;
-
+	btCollisionShape* collisionShape;
    // float rotationAngle;
     //float orbitAngle;
     //float orbitRadius;
