@@ -2,6 +2,6 @@
 ## Group - Bruce Martin and Sean McDonald
 
 ## Current Finished Projects
-PA1, PA2, PA3, PA4, PA5, PA6
+PA1, PA2, PA3, PA4, PA5, PA6, PA7
 
 Group Projects - Bruce Martin and I will be using this Repository
