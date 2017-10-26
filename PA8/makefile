@@ -19,7 +19,7 @@ endif
 CXXFLAGS=-g -Wall -std=c++0x
 
 # .o Compilation
-O_FILES=main.o camera.o engine.o graphics.o object.o shader.o window.o bmploader.o
+O_FILES=main.o camera.o engine.o graphics.o object.o shader.o window.o bmploader.o physics.o
 
 # Point to includes of local directories
 INDLUDES=-I../include
@@ -52,5 +52,33 @@ window.o: ../src/window.cpp
 bmploader.o: ../src/bmploader.cpp
 	$(CC) $(CXXFLAGS) -c ../src/bmploader.cpp -o bmploader.o $(INDLUDES)
 
+physics.o: ../src/physics.cpp
+	$(CC) $(CXXFLAGS) -c ../src/physics.cpp -o physics.o $(INDLUDES)
+
 clean:
 	-@if rm *.o Tutorial 2>/dev/null || true; then echo "Main Removed"; else echo "No Main"; fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
