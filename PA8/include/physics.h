@@ -27,7 +27,7 @@ class PhysicsManager
         glm::mat4 GetModelMatrixAtIndex(int index);
         int GetNumObjects();
 
-        void Update(//pass engine dt );
+        void Update(unsigned int dt);
 
         void ApplyForceAtIndex(btVector3 force, int index);
 

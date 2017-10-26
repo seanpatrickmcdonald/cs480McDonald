@@ -7,7 +7,7 @@
   	"inertia":0,
 	"restitution":0.1,
  	"scale":3,
-	"kinematic":0 
+	"kinematic":false 
 	},
 
 	{
@@ -18,7 +18,7 @@
   	"inertia":0,
 	"restitution":0.8,
  	"scale":1,
-	"kinematic":1
+	"kinematic":true
 	},
 
 	{
@@ -29,7 +29,7 @@
   	"inertia":0, 
 	"restitution":0.1,
  	"scale":1,
-	"kinematic":0
+	"kinematic":false
 	},
 	
 	{
@@ -40,7 +40,7 @@
   	"inertia":0,
 	"restitution":0.1,
  	"scale":1,
-	"kinematic":0 
+	"kinematic":false
 	}
 	]
 

@@ -77,10 +77,10 @@ glm::mat4 physics::GetModelMatrixAtIndex(int index)
     return modelMatrix;
 }
 
-void physics::Update()
+void physics::Update(unsigned int dt)
 {
 	
-    dynamicsWorld->stepSimulation(Engine::->GetTimeDelta(), 1);
+    dynamicsWorld->stepSimulation(dt, 1 ); //1 is max time step
 }
 //applies force in direction
 void physics::ApplyForceAtIndex(btVector3 force, int index)
