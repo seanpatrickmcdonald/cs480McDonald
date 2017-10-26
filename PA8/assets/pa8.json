@@ -1,39 +1,47 @@
-{ "object":{
+{ "object":[{
 
 	"name":"table", 
-  	"mesh":"table.obj",
-  	"texture":"blue.jpg", 
+  	"mesh":"../assets/table.obj",
+  	"texture":"../assets/blue.jpg", 
   	"mass":0,
   	"inertia":0,
+	"restitution":0.1,
  	"scale":3,
 	"kinematic":0 
 	},
 
+	{
 	"name":"ball",
-  	"mesh":"sphere.obj",
-  	"texture":"green.jpg",
+  	"mesh":"../assets/sphere.obj",
+  	"texture":"../assets/green.jpg",
   	"mass":0,
   	"inertia":0,
+	"restitution":0.8,
  	"scale":1,
 	"kinematic":1
 	},
 
+	{
 	"name":"cylinder", 
-  	"mesh":"cylinder.obj",
-  	"texture":"wood.jpg", 
+  	"mesh":"../assets/cylinder.obj",
+  	"texture":"../assets/wood.jpg", 
   	"mass":0, 
   	"inertia":0, 
+	"restitution":0.1,
  	"scale":1,
 	"kinematic":0
 	},
-
+	
+	{
 	"name":"cube", 
-  	"mesh":"cube.obj", 
-  	"texture":"crate.jpg", 
+  	"mesh":"../assets/cube.obj", 
+  	"texture":"../assets/crate.jpg", 
   	"mass":0, 
   	"inertia":0,
+	"restitution":0.1,
  	"scale":1,
 	"kinematic":0 
 	}
+	]
 
 }
