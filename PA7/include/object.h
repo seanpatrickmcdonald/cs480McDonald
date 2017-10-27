@@ -8,7 +8,7 @@
 #include "assimp/postprocess.h"
 #include "bmploader.h"
 
-const int numBodies = 15;
+const int numBodies = 21;
 
 enum ObjectName
 {
@@ -69,7 +69,7 @@ class Object
 
     GLuint texture_int;
     std::string obj_name;
-    void toggleFixedScale();
+    void chooseScale(bool );
 
     float scale;
 

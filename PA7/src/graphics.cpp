@@ -75,7 +75,6 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv)
         else if (m_objects[index]->obj_name == asdf.parent_name[i])
         { 
           m_objects[index]->childPtr.push_back(m_objects[i]);
-
           parentNotMade = false;         
         }
 
@@ -205,8 +204,6 @@ void Graphics::Render()
   {
     m_objects[i]->Render(m_mySampler, m_modelMatrix);
   }
-
-
 
   // Get any errors from OpenGL
   auto error = glGetError();

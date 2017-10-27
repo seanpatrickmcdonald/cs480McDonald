@@ -33,17 +33,23 @@ make && ./Tutorial
 ```
 
 # Input
-## Modes
-Use the ` - grave key - to toggle between Scaled and Detailed views.   
+There are 2 main views, Scaled and Detailed. Scaled is a view of the System from above, where Detailed is a close up of each planet.  
+    
+Scaled View is useful for viewing differences in Orbit Radiuses and Speeds.  
+Detailed View is useful for viewing Textures, Scales, and Rotation Speeds. The Camera is set a fixed (x, 0, z) away from the planet,  
+and thus, rotations and scales will be accurate.
+
+## Global Inputs
+Tab         = Toggle between Scaled and Detailed views.   
+Letter O    = Toggle Orbit Path Rendering  
+Number Keys = Change speed proportionally, e.g. 1 = 1x, 2 = 2x, 3 = 3x, etc.  
+Space       = Pause all motion. Note: While paused no other actions are processed. (Can only unpause)  
 
 ## Scaled View
-
-Number Keys = change speed proportionally, e.g. 1 = 1x, 2 = 2x, 3 = 3x, etc.  
-Space       = pause all motion. Note: While paused no other actions are processed. (Can only unpause)  
+The Scaled View has two modes: System and Inner Planets.   
+Up   = Change to System View  
+Down = Change to Inner Planets View  
 
 ## Detailed View
 ### Detailed View is a center on the target planet, with fixed translational offset. So, rotations will be equal to their actual values.
-
-Number Keys = change speed proportionally, e.g. 1 = 1x, 2 = 2x, 3 = 3x, etc.  
-Space       = pause all motion. Note: While paused no other actions are processed. (Can only unpause)  
-Left/Right Arrow = change target planet, e.g. Right moves from Sun->Mercury->Venus, Left moves from Mercury->Sun->Pluto  
+Left/Right Arrow = Change target planet, e.g. Right moves from Sun->Mercury->Venus, Left moves from Mercury->Sun->Pluto  
