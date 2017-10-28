@@ -1,5 +1,6 @@
 #include "graphics.h"
 
+using json = nlohmann::json;
 
 Graphics::Graphics()
 {
@@ -50,16 +51,22 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv)
   //Initialize our PhysicsManager
   m_physics = new PhysicsManager();
 
-  // Create the objects
-  unsigned int num_objects = 2;
+  
+  //read in our json
+  std::ifstream i("../assets/pa8.json");
+  nlohmann::json j;
+  i >> j ;
 
-  m_physicsObjects = new PhysicsObject*[num_objects];
-  for (unsigned int i = 0; i < num_objects; i++)
+  // Create the objects  
+  num_physics_objects = j["object"].size();
+  m_physicsObjects = new PhysicsObject*[num_physics_objects];
+
+  for (unsigned int i = 0; i < num_physics_objects; i++)
   {     
-      m_physicsObjects[i] = new PhysicsObject("../assets/Sphere.obj", m_physics);
+      PhysicsObjectStruct passStruct;
+      passStruct.objFilename = j["object"][i]["mesh"];
+      m_physicsObjects[i] = new PhysicsObject(passStruct, m_physics);
   }
-
-
 
   // Set up the shaders
   m_shader = new Shader();
@@ -157,7 +164,7 @@ void Graphics::Update(unsigned int dt)
   m_physics->Update(dt);
   
   // Update the object
-  for (unsigned int i = 0; i < 2; i++)
+  for (unsigned int i = 0; i < num_physics_objects; i++)
   {
     //m_physicsObjects[i]->Update(dt);
   }
@@ -178,11 +185,12 @@ void Graphics::Render()
 
   // Render the object
 
-  for (unsigned int i = 0; i < 2; i++)
+  for (unsigned int i = 0; i < num_physics_objects; i++)
   {
     glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_physics->GetModelMatrixAtIndex(i)));
     m_physicsObjects[i]->Render(m_mySampler);
   }
+
 
   // Get any errors from OpenGL
   auto error = glGetError();

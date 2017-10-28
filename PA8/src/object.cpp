@@ -1,5 +1,11 @@
 #include "object.h"
 
+#ifndef STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+#endif
+
+#include "stb_image.h"
+
 Object::Object()
 {  
 
@@ -7,13 +13,15 @@ Object::Object()
 
 GLuint Object::loadBMP(std::string textureName)
 {    
-    BMPLoader loader;
-    loader.loadFromFile(textureName);
-
+    int width, height, n;
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char *data;
+    data = stbi_load(textureName.c_str(), &width, &height, &n, 3);
+    
     GLuint tex;
     glCreateTextures(GL_TEXTURE_2D, 1, &tex);
         
-    glTextureStorage2D(tex, 1, GL_RGBA32F, loader.width, loader.height);
+    glTextureStorage2D(tex, 1, GL_RGBA32F, width, height);
     glBindTexture(GL_TEXTURE_2D, tex);
    
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -23,10 +31,10 @@ GLuint Object::loadBMP(std::string textureName)
     glTextureSubImage2D(tex,
 		        0,
 		        0, 0,
-		        loader.width, loader.height,
+		        width, height,
 		        GL_RGB,
 		        GL_UNSIGNED_BYTE,
-		        loader.data);
+		        data);
  
     return tex;
 }
@@ -54,7 +62,10 @@ Object::Object(std::string objFilename)
     //build our aimesh object
     const aiMesh *modelMesh = LoadAssimp(objFilename);
 
-
+    if (modelMesh == nullptr)
+    {
+        std::cout << "Invalid Mesh: " << objFilename << std::endl;
+    }
 
     //Load Vertex Positions and TextureCoords
     for (unsigned int i = 0; i < modelMesh->mNumVertices; i++)
@@ -67,8 +78,17 @@ Object::Object(std::string objFilename)
 
         glm::vec2 uv;
 
-        uv.x = modelMesh->mTextureCoords[0][i].x;
-        uv.y = modelMesh->mTextureCoords[0][i].y;
+        if (modelMesh->GetNumUVChannels() > 0)
+        {
+            uv.x = modelMesh->mTextureCoords[0][i].x;
+            uv.y = modelMesh->mTextureCoords[0][i].y;
+        }
+
+        else
+        {
+            uv.x = 1.0f;
+            uv.y = 1.0f;
+        }
 	        
         Vertex dummyVertex(vertexVec, uv);
         Vertices.push_back(dummyVertex);        
@@ -85,6 +105,7 @@ Object::Object(std::string objFilename)
         }
     }
 
+
   glGenBuffers(1, &VB);
   glBindBuffer(GL_ARRAY_BUFFER, VB);
   glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * Vertices.size(), &Vertices[0], GL_STATIC_DRAW);
@@ -92,7 +113,6 @@ Object::Object(std::string objFilename)
   glGenBuffers(1, &IB);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * Indices.size(), &Indices[0], GL_STATIC_DRAW);
-
 }
 
 Object::~Object()
@@ -114,9 +134,7 @@ glm::mat4 Object::GetModel()
 
 void Object::Render(GLint location)
 {
-
-  glBindTexture(GL_TEXTURE_2D, texture_int);
-  
+  glBindTexture(GL_TEXTURE_2D, texture_int);  
 
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);

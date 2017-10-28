@@ -9,6 +9,7 @@ using namespace std;
 #include "shader.h"
 #include "object.h"
 #include "physics_object.h"
+#include "json.hpp"
 
 class Graphics
 {
@@ -33,6 +34,9 @@ class Graphics
 
     //Object **m_objects;
     PhysicsObject **m_physicsObjects;
+
+    //unsigned int numObjects;
+    size_t num_physics_objects;
 };
 
 #endif /* GRAPHICS_H */

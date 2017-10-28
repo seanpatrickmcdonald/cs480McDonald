@@ -10,8 +10,9 @@ PhysicsObject::~PhysicsObject()
 
 }
 
-PhysicsObject::PhysicsObject(std::string objFilename, PhysicsManager *physics_manager)
-: Object(objFilename)
+
+PhysicsObject::PhysicsObject(PhysicsObjectStruct objStruct, PhysicsManager *physics_manager)
+: Object(objStruct.objFilename)
 {  
   btCollisionShape *collisionShape = new btSphereShape (btScalar(1.0f));
   btVector3 origin     = btVector3(0,0,0);

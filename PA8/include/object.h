@@ -1,12 +1,11 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include <vector>
 #include "graphics_headers.h"
 #include "assimp/scene.h"
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
-#include "bmploader.h"
+
 
 class Object
 {
