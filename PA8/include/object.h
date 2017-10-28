@@ -12,12 +12,15 @@ class Object
 {
   public:
     Object();
-    Object(std::string objFilename, float radiusIn);
+    Object(std::string objFilename);
     ~Object();
     void Update(unsigned int dt);
     void Render(GLint);
 
     glm::mat4 GetModel();
+
+    GLuint loadBMP(std::string textureName);
+    const aiMesh* LoadAssimp(std::string objFilename);
 
   private:
     glm::mat4 model;
@@ -26,10 +29,6 @@ class Object
     GLuint VB;
     GLuint IB;
     GLuint texture_int;
-
-    float rotationAngle;
-    float orbitAngle;
-    float orbitRadius;
 };
 
 #endif /* OBJECT_H */

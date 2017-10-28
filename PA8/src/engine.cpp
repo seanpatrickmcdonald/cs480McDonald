@@ -23,12 +23,9 @@ Engine::~Engine()
   delete m_window;
   if (m_graphics)
   	delete m_graphics;
-  if(m_physics)
-  	delete m_physics;
 
   m_window = nullptr;
   m_graphics = nullptr;
-  m_physics = nullptr;
 }
 
 bool Engine::Initialize(int argc, char **argv)
@@ -49,7 +46,6 @@ bool Engine::Initialize(int argc, char **argv)
     return false;
   }
 
-  m_physics = new PhysicsManager();
 
   // Set the time
   m_currentTimeMillis = GetCurrentTimeMillis();

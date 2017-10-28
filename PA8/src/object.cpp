@@ -5,7 +5,7 @@ Object::Object()
 
 }
 
-GLuint loadBMP(std::string textureName)
+GLuint Object::loadBMP(std::string textureName)
 {    
     BMPLoader loader;
     loader.loadFromFile(textureName);
@@ -31,7 +31,7 @@ GLuint loadBMP(std::string textureName)
     return tex;
 }
 
-const aiMesh* LoadAssimp(std::string objFilename)
+const aiMesh* Object::LoadAssimp(std::string objFilename)
 {
     //Use assimp namespace for this function only
     using namespace Assimp;
@@ -46,12 +46,8 @@ const aiMesh* LoadAssimp(std::string objFilename)
     return modelMesh;
 }
 
-Object::Object(std::string objFilename, float radiusIn)
+Object::Object(std::string objFilename)
 {
-    rotationAngle = 0.0f;
-    orbitAngle = 0.0f;
-    orbitRadius = radiusIn;
-
     //bring in textures and load to opengl
     texture_int = loadBMP("../assets/earth.bmp");
 
@@ -108,14 +104,6 @@ Object::~Object()
 void Object::Update(unsigned int dt)
 {
 
-  rotationAngle += dt * M_PI/2000;
-  orbitAngle += dt * M_PI/2000;
-
-  glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(orbitRadius * cos(orbitAngle), 0.0f, orbitRadius * sin(orbitAngle) ));
-  glm::mat4 RotationMatrix = glm::rotate(glm::mat4(1.0f), rotationAngle, glm::vec3(0.0, 1.0, 0.0));
-  glm::mat4 ScaleMatrix = glm::scale(glm::vec3(1.0f, 1.0f, 1.0f));
-
-  model = TranslationMatrix * RotationMatrix * ScaleMatrix;
 
 }
 

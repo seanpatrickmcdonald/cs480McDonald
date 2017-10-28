@@ -10,7 +10,6 @@ PhysicsManager::PhysicsManager()
     dispatcher             = new btCollisionDispatcher(collisionConfiguration);
     solver                 = new btSequentialImpulseConstraintSolver();
     dynamicsWorld          = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
-
     // Add gravity
     dynamicsWorld->setGravity(btVector3(0, -9.81, 0));
 }
@@ -47,12 +46,16 @@ void PhysicsManager::AddRigidBody(btCollisionShape* collisionShape, btVector3 or
     btRigidBody* body = new btRigidBody(constructionInfo);
     body->setRestitution(restitution);
     body->setActivationState(DISABLE_DEACTIVATION);
+
     if(kinematic)
     {
         body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
         //body->setActivationState(DISABLE_DEACTIVATION);
     }
-    dynamicsWorld->addRigidBody(body);
+
+    if (dynamicsWorld)
+        dynamicsWorld->addRigidBody(body);
+
 }
 
 int PhysicsManager::GetNumObjects()

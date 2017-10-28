@@ -8,9 +8,9 @@ Graphics::Graphics()
 
 Graphics::~Graphics()
 {
-
-
-
+  if(m_physics)
+  	delete m_physics;
+  m_physics = nullptr;
 }
 
 bool Graphics::Initialize(int width, int height, int argc, char **argv)
@@ -47,14 +47,19 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv)
     return false;
   }
 
+  //Initialize our PhysicsManager
+  m_physics = new PhysicsManager();
+
   // Create the objects
   unsigned int num_objects = 2;
 
-  m_objects = new Object*[num_objects];
+  m_physicsObjects = new PhysicsObject*[num_objects];
   for (unsigned int i = 0; i < num_objects; i++)
   {     
-      m_objects[i] = new Object("../assets/Sphere.obj", i * 4.0f);
+      m_physicsObjects[i] = new PhysicsObject("../assets/Sphere.obj", m_physics);
   }
+
+
 
   // Set up the shaders
   m_shader = new Shader();
@@ -63,6 +68,7 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv)
     printf("Shader Failed to Initialize\n");
     return false;
   }
+
 
   int vertexFileIndex = -1;
   int fragmentFileIndex = -1;
@@ -148,10 +154,12 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv)
 
 void Graphics::Update(unsigned int dt)
 {
+  m_physics->Update(dt);
+  
   // Update the object
   for (unsigned int i = 0; i < 2; i++)
   {
-    m_objects[i]->Update(dt);
+    //m_physicsObjects[i]->Update(dt);
   }
 }
 
@@ -170,11 +178,10 @@ void Graphics::Render()
 
   // Render the object
 
-
   for (unsigned int i = 0; i < 2; i++)
   {
-    glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_objects[i]->GetModel()));
-    m_objects[i]->Render(m_mySampler);
+    glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_physics->GetModelMatrixAtIndex(i)));
+    m_physicsObjects[i]->Render(m_mySampler);
   }
 
   // Get any errors from OpenGL

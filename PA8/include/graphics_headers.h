@@ -22,6 +22,8 @@
 
 #define INVALID_UNIFORM_LOCATION 0x7fffffff
 
+#include "physics.h"
+
 struct Vertex
 {
   glm::vec3 vertex;
