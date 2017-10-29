@@ -1,7 +1,7 @@
 
 #include "physics.h"
 #include "engine.h"
-
+//-9.81
 PhysicsManager::PhysicsManager()
 {
     // Initialize Bullet
@@ -42,6 +42,7 @@ void PhysicsManager::AddRigidBody(btCollisionShape* collisionShape, btVector3 or
     btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), origin));
     if(mass > 0)
         collisionShape->calculateLocalInertia(mass, inertia);
+    
     btRigidBody::btRigidBodyConstructionInfo constructionInfo(mass, motionState, collisionShape, inertia);
     btRigidBody* body = new btRigidBody(constructionInfo);
     body->setRestitution(restitution);

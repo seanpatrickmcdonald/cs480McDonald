@@ -11,7 +11,7 @@ class Object
 {
   public:
     Object();
-    Object(std::string objFilename);
+    Object(std::string objFilename, std::string texFilename);
     ~Object();
     void Update(unsigned int dt);
     void Render(GLint);

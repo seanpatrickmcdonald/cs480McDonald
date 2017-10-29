@@ -14,6 +14,26 @@ Graphics::~Graphics()
   m_physics = nullptr;
 }
 
+PhysicsObjectStruct* structFromJSON(json j, size_t index)
+{
+  PhysicsObjectStruct *passStruct = new PhysicsObjectStruct();
+  passStruct->objName = j["object"][index]["name"];
+  passStruct->objFilename = j["object"][index]["mesh"];
+  passStruct->texFilename = j["object"][index]["texture"];
+  //passStruct->inertia = j["object"][index]["inertia"];
+  passStruct->mass = j["object"][index]["mass"];
+  //passStruct->restitution = j["object"][index]["restitution"];
+  //passStruct->kinematic = j["object"][index]["kinematic"];
+  passStruct->origin = btVector3(
+                                j["object"][index]["origin.x"],
+                                j["object"][index]["origin.y"],
+                                j["object"][index]["origin.z"]        
+                                );
+  passStruct->primitiveType = j["object"][index]["primitive"];
+
+  return passStruct;
+}
+
 bool Graphics::Initialize(int width, int height, int argc, char **argv)
 {
   // Used for the linux OS
@@ -63,9 +83,7 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv)
 
   for (unsigned int i = 0; i < num_physics_objects; i++)
   {     
-      PhysicsObjectStruct passStruct;
-      passStruct.objFilename = j["object"][i]["mesh"];
-      m_physicsObjects[i] = new PhysicsObject(passStruct, m_physics);
+      m_physicsObjects[i] = new PhysicsObject(*(structFromJSON(j, i)), m_physics);
   }
 
   // Set up the shaders

@@ -54,10 +54,10 @@ const aiMesh* Object::LoadAssimp(std::string objFilename)
     return modelMesh;
 }
 
-Object::Object(std::string objFilename)
+Object::Object(std::string objFilename, std::string texFilename)
 {
     //bring in textures and load to opengl
-    texture_int = loadBMP("../assets/earth.bmp");
+    texture_int = loadBMP(texFilename);
 
     //build our aimesh object
     const aiMesh *modelMesh = LoadAssimp(objFilename);

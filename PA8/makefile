@@ -32,24 +32,21 @@ OBJ_FILES   = $(patsubst $(SRC_DIR)/%.cpp, $(SRC_DIR)/%.o, $(SRC_FILES))
 INCLUDES=-I../include -I/usr/include/bullet
 
 #Color Variables
-COM_COLOR   = \033[0;34m
-OBJ_COLOR   = \033[0;36m
-OK_COLOR    = \033[0;32m
-ERROR_COLOR = \033[0;31m
-WARN_COLOR  = \033[0;33m
+LNK_COLOR   = \033[0;36m
+OBJ_COLOR   = \033[0;32m
 NO_COLOR    = \033[m
 
 
 all: $(OBJ_FILES)
-	@printf "$(OBJ_COLOR)Linking executable Tutorial$(NO_COLOR)"
-	$(CC) $(CXXFLAGS) -o Tutorial $^ $(LIBS)   #$(PATHI) $(PATHL) 
-	@printf "\rBuilt Target Tutorial            \n"
+	@printf "$(LNK_COLOR)Linking executable Tutorial$(NO_COLOR)"
+	$(CC) $(CXXFLAGS) -o Tutorial $^ $(LIBS) 
+	@printf "\rBuilt Target Tutorial                                 \n"
 
 $(SRC_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@printf "$(OBJ_COLOR)Building $@ $(NO_COLOR)"
 	$(CC) $(CXXFLAGS) -c -o $@ $< $(INCLUDES) 
-	@printf "\r$(OK_COLOR)Built $@     \n$(NO_COLOR)"
-	
+	@printf "\r$(OBJ_COLOR)Built $@                                   \n"
+
 
 clean:
 	-@if rm ../src/*.o Tutorial 2>/dev/null || true; then echo "Main Removed"; else echo "No Main"; fi

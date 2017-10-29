@@ -25,14 +25,9 @@ struct PhysicsObjectStruct
   btScalar restitution;
   btVector3 inertia;
   bool kinematic;
+  std::string primitiveType;
 };
 
-enum PrimType
-{
-  SPHERE = 0,
-  PLANE = 1,
-  BOX = 2  
-};
 
 
 
