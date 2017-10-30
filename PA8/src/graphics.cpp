@@ -22,7 +22,7 @@ PhysicsObjectStruct* structFromJSON(json j, size_t index)
   passStruct->texFilename = j["object"][index]["texture"];
   //passStruct->inertia = j["object"][index]["inertia"];
   passStruct->mass = j["object"][index]["mass"];
-  //passStruct->restitution = j["object"][index]["restitution"];
+  passStruct->restitution = j["object"][index]["restitution"];
   //passStruct->kinematic = j["object"][index]["kinematic"];
   passStruct->origin = btVector3(
                                 j["object"][index]["origin.x"],
@@ -32,6 +32,32 @@ PhysicsObjectStruct* structFromJSON(json j, size_t index)
   passStruct->primitiveType = j["object"][index]["primitive"];
 
   return passStruct;
+}
+
+void createTables(PhysicsManager *physicsManager)
+{ 
+  btVector3 Xup(1.0f, 0.0f, 0.0f);
+  btVector3 Zup(0.0f, 0.0f, 1.0f);
+
+  btCollisionShape *wall1 = new btBoxShape(btVector3(0.01f, 0.25f, 2.0f));
+  btCollisionShape *wall2 = new btBoxShape(btVector3(0.01f, 0.25f, 2.0f));
+  btCollisionShape *wall3 = new btBoxShape(btVector3(2.00f, 0.25f, 0.01f));
+  btCollisionShape *wall4 = new btBoxShape(btVector3(2.00f, 0.25f, 0.01f));
+ 
+  btVector3 originwall1 = btVector3( 2.0f, 0.0f, 0.0f);
+  btVector3 originwall2 = btVector3(-2.0f, 0.0f, 0.0f);
+  btVector3 originwall3 = btVector3(0.0f, 0.0f, 2.0f);
+  btVector3 originwall4 = btVector3(0.0f, 0.0f, -2.0f);
+
+  btScalar mass        = btScalar(0.0f);
+  btScalar restitution = btScalar(1.0f);
+  btVector3 inertia    = btVector3(0.0f, 0.0f, 0.0f);
+  bool kinematic       = false;
+
+  physicsManager->AddRigidBody(wall1, originwall1, mass, restitution, inertia, kinematic);
+  physicsManager->AddRigidBody(wall2, originwall2, mass, restitution, inertia, kinematic);
+  physicsManager->AddRigidBody(wall3, originwall3, mass, restitution, inertia, kinematic);
+  physicsManager->AddRigidBody(wall4, originwall4, mass, restitution, inertia, kinematic);
 }
 
 bool Graphics::Initialize(int width, int height, int argc, char **argv)
@@ -85,6 +111,10 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv)
   {     
       m_physicsObjects[i] = new PhysicsObject(*(structFromJSON(j, i)), m_physics);
   }
+
+  createTables(m_physics);
+
+  m_physics->ApplyForceAtIndex(btVector3(-4.0f, 0, 0.5f), 1);
 
   // Set up the shaders
   m_shader = new Shader();
@@ -208,7 +238,7 @@ void Graphics::Render()
     glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_physics->GetModelMatrixAtIndex(i)));
     m_physicsObjects[i]->Render(m_mySampler);
   }
-
+  
 
   // Get any errors from OpenGL
   auto error = glGetError();

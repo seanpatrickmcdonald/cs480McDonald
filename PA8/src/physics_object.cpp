@@ -24,13 +24,15 @@ PhysicsObject::PhysicsObject(PhysicsObjectStruct objStruct, PhysicsManager *phys
 
 */
   if (objStruct.primitiveType == "sphere")
-      collisionShape = new btSphereShape(btScalar(1.0f));
+      collisionShape = new btSphereShape(btScalar(0.25f));
   else if (objStruct.primitiveType == "cylinder")
-      collisionShape = new btCylinderShape(btVector3(0.5f, 1.4f, 1.0f));
+      collisionShape = new btCylinderShape(btVector3(0.25f, 0.5f, 0.5f));
   else if (objStruct.primitiveType == "box")
       collisionShape = new btBoxShape(btVector3(0.5f, 0.5f, 0.5f));
   else if (objStruct.primitiveType == "plane")
       collisionShape = new btStaticPlaneShape(Yup, 0);
+
+  
 
   /*
     Replace this cout statement with triangulate code
@@ -41,7 +43,7 @@ PhysicsObject::PhysicsObject(PhysicsObjectStruct objStruct, PhysicsManager *phys
 
   btVector3 origin     = objStruct.origin;
   btScalar mass        = btScalar(objStruct.mass);
-  btScalar restitution = btScalar(1.0f);
+  btScalar restitution = objStruct.restitution;
   btVector3 inertia    = btVector3(0.0f, 0.0f, 0.0f);
   bool kinematic       = false;
 

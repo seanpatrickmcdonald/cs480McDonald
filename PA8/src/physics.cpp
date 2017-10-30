@@ -33,7 +33,6 @@ PhysicsManager::~PhysicsManager()
     collisionConfiguration = NULL;
     dispatcher             = NULL;
     solver                 = NULL;
-
 }
 
 //restitution is the difference in velocity after a collision of an object new velocity/prev velocity
@@ -82,8 +81,7 @@ glm::mat4 PhysicsManager::GetModelMatrixAtIndex(int index)
 }
 
 void PhysicsManager::Update(unsigned int dt)
-{
-	
+{	
     dynamicsWorld->stepSimulation(dt, 1 ); //1 is max time step
 }
 //applies force in direction
