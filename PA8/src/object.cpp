@@ -19,14 +19,10 @@ GLuint Object::loadBMP(std::string textureName)
     data = stbi_load(textureName.c_str(), &width, &height, &n, 3);
     
     GLuint tex;
-    glCreateTextures(GL_TEXTURE_2D, 1, &tex);
-        
-    glTextureStorage2D(tex, 1, GL_RGBA32F, width, height);
+    glCreateTextures(GL_TEXTURE_2D, 1, &tex);   
+    glTextureStorage2D(tex, 10, GL_RGBA32F, width, height);     
     glBindTexture(GL_TEXTURE_2D, tex);
    
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-    glGenerateMipmap(GL_TEXTURE_2D);
 
     glTextureSubImage2D(tex,
 		        0,
@@ -36,6 +32,9 @@ GLuint Object::loadBMP(std::string textureName)
 		        GL_UNSIGNED_BYTE,
 		        data);
  
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
     return tex;
 }
 

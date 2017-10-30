@@ -28,7 +28,7 @@ PhysicsObject::PhysicsObject(PhysicsObjectStruct objStruct, PhysicsManager *phys
   else if (objStruct.primitiveType == "cylinder")
       collisionShape = new btCylinderShape(btVector3(0.25f, 0.5f, 0.5f));
   else if (objStruct.primitiveType == "box")
-      collisionShape = new btBoxShape(btVector3(0.5f, 0.5f, 0.5f));
+      collisionShape = new btBoxShape(btVector3(0.25f, 0.25f, 0.25f));
   else if (objStruct.primitiveType == "plane")
       collisionShape = new btStaticPlaneShape(Yup, 0);
 
