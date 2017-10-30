@@ -47,6 +47,8 @@ void PhysicsManager::AddRigidBody(btCollisionShape* collisionShape, btVector3 or
     body->setRestitution(restitution);
     body->setActivationState(DISABLE_DEACTIVATION);
 
+    //std::cout << kinematic << std::endl;
+
     if(kinematic)
     {
         body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
@@ -96,7 +98,30 @@ void PhysicsManager::ApplyForceAtIndex(btVector3 force, int index)
     btRigidBody* object = btRigidBody::upcast(dynamicsWorld->getCollisionObjectArray()[index]);
     object->applyCentralImpulse(force);
     object->clearForces();
-
 }
 
+void PhysicsManager::MoveKinematic(btVector3 movementVector)
+{
+  btRigidBody* object = btRigidBody::upcast(dynamicsWorld->getCollisionObjectArray()[3]);
 
+  if (object != nullptr)
+  {
+    btTransform tr;
+    object->getMotionState()->getWorldTransform(tr);
+    tr.setOrigin( tr.getOrigin() + movementVector);
+
+    if (tr.getOrigin()[0] > 1.75)
+      tr.getOrigin()[0] = 1.75;
+    if (tr.getOrigin()[0] < -1.75)
+      tr.getOrigin()[0] = -1.75;
+    if (tr.getOrigin()[2] > 1.75)
+      tr.getOrigin()[2] = 1.75;
+    if (tr.getOrigin()[2] < -1.75)
+      tr.getOrigin()[2] = -1.75;
+
+    object->getMotionState()->setWorldTransform(tr);
+  }
+
+  else
+    std::cout << "invalid object" << std::endl; 
+}

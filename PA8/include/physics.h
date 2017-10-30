@@ -32,6 +32,8 @@ class PhysicsManager
 
         void ApplyForceAtIndex(btVector3 force, int index);
 
+        void MoveKinematic(btVector3);
+
     private:
 
         btBroadphaseInterface* broadphase;

@@ -91,6 +91,32 @@ void Engine::Keyboard()
     {
       m_running = false;
     }
+
+    float ms = 0.125f;
+
+    glm::vec3 trans_vector = glm::vec3(0.0f, 0.0f, 0.0f);
+
+    if (m_event.key.keysym.sym == SDLK_w)
+    {
+      trans_vector += glm::vec3(0.0f, 0.0f, ms);
+    }
+
+    if (m_event.key.keysym.sym == SDLK_s)
+    {
+      trans_vector += glm::vec3(0.0f, 0.0f, -ms);
+    }
+
+    if (m_event.key.keysym.sym == SDLK_a)
+    {
+      trans_vector += glm::vec3(ms, 0.0f, 0.0f);
+    }
+
+    if (m_event.key.keysym.sym == SDLK_d)
+    {
+      trans_vector += glm::vec3(-ms, 0.0f, 0.0f);
+    }
+    
+    m_graphics->getPhysicsManager()->MoveKinematic(btVector3(trans_vector.x, trans_vector.y, trans_vector.z));
   }
 }
 

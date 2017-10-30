@@ -23,7 +23,7 @@ PhysicsObjectStruct* structFromJSON(json j, size_t index)
   //passStruct->inertia = j["object"][index]["inertia"];
   passStruct->mass = j["object"][index]["mass"];
   passStruct->restitution = j["object"][index]["restitution"];
-  //passStruct->kinematic = j["object"][index]["kinematic"];
+  passStruct->kinematic = j["object"][index]["kinematic"];
   passStruct->origin = btVector3(
                                 j["object"][index]["origin.x"],
                                 j["object"][index]["origin.y"],
@@ -39,10 +39,10 @@ void createTables(PhysicsManager *physicsManager)
   btVector3 Xup(1.0f, 0.0f, 0.0f);
   btVector3 Zup(0.0f, 0.0f, 1.0f);
 
-  btCollisionShape *wall1 = new btBoxShape(btVector3(0.01f, 0.25f, 2.0f));
-  btCollisionShape *wall2 = new btBoxShape(btVector3(0.01f, 0.25f, 2.0f));
-  btCollisionShape *wall3 = new btBoxShape(btVector3(2.00f, 0.25f, 0.01f));
-  btCollisionShape *wall4 = new btBoxShape(btVector3(2.00f, 0.25f, 0.01f));
+  btCollisionShape *wall1 = new btBoxShape(btVector3(0.01f, 0.5f, 2.0f));
+  btCollisionShape *wall2 = new btBoxShape(btVector3(0.01f, 0.5f, 2.0f));
+  btCollisionShape *wall3 = new btBoxShape(btVector3(2.00f, 0.5f, 0.01f));
+  btCollisionShape *wall4 = new btBoxShape(btVector3(2.00f, 0.5f, 0.01f));
  
   btVector3 originwall1 = btVector3( 2.0f, 0.0f, 0.0f);
   btVector3 originwall2 = btVector3(-2.0f, 0.0f, 0.0f);
@@ -281,3 +281,7 @@ std::string Graphics::ErrorString(GLenum error)
   }
 }
 
+PhysicsManager* Graphics::getPhysicsManager()
+{
+  return m_physics;
+}

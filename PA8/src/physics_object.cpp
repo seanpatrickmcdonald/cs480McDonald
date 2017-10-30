@@ -45,7 +45,7 @@ PhysicsObject::PhysicsObject(PhysicsObjectStruct objStruct, PhysicsManager *phys
   btScalar mass        = btScalar(objStruct.mass);
   btScalar restitution = objStruct.restitution;
   btVector3 inertia    = btVector3(0.0f, 0.0f, 0.0f);
-  bool kinematic       = false;
+  bool kinematic       = objStruct.kinematic;
 
   physics_manager->AddRigidBody(collisionShape, origin, mass, restitution, inertia, kinematic);
 }
