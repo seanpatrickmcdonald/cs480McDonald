@@ -1,0 +1,63 @@
+{ "object":[{
+
+	"name":"table", 
+  	"mesh":"../assets/table.obj",
+  	"texture":"../assets/blue.jpg", 
+  	"mass":0,
+  	"inertia":0,
+	"restitution":1,
+ 	"scale":3,
+	"kinematic":false ,
+    "origin.x": 0,
+    "origin.y": 0,
+    "origin.z": 0,
+    "primitive": "plane"
+	},
+
+	{
+	"name":"ball",
+  	"mesh":"../assets/64Sphere.obj",
+  	"texture":"../assets/green.jpg",
+  	"mass":1,
+  	"inertia":0,
+	"restitution":1,
+ 	"scale":1,
+	"kinematic":true,
+    "origin.x": 0.5,
+    "origin.y": 0,
+    "origin.z": 0,
+    "primitive": "sphere"
+	},
+
+	{
+	"name":"cylinder", 
+  	"mesh":"../assets/cylinder.obj",
+  	"texture":"../assets/wood.jpg", 
+  	"mass":0, 
+  	"inertia":0, 
+	"restitution":1,
+ 	"scale":1,
+	"kinematic":false,
+    "origin.x": 1.0,
+    "origin.y": 0,
+    "origin.z": 0,
+    "primitive": "cylinder"
+	},
+	
+	{
+	"name":"cube", 
+  	"mesh":"../assets/cube.obj", 
+  	"texture":"../assets/crate.jpg", 
+  	"mass":1, 
+  	"inertia":0,
+	"restitution":0.25,
+ 	"scale":1,
+	"kinematic":false,
+    "origin.x": -0.5,
+    "origin.y": 0,
+    "origin.z": 0,
+    "primitive": "box"
+	}
+	]
+ 
+}
