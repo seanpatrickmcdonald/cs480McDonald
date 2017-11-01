@@ -19,10 +19,13 @@ Engine::Engine(string name)
 
 Engine::~Engine()
 {
+  if (m_window)
   delete m_window;
-  delete m_graphics;
-  m_window = NULL;
-  m_graphics = NULL;
+  if (m_graphics)
+  	delete m_graphics;
+
+  m_window = nullptr;
+  m_graphics = nullptr;
 }
 
 bool Engine::Initialize(int argc, char **argv)
@@ -42,6 +45,7 @@ bool Engine::Initialize(int argc, char **argv)
     printf("The graphics failed to initialize.\n");
     return false;
   }
+
 
   // Set the time
   m_currentTimeMillis = GetCurrentTimeMillis();
@@ -87,6 +91,32 @@ void Engine::Keyboard()
     {
       m_running = false;
     }
+
+    float ms = 0.125f;
+
+    glm::vec3 trans_vector = glm::vec3(0.0f, 0.0f, 0.0f);
+
+    if (m_event.key.keysym.sym == SDLK_w)
+    {
+      trans_vector += glm::vec3(0.0f, 0.0f, ms);
+    }
+
+    if (m_event.key.keysym.sym == SDLK_s)
+    {
+      trans_vector += glm::vec3(0.0f, 0.0f, -ms);
+    }
+
+    if (m_event.key.keysym.sym == SDLK_a)
+    {
+      trans_vector += glm::vec3(ms, 0.0f, 0.0f);
+    }
+
+    if (m_event.key.keysym.sym == SDLK_d)
+    {
+      trans_vector += glm::vec3(-ms, 0.0f, 0.0f);
+    }
+    
+    m_graphics->getPhysicsManager()->MoveKinematic(btVector3(trans_vector.x, trans_vector.y, trans_vector.z));
   }
 }
 

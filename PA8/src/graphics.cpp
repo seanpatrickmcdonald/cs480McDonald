@@ -1,5 +1,6 @@
 #include "graphics.h"
 
+using json = nlohmann::json;
 
 Graphics::Graphics()
 {
@@ -8,7 +9,55 @@ Graphics::Graphics()
 
 Graphics::~Graphics()
 {
+  if(m_physics)
+  	delete m_physics;
+  m_physics = nullptr;
+}
 
+PhysicsObjectStruct* structFromJSON(json j, size_t index)
+{
+  PhysicsObjectStruct *passStruct = new PhysicsObjectStruct();
+  passStruct->objName = j["object"][index]["name"];
+  passStruct->objFilename = j["object"][index]["mesh"];
+  passStruct->texFilename = j["object"][index]["texture"];
+  //passStruct->inertia = j["object"][index]["inertia"];
+  passStruct->mass = j["object"][index]["mass"];
+  passStruct->restitution = j["object"][index]["restitution"];
+  passStruct->kinematic = j["object"][index]["kinematic"];
+  passStruct->origin = btVector3(
+                                j["object"][index]["origin.x"],
+                                j["object"][index]["origin.y"],
+                                j["object"][index]["origin.z"]        
+                                );
+  passStruct->primitiveType = j["object"][index]["primitive"];
+
+  return passStruct;
+}
+
+void createTables(PhysicsManager *physicsManager)
+{ 
+  btVector3 Xup(1.0f, 0.0f, 0.0f);
+  btVector3 Zup(0.0f, 0.0f, 1.0f);
+
+  btCollisionShape *wall1 = new btBoxShape(btVector3(0.01f, 0.5f, 2.0f));
+  btCollisionShape *wall2 = new btBoxShape(btVector3(0.01f, 0.5f, 2.0f));
+  btCollisionShape *wall3 = new btBoxShape(btVector3(2.00f, 0.5f, 0.01f));
+  btCollisionShape *wall4 = new btBoxShape(btVector3(2.00f, 0.5f, 0.01f));
+ 
+  btVector3 originwall1 = btVector3( 2.0f, 0.0f, 0.0f);
+  btVector3 originwall2 = btVector3(-2.0f, 0.0f, 0.0f);
+  btVector3 originwall3 = btVector3(0.0f, 0.0f, 2.0f);
+  btVector3 originwall4 = btVector3(0.0f, 0.0f, -2.0f);
+
+  btScalar mass        = btScalar(0.0f);
+  btScalar restitution = btScalar(1.0f);
+  btVector3 inertia    = btVector3(0.0f, 0.0f, 0.0f);
+  bool kinematic       = false;
+
+  physicsManager->AddRigidBody(wall1, originwall1, mass, restitution, inertia, kinematic);
+  physicsManager->AddRigidBody(wall2, originwall2, mass, restitution, inertia, kinematic);
+  physicsManager->AddRigidBody(wall3, originwall3, mass, restitution, inertia, kinematic);
+  physicsManager->AddRigidBody(wall4, originwall4, mass, restitution, inertia, kinematic);
 }
 
 bool Graphics::Initialize(int width, int height, int argc, char **argv)
@@ -45,8 +94,27 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv)
     return false;
   }
 
-  // Create the object
-  m_cube = new Object("../assets/dragon.obj");
+  //Initialize our PhysicsManager
+  m_physics = new PhysicsManager();
+
+  
+  //read in our json
+  std::ifstream i("../assets/pa8.json");
+  nlohmann::json j;
+  i >> j ;
+
+  // Create the objects  
+  num_physics_objects = j["object"].size();
+  m_physicsObjects = new PhysicsObject*[num_physics_objects];
+
+  for (unsigned int i = 0; i < num_physics_objects; i++)
+  {     
+      m_physicsObjects[i] = new PhysicsObject(*(structFromJSON(j, i)), m_physics);
+  }
+
+  createTables(m_physics);
+
+  m_physics->ApplyForceAtIndex(btVector3(-4.0f, 0, 0.5f), 1);
 
   // Set up the shaders
   m_shader = new Shader();
@@ -55,6 +123,7 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv)
     printf("Shader Failed to Initialize\n");
     return false;
   }
+
 
   int vertexFileIndex = -1;
   int fragmentFileIndex = -1;
@@ -124,6 +193,13 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv)
     return false;
   }
 
+  m_mySampler = m_shader->GetUniformLocation("mySampler");
+  if (m_mySampler == -1) 
+  {
+    printf("m_mySampler not found\n");
+    return false;
+  }
+
   //enable depth testing
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
@@ -133,14 +209,19 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv)
 
 void Graphics::Update(unsigned int dt)
 {
+  m_physics->Update(dt);
+  
   // Update the object
-  m_cube->Update(dt);
+  for (unsigned int i = 0; i < num_physics_objects; i++)
+  {
+    //m_physicsObjects[i]->Update(dt);
+  }
 }
 
 void Graphics::Render()
 {
   //clear the screen
-  glClearColor(0.0, 0.0, 0.2, 1.0);
+  glClearColor(0.0, 0.0, 0.0, 0.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Start the correct program
@@ -151,8 +232,13 @@ void Graphics::Render()
   glUniformMatrix4fv(m_viewMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetView())); 
 
   // Render the object
-  glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_cube->GetModel()));
-  m_cube->Render();
+
+  for (unsigned int i = 0; i < num_physics_objects; i++)
+  {
+    glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_physics->GetModelMatrixAtIndex(i)));
+    m_physicsObjects[i]->Render(m_mySampler);
+  }
+  
 
   // Get any errors from OpenGL
   auto error = glGetError();
@@ -195,3 +281,7 @@ std::string Graphics::ErrorString(GLenum error)
   }
 }
 
+PhysicsManager* Graphics::getPhysicsManager()
+{
+  return m_physics;
+}

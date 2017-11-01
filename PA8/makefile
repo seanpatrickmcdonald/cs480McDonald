@@ -3,8 +3,8 @@ UNAME_S := $(shell uname -s)
 
 # Linux
 ifeq ($(UNAME_S), Linux)
-	CC=g++
-	LIBS=-lSDL2 -lGLEW -lGL -lassimp
+	CC=@g++
+	LIBS=-lSDL2 -lGLEW -lGL -lassimp -lBulletDynamics -lBulletSoftBody -lLinearMath -lBulletCollision
 # Mac
 else
 	CC=clang++
@@ -18,36 +18,38 @@ endif
 #Compiler Flags
 CXXFLAGS=-g -Wall -std=c++0x
 
-# .o Compilation
-O_FILES=main.o camera.o engine.o graphics.o object.o shader.o window.o
+#SRC DIR
+SRC_DIR=../src
+
+#CUR_DIR
+CUR_DIR = $(shell pwd)
+
+#OBJ FILES
+SRC_FILES = $(wildcard $(SRC_DIR)/*.cpp)
+OBJ_FILES   = $(patsubst $(SRC_DIR)/%.cpp, $(SRC_DIR)/%.o, $(SRC_FILES))
 
 # Point to includes of local directories
-INDLUDES=-I../include
+INCLUDES=-I../include -I/usr/include/bullet
+
+#Color Variables
+LNK_COLOR   = \033[0;36m
+OBJ_COLOR   = \033[0;32m
+NO_COLOR    = \033[m
 
 
-all: $(O_FILES)
-	$(CC) $(CXXFLAGS) -o Tutorial $(O_FILES) $(LIBS) #$(PATHI) $(PATHL)
+all: $(OBJ_FILES)
+	@printf "$(LNK_COLOR)Linking executable Tutorial$(NO_COLOR)"
+	$(CC) $(CXXFLAGS) -o Tutorial $^ $(LIBS) 
+	@printf "\rBuilt Target Tutorial                                 \n"
 
-main.o: ../src/main.cpp
-	$(CC) $(CXXFLAGS) -c ../src/main.cpp -o main.o $(INDLUDES)
+$(SRC_DIR)/%.o: $(SRC_DIR)/%.cpp
+	@printf "$(OBJ_COLOR)Building $@ $(NO_COLOR)"
+	$(CC) $(CXXFLAGS) -c -o $@ $< $(INCLUDES) 
+	@printf "\r$(OBJ_COLOR)Built $@                                   \n"
 
-camera.o: ../src/camera.cpp
-	$(CC) $(CXXFLAGS) -c ../src/camera.cpp -o camera.o $(INDLUDES)
-
-engine.o: ../src/engine.cpp
-	$(CC) $(CXXFLAGS) -c ../src/engine.cpp -o engine.o $(INDLUDES)
-
-graphics.o: ../src/graphics.cpp
-	$(CC) $(CXXFLAGS) -c ../src/graphics.cpp -o graphics.o $(INDLUDES)
-
-object.o: ../src/object.cpp
-	$(CC) $(CXXFLAGS) -c ../src/object.cpp -o object.o $(INDLUDES)
-
-shader.o: ../src/shader.cpp
-	$(CC) $(CXXFLAGS) -c ../src/shader.cpp -o shader.o $(INDLUDES)
-
-window.o: ../src/window.cpp
-	$(CC) $(CXXFLAGS) -c ../src/window.cpp -o window.o $(INDLUDES)
 
 clean:
-	-@if rm *.o Tutorial 2>/dev/null || true; then echo "Main Removed"; else echo "No Main"; fi
+	-@if rm ../src/*.o Tutorial 2>/dev/null || true; then echo "Main Removed"; else echo "No Main"; fi
+
+print:
+	echo $(O_FILES)

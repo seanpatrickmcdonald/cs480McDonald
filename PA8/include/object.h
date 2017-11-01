@@ -1,22 +1,25 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include <vector>
 #include "graphics_headers.h"
 #include "assimp/scene.h"
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 
+
 class Object
 {
   public:
     Object();
-    Object(std::string objFilename);
+    Object(std::string objFilename, std::string texFilename);
     ~Object();
     void Update(unsigned int dt);
-    void Render();
+    void Render(GLint);
 
     glm::mat4 GetModel();
+
+    GLuint loadBMP(std::string textureName);
+    const aiMesh* LoadAssimp(std::string objFilename);
 
   private:
     glm::mat4 model;
@@ -24,12 +27,7 @@ class Object
     std::vector<unsigned int> Indices;
     GLuint VB;
     GLuint IB;
-
-    Assimp::Importer *modelImporter;
-
-    float rotationAngle;
-    float orbitAngle;
-    float orbitRadius;
+    GLuint texture_int;
 };
 
 #endif /* OBJECT_H */

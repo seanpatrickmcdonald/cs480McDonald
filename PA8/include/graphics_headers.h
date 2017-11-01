@@ -22,12 +22,15 @@
 
 #define INVALID_UNIFORM_LOCATION 0x7fffffff
 
+#include "physics.h"
+#include <vector>
+
 struct Vertex
 {
   glm::vec3 vertex;
-  glm::vec3 color;
+  glm::vec2 uv;
 
-  Vertex(glm::vec3 v, glm::vec3 c): vertex(v), color(c) {}
+  Vertex(glm::vec3 v, glm::vec2 c): vertex(v), uv(c) {}
 };
 
 #endif /* GRAPHICS_HEADERS_H */

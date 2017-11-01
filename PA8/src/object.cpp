@@ -1,113 +1,108 @@
 #include "object.h"
 
+#ifndef STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+#endif
+
+#include "stb_image.h"
+
 Object::Object()
 {  
-  /*
-    # Blender File for a Cube
-    o Cube
-    v 1.000000 -1.000000 -1.000000
-    v 1.000000 -1.000000 1.000000
-    v -1.000000 -1.000000 1.000000
-    v -1.000000 -1.000000 -1.000000
-    v 1.000000 1.000000 -0.999999
-    v 0.999999 1.000000 1.000001
-    v -1.000000 1.000000 1.000000
-    v -1.000000 1.000000 -1.000000
-    s off
-    f 2 3 4
-    f 8 7 6
-    f 1 5 6
-    f 2 6 7
-    f 7 8 4
-    f 1 4 8
-    f 1 2 4
-    f 5 8 6
-    f 2 1 6
-    f 3 2 7
-    f 3 7 4
-    f 5 1 8
-  */
 
-  Vertices = {
-    {{1.0f, -1.0f, -1.0f}, {0.0f, 0.0f, 0.0f}},
-    {{1.0f, -1.0f, 1.0f}, {1.0f, 0.0f, 0.0f}},
-    {{-1.0f, -1.0f, 1.0f}, {0.0f, 1.0f, 0.0f}},
-    {{-1.0f, -1.0f, -1.0f}, {0.0f, 0.0f, 1.0f}},
-    {{1.0f, 1.0f, -1.0f}, {1.0f, 1.0f, 0.0f}},
-    {{1.0f, 1.0f, 1.0f}, {1.0f, 0.0f, 1.0f}},
-    {{-1.0f, 1.0f, 1.0f}, {0.0f, 1.0f, 1.0f}},
-    {{-1.0f, 1.0f, -1.0f}, {1.0f, 1.0f, 1.0f}}
-  };
-
-  Indices = {
-    2, 3, 4,
-    8, 7, 6,
-    1, 5, 6,
-    2, 6, 7,
-    7, 8, 4,
-    1, 4, 8,
-    1, 2, 4,
-    5, 8, 6,
-    2, 1, 6,
-    3, 2, 7,
-    3, 7, 4,
-    5, 1, 8
-  };
-
-  // The index works at a 0th index
-  for(unsigned int i = 0; i < Indices.size(); i++)
-  {
-    Indices[i] = Indices[i] - 1;
-  }
-
-  rotationAngle = 0.0f;
-  orbitAngle = 0.0f;
-  orbitRadius = 6.5f;
-
-  glGenBuffers(1, &VB);
-  glBindBuffer(GL_ARRAY_BUFFER, VB);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * Vertices.size(), &Vertices[0], GL_STATIC_DRAW);
-
-  glGenBuffers(1, &IB);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * Indices.size(), &Indices[0], GL_STATIC_DRAW);
 }
 
-Object::Object(std::string objFilename)
+GLuint Object::loadBMP(std::string textureName)
+{    
+    int width, height, n;
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char *data;
+    data = stbi_load(textureName.c_str(), &width, &height, &n, 3);
+    
+    GLuint tex;
+    glCreateTextures(GL_TEXTURE_2D, 1, &tex);   
+    glTextureStorage2D(tex, 10, GL_RGBA32F, width, height);     
+    glBindTexture(GL_TEXTURE_2D, tex);
+   
+
+    glTextureSubImage2D(tex,
+		        0,
+		        0, 0,
+		        width, height,
+		        GL_RGB,
+		        GL_UNSIGNED_BYTE,
+		        data);
+ 
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+    return tex;
+}
+
+const aiMesh* Object::LoadAssimp(std::string objFilename)
 {
     //Use assimp namespace for this function only
     using namespace Assimp;
 
+    Importer *modelImporter;
+
     //Create Assimp Importer
     modelImporter = new Importer();
     const aiScene* modelScene = modelImporter->ReadFile(objFilename, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate);
-    
-    for (unsigned int i = 0; i < modelScene->mMeshes[0]->mNumVertices; i++)
+    const aiMesh *modelMesh = modelScene->mMeshes[0];
+
+    return modelMesh;
+}
+
+Object::Object(std::string objFilename, std::string texFilename)
+{
+    //bring in textures and load to opengl
+    texture_int = loadBMP(texFilename);
+
+    //build our aimesh object
+    const aiMesh *modelMesh = LoadAssimp(objFilename);
+
+    if (modelMesh == nullptr)
+    {
+        std::cout << "Invalid Mesh: " << objFilename << std::endl;
+    }
+
+    //Load Vertex Positions and TextureCoords
+    for (unsigned int i = 0; i < modelMesh->mNumVertices; i++)
     {
         glm::vec3 vertexVec;
 
-        vertexVec.x = modelScene->mMeshes[0]->mVertices[i].x;
-        vertexVec.y = modelScene->mMeshes[0]->mVertices[i].y;
-        vertexVec.z = modelScene->mMeshes[0]->mVertices[i].z;
+        vertexVec.x = modelMesh->mVertices[i].x;
+        vertexVec.y = modelMesh->mVertices[i].y;
+        vertexVec.z = modelMesh->mVertices[i].z;
 
-        glm::vec3 color(1.0f, 1.0f, 1.0f);
+        glm::vec2 uv;
+
+        if (modelMesh->GetNumUVChannels() > 0)
+        {
+            uv.x = modelMesh->mTextureCoords[0][i].x;
+            uv.y = modelMesh->mTextureCoords[0][i].y;
+        }
+
+        else
+        {
+            uv.x = 1.0f;
+            uv.y = 1.0f;
+        }
 	        
-        Vertex dummyVertex(vertexVec, color);
+        Vertex dummyVertex(vertexVec, uv);
         Vertices.push_back(dummyVertex);        
     }
-
-    for (unsigned int i = 0; i < modelScene->mMeshes[0]->mNumFaces; i++)
+    //Load Indices
+    for (unsigned int i = 0; i < modelMesh->mNumFaces; i++)
     {
-        if (modelScene->mMeshes[0]->mFaces[i].mNumIndices == 3)
+        if (modelMesh->mFaces[i].mNumIndices == 3)  //only if it's a triangle
         {
             for (unsigned int j = 0; j < 3; j++)
             {
-                Indices.push_back(modelScene->mMeshes[0]->mFaces[i].mIndices[j]);
+                Indices.push_back(modelMesh->mFaces[i].mIndices[j]);
             }
         }
     }
-
-   for (unsigned int i = 0; i < Indices.size(); i++)
 
 
   glGenBuffers(1, &VB);
@@ -117,7 +112,6 @@ Object::Object(std::string objFilename)
   glGenBuffers(1, &IB);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * Indices.size(), &Indices[0], GL_STATIC_DRAW);
-
 }
 
 Object::~Object()
@@ -129,14 +123,6 @@ Object::~Object()
 void Object::Update(unsigned int dt)
 {
 
-  rotationAngle += dt * M_PI/2000;
-  //orbitAngle += dt * M_PI/2000;
-
-  glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(orbitRadius * cos(orbitAngle), 0.0f, orbitRadius * sin(orbitAngle) ));
-  glm::mat4 RotationMatrix = glm::rotate(glm::mat4(1.0f), (rotationAngle), glm::vec3(0.0, 1.0, 0.0));
-  glm::mat4 ScaleMatrix = glm::scale(glm::vec3(1.01f, 1.0f, 1.0f));
-
-  model = TranslationMatrix * RotationMatrix * ScaleMatrix;
 
 }
 
@@ -145,15 +131,16 @@ glm::mat4 Object::GetModel()
   return model;
 }
 
-void Object::Render()
+void Object::Render(GLint location)
 {
+  glBindTexture(GL_TEXTURE_2D, texture_int);  
 
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
 
   glBindBuffer(GL_ARRAY_BUFFER, VB);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex,color));
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex,uv));
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);
 
