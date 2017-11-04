@@ -10,7 +10,6 @@ using namespace std;
 #include "object.h"
 #include "physics_object.h"
 #include "json.hpp"
-#include "gui.h"
 
 class Graphics
 {
@@ -27,19 +26,13 @@ class Graphics
     std::string ErrorString(GLenum error);
 
     Camera *m_camera;
-    Shader *m_shader;
+    Shader *m_pervertex_shader;
+    Shader *m_perfrag_shader;
+    Shader *current_shader;
     PhysicsManager *m_physics;
-
-    GLint m_projectionMatrix;
-    GLint m_viewMatrix;
-    GLint m_modelMatrix;
-    GLint m_mySampler;
 
     //Object **m_objects;
     PhysicsObject **m_physicsObjects;
-
-    //GuiHandle
-    GuiHandle *m_gui;
 
     //unsigned int numObjects;
     size_t num_physics_objects;

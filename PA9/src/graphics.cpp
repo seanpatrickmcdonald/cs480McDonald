@@ -12,12 +12,6 @@ Graphics::~Graphics()
   if(m_physics)
   	delete m_physics;
   m_physics = nullptr;
-
-  if (m_gui != nullptr)
-  { 
-    delete m_gui;
-    m_gui = nullptr;
-  }
 }
 
 PhysicsObjectStruct* structFromJSON(json j, size_t index)
@@ -120,101 +114,55 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv)
 
   createTables(m_physics);
 
-  m_physics->ApplyForceAtIndex(btVector3(-4.0f, 0, 0.5f), 1);
+
+
+
 
   // Set up the shaders
-  m_shader = new Shader();
-  if(!m_shader->Initialize())
+  m_pervertex_shader = new Shader();
+
+  bool progInit = m_pervertex_shader->Initialize();
+  if(!progInit)
   {
-    printf("Shader Failed to Initialize\n");
+    printf("Shader Program Failed to Initialize\n");
     return false;
   }
 
-
-  int vertexFileIndex = -1;
-  int fragmentFileIndex = -1;
-
-  if (argc > 1)
-  {
-    for (int i = 0; i < argc; i++)
-    {
-      if (argv[i][0] == '-' && i + 1 < argc && argv[i + 1][0] != '-')
-      {
-        if (argv[i][1] == 'v')
-        {
-          vertexFileIndex = i + 1;
-        }
-
-        if (argv[i][1] == 'f')
-        {
-          fragmentFileIndex = i + 1;
-        }
-      }
-    }
-  }
-
   // Add the vertex shader
-  if(!m_shader->AddShader(GL_VERTEX_SHADER, vertexFileIndex, argv))
+  if(!m_pervertex_shader->AddShader(GL_VERTEX_SHADER, "../shaders/pervertexlighting.vert"))
   {
     printf("Vertex Shader failed to Initialize\n");
     return false;
   }
 
   // Add the fragment shader
-  if(!m_shader->AddShader(GL_FRAGMENT_SHADER, fragmentFileIndex, argv))
+  if(!m_pervertex_shader->AddShader(GL_FRAGMENT_SHADER, "../shaders/pervertexlighting.frag"))
   {
     printf("Fragment Shader failed to Initialize\n");
     return false;
-  }
-  
+  }  
 
   // Connect the program
-  if(!m_shader->Finalize())
+  if(!m_pervertex_shader->Finalize())
   {
     printf("Program to Finalize\n");
     return false;
   }
 
-  // Locate the projection matrix in the shader
-  m_projectionMatrix = m_shader->GetUniformLocation("projectionMatrix");
-  if (m_projectionMatrix == INVALID_UNIFORM_LOCATION) 
-  {
-    printf("m_projectionMatrix not found\n");
-    return false;
-  }
+  //insert your shader here - variable is m_perfrag_shader
 
-  // Locate the view matrix in the shader
-  m_viewMatrix = m_shader->GetUniformLocation("viewMatrix");
-  if (m_viewMatrix == INVALID_UNIFORM_LOCATION) 
-  {
-    printf("m_viewMatrix not found\n");
-    return false;
-  }
 
-  // Locate the model matrix in the shader
-  m_modelMatrix = m_shader->GetUniformLocation("modelMatrix");
-  if (m_modelMatrix == INVALID_UNIFORM_LOCATION) 
-  {
-    printf("m_modelMatrix not found\n");
-    return false;
-  }
 
-  m_mySampler = m_shader->GetUniformLocation("mySampler");
-  if (m_mySampler == -1) 
-  {
-    printf("m_mySampler not found\n");
-    return false;
-  }
+  current_shader = m_pervertex_shader;
 
-  //Create and initialize the GUI
-  m_gui = new GuiHandle();
-  m_gui->GuiInit();
+
+
+
 
   //enable depth testing
   glEnable(GL_DEPTH_TEST);
-  glDepthFunc(GL_LESS);
+  glDepthFunc(GL_LESS); 
 
- 
 
   return true;
 }
@@ -222,12 +170,6 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv)
 void Graphics::Update(unsigned int dt)
 {
   m_physics->Update(dt);
-  
-  // Update the object
-  for (unsigned int i = 0; i < num_physics_objects; i++)
-  {
-    //m_physicsObjects[i]->Update(dt);
-  }
 }
 
 void Graphics::Render()
@@ -237,18 +179,17 @@ void Graphics::Render()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Start the correct program
-  m_shader->Enable();
+  current_shader->Enable();
 
   // Send in the projection and view to the shader
-  glUniformMatrix4fv(m_projectionMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetProjection())); 
-  glUniformMatrix4fv(m_viewMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetView())); 
+  glUniformMatrix4fv(current_shader->m_projectionMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetProjection())); 
+  glUniformMatrix4fv(current_shader->m_viewMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetView())); 
 
   // Render the object
-
   for (unsigned int i = 0; i < num_physics_objects; i++)
   {
-    glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_physics->GetModelMatrixAtIndex(i)));
-    m_physicsObjects[i]->Render(m_mySampler);
+    glUniformMatrix4fv(current_shader->m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_physics->GetModelMatrixAtIndex(i)));
+    m_physicsObjects[i]->Render();
   }
   
 
