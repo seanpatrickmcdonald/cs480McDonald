@@ -17,19 +17,19 @@ Graphics::~Graphics()
 PhysicsObjectStruct* structFromJSON(json j, size_t index)
 {
   PhysicsObjectStruct *passStruct = new PhysicsObjectStruct();
-  passStruct->objName = j["object"][index]["name"];
-  passStruct->objFilename = j["object"][index]["mesh"];
-  passStruct->texFilename = j["object"][index]["texture"];
+  passStruct->objName = j["physicsobjects"][index]["name"];
+  passStruct->objFilename = j["physicsobjects"][index]["mesh"];
+  passStruct->texFilename = j["physicsobjects"][index]["texture"];
   //passStruct->inertia = j["object"][index]["inertia"];
-  passStruct->mass = j["object"][index]["mass"];
-  passStruct->restitution = j["object"][index]["restitution"];
-  passStruct->kinematic = j["object"][index]["kinematic"];
+  passStruct->mass = j["physicsobjects"][index]["mass"];
+  passStruct->restitution = j["physicsobjects"][index]["restitution"];
+  passStruct->kinematic = j["physicsobjects"][index]["kinematic"];
   passStruct->origin = btVector3(
-                                j["object"][index]["origin.x"],
-                                j["object"][index]["origin.y"],
-                                j["object"][index]["origin.z"]        
+                                j["physicsobjects"][index]["origin.x"],
+                                j["physicsobjects"][index]["origin.y"],
+                                j["physicsobjects"][index]["origin.z"]        
                                 );
-  passStruct->primitiveType = j["object"][index]["primitive"];
+  passStruct->primitiveType = j["physicsobjects"][index]["primitive"];
 
   return passStruct;
 }
@@ -60,7 +60,7 @@ void createTables(PhysicsManager *physicsManager)
   physicsManager->AddRigidBody(wall4, originwall4, mass, restitution, inertia, kinematic);
 }
 
-bool Graphics::Initialize(int width, int height, int argc, char **argv)
+bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Window *gWindow)
 {
   // Used for the linux OS
   #if !defined(__APPLE__) && !defined(MACOSX)
@@ -103,8 +103,17 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv)
   nlohmann::json j;
   i >> j ;
 
-  // Create the objects  
-  num_physics_objects = j["object"].size();
+  //Create non-physics render only objects
+  numObjects = j["objects"].size();;
+  m_objects = new Object*[numObjects];
+
+  for (unsigned int i = 0; i < numObjects; i++)
+  {     
+      m_objects[i] = new Object(j["objects"][i]["mesh"], j["objects"][i]["texture"]);
+  }
+
+  // Create Physics Objects  
+  num_physics_objects = j["physicsobjects"].size();
   m_physicsObjects = new PhysicsObject*[num_physics_objects];
 
   for (unsigned int i = 0; i < num_physics_objects; i++)
@@ -113,7 +122,6 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv)
   }
 
   createTables(m_physics);
-
 
 
 
@@ -150,19 +158,26 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv)
   }
 
   //insert your shader here - variable is m_perfrag_shader
-
-
-
   current_shader = m_pervertex_shader;
 
+  //Gui Setup
+  m_window = gWindow;
+  m_gui = new GuiHandle();  
 
+  if (!m_gui)
+  {
+    std::cout.flush() << "Failed to create GuiHandle - Not rendering Gui" << std::endl;
+  }
+  m_gui->GuiInit(m_window);  
 
-
+  ambient = current_shader->GetUniform3f(current_shader->uniforms[AMBIENT]);
+  diffuse = current_shader->GetUniform3f(current_shader->uniforms[DIFFUSE]);
+  specular = current_shader->GetUniform3f(current_shader->uniforms[SPECULARALB]);
+  specularPower = current_shader->GetUniformf(current_shader->uniforms[SPECULARPOW]);
 
   //enable depth testing
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS); 
-
 
   return true;
 }
@@ -185,13 +200,54 @@ void Graphics::Render()
   glUniformMatrix4fv(current_shader->m_projectionMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetProjection())); 
   glUniformMatrix4fv(current_shader->m_viewMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetView())); 
 
-  // Render the object
+  //Render Objects
+  for (unsigned int i = 0; i < numObjects; i++)
+  {
+    glUniformMatrix4fv(current_shader->m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_objects[i]->GetModel()));
+    m_objects[i]->Render();
+  }
+
+  // Render physics objects
   for (unsigned int i = 0; i < num_physics_objects; i++)
   {
     glUniformMatrix4fv(current_shader->m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_physics->GetModelMatrixAtIndex(i)));
     m_physicsObjects[i]->Render();
   }
-  
+
+
+  //Render Gui
+  m_gui->NewFrame(m_window);
+ 
+  ImGui::Begin("Stat Window");
+
+  //ambient handling
+  float newAmbient = ambient.x;
+  ImGui::SliderFloat("Ambient Brightness", &newAmbient, 0.0f, 1.0f);
+  ambient = glm::vec3(newAmbient, newAmbient, newAmbient);
+  glUniform3f(current_shader->uniforms[AMBIENT], ambient.x, ambient.y, ambient.z);
+
+  //diffuse handling
+  float newDiffuse = diffuse.x;
+  ImGui::SliderFloat("Diffuse Brightness", &newDiffuse, 0.0f, 1.0f);
+  diffuse = glm::vec3(newDiffuse, newDiffuse, newDiffuse);
+  glUniform3f(current_shader->uniforms[DIFFUSE], diffuse.x, diffuse.y, diffuse.z);
+
+  //specularpower handling
+  float newSpecPower = 1 / specularPower;
+  ImGui::SliderFloat("Specular Power", &newSpecPower, 0.001f, 1.0f);
+  specularPower = 1 / newSpecPower;
+  glUniform1f(current_shader->uniforms[SPECULARPOW], specularPower);
+
+  //specularalbedo handling
+  float newSpecular = specular.x;
+  ImGui::SliderFloat("Specular Albedo", &newSpecular, 0.0f, 100.0f);
+  specular = glm::vec3(newSpecular, newSpecular, newSpecular);
+  glUniform3f(current_shader->uniforms[SPECULARALB], specular.x, specular.y, specular.z);
+
+
+  ImGui::End();
+
+  ImGui::Render();
 
   // Get any errors from OpenGL
   auto error = glGetError();
@@ -232,6 +288,8 @@ std::string Graphics::ErrorString(GLenum error)
   {
     return "None";
   }
+
+  
 }
 
 PhysicsManager* Graphics::getPhysicsManager()

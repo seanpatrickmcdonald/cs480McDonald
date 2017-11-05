@@ -226,12 +226,11 @@ bool Shader::Finalize()
   m_modelMatrix = GetUniformLocation("model_matrix");
   m_viewMatrix = GetUniformLocation("view_matrix");
   m_projectionMatrix = GetUniformLocation("projection_matrix");
-  m_ambient = GetUniformLocation("ambient");
-  m_diffuse_albedo = GetUniformLocation("diffuse_albedo");
-  m_specular_albedo = GetUniformLocation("specular_albedo");
-  m_specular_power = GetUniformLocation("specular_power");
-  m_lightPosition = GetUniformLocation("light_position");
-  
+
+  for (int i = PROJMATRIX; i < LIGHTPOS; i++)
+  {
+    uniforms.push_back(GetUniformLocation(UniformName[i].c_str())); 
+  }
   return true;
 }
 
@@ -251,4 +250,22 @@ GLint Shader::GetUniformLocation(const char* pUniformName)
     }
 
     return Location;
+}
+
+glm::vec3 Shader::GetUniform3f(GLint uniformLocation)
+{
+  glm::vec3 dummy;
+
+  glGetUniformfv(m_shaderProg, uniformLocation , glm::value_ptr(dummy));
+
+  return dummy;
+}
+
+float Shader::GetUniformf(GLint uniformLocation)
+{
+  float dummy;
+
+  glGetUniformfv(m_shaderProg, uniformLocation , &dummy);
+
+  return dummy;
 }

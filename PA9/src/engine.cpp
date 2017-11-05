@@ -40,7 +40,7 @@ bool Engine::Initialize(int argc, char **argv)
 
   // Start the graphics
   m_graphics = new Graphics();
-  if(!m_graphics->Initialize(m_WINDOW_WIDTH, m_WINDOW_HEIGHT, argc, argv))
+  if(!m_graphics->Initialize(m_WINDOW_WIDTH, m_WINDOW_HEIGHT, argc, argv, m_window->GetWindow()))
   {
     printf("The graphics failed to initialize.\n");
     return false;

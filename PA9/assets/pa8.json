@@ -1,4 +1,4 @@
-{ "object":[{
+{ "physicsobjects":[{
 
 	"name":"table", 
   	"mesh":"../assets/table.obj",
@@ -58,11 +58,12 @@
     "origin.z": 0,
     "primitive": "box"
 	}
+
 	],
     "shaderprograms":[
     {
     "type":"pervertex",
-    "vertshader": "../shaders/vertlighting.vert",
+    "vertshader": "../shaders/vertlighting.ve rt",
     "fragshader": "../shaders/vertlighting.frag"
     },
     {
@@ -70,6 +71,15 @@
     "vertshader": "../shaders/fraglighting.vert",
     "fragshader": "../shaders/fraglighting.frag"
     }
+    ],
+
+    "objects":[
+    {
+    "name":"sword", 
+  	"mesh":"../assets/GreatswordArtorias.obj", 
+  	"texture":"../assets/c4520_WP_A_0267.png"
+    }
+
     ]
 
  

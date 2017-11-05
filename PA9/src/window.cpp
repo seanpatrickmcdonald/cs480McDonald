@@ -36,11 +36,11 @@ bool Window::Initialize(const string &name, int* width, int* height)
   SDL_GetCurrentDisplayMode(0, &current);
   
   //use for fullscreen
-  //if (*height == 0 && *width == 0)
-  //{
+  if (*height == 0 && *width == 0)
+  {
     *height = current.h;
     *width = current.w;
-  //}
+  }
 
   gWindow = SDL_CreateWindow(name.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, *width, *height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
   if(gWindow == NULL)
@@ -64,13 +64,16 @@ bool Window::Initialize(const string &name, int* width, int* height)
     return false;
   }
 
-  //m_gui = new GuiHandle();
-  //m_gui->GuiInit(gWindow);
-
   return true;
+}
+
+SDL_Window* Window::GetWindow()
+{
+    return gWindow;
 }
 
 void Window::Swap()
 {
   SDL_GL_SwapWindow(gWindow);
 }
+

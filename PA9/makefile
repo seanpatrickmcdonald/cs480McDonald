@@ -49,7 +49,7 @@ $(SRC_DIR)/%.o: $(SRC_DIR)/%.cpp
 
 
 clean:
-	-@if rm ../src/*.o Tutorial 2>/dev/null || true; then echo "Main Removed"; else echo "No Main"; fi
+	-@if rm ../src/*.o Tutorial imgui.ini 2>/dev/null || true; then echo "Main Removed"; else echo "No Main"; fi
 
 print:
 	echo $(O_FILES)

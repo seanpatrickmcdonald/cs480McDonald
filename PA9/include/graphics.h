@@ -10,17 +10,22 @@ using namespace std;
 #include "object.h"
 #include "physics_object.h"
 #include "json.hpp"
+#include "gui.h"
 
 class Graphics
 {
   public:
     Graphics();
     ~Graphics();
-    bool Initialize(int width, int height, int argc, char **argv);
+    bool Initialize(int width, int height, int argc, char **argv, SDL_Window*);
     void Update(unsigned int dt);
     void Render();
     PhysicsManager* getPhysicsManager();
     glm::vec3 trans_vector = glm::vec3(0.0f, 0.0f, 0.0f);
+
+    //GuiHandle and window handle
+    GuiHandle *m_gui;    
+    SDL_Window* m_window;    
 
   private:
     std::string ErrorString(GLenum error);
@@ -31,10 +36,15 @@ class Graphics
     Shader *current_shader;
     PhysicsManager *m_physics;
 
-    //Object **m_objects;
+    glm::vec3 ambient;
+    glm::vec3 diffuse;
+    glm::vec3 specular;
+    float specularPower;
+
+    Object **m_objects;
     PhysicsObject **m_physicsObjects;
 
-    //unsigned int numObjects;
+    size_t numObjects;
     size_t num_physics_objects;
 };
 

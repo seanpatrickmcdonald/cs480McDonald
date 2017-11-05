@@ -14,8 +14,8 @@ class Window
     bool Initialize(const string &name, int* width, int* height);
     void Swap();
 
-    //GuiHandle
-    GuiHandle *m_gui;
+
+    SDL_Window* GetWindow();
 
   private:
     SDL_Window* gWindow;
