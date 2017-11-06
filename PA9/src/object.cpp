@@ -23,7 +23,6 @@ GLuint Object::loadBMP(std::string textureName)
     glTextureStorage2D(tex, 10, GL_RGBA32F, width, height);     
     glBindTexture(GL_TEXTURE_2D, tex);
    
-
     glTextureSubImage2D(tex,
 		        0,
 		        0, 0,

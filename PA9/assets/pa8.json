@@ -74,11 +74,6 @@
     ],
 
     "objects":[
-    {
-    "name":"sword", 
-  	"mesh":"../assets/GreatswordArtorias.obj", 
-  	"texture":"../assets/c4520_WP_A_0267.png"
-    }
 
     ]
 
