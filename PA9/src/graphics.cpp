@@ -170,14 +170,14 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
   }
 
   // Add the vertex shader
-  if(!m_perfrag_shader->AddShader(GL_VERTEX_SHADER, "../shaders/pervertexlighting.vert"))
+  if(!m_perfrag_shader->AddShader(GL_VERTEX_SHADER, "../shaders/perFraglighting.vert"))
   {
     printf("Vertex Shader failed to Initialize\n");
     return false;
   }
 
   // Add the fragment shader
-  if(!m_perfrag_shader->AddShader(GL_FRAGMENT_SHADER, "../shaders/pervertexlighting.frag"))
+  if(!m_perfrag_shader->AddShader(GL_FRAGMENT_SHADER, "../shaders/perFraglighting.frag"))
   {
     printf("Fragment Shader failed to Initialize\n");
     return false;
