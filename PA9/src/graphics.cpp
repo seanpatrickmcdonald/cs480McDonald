@@ -156,8 +156,41 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
     printf("Program to Finalize\n");
     return false;
   }
+  
+  ///\\\///\\\///\\\///\\\///\\\///\\\///\\\///\\\///\\\///\\\///\\\///\\\
+  ///\\\///\\\///\\\///\\\///\\\///\\\///\\\///\\\///\\\///\\\///\\\///\\\
+  
+  m_perfrag_shader = new Shader();
 
-  //insert your shader here - variable is m_perfrag_shader
+  bool progInit2 = m_perfrag_shaderr->Initialize();
+  if(!progInit2)
+  {
+    printf("Shader Program Failed to Initialize\n");
+    return false;
+  }
+
+  // Add the vertex shader
+  if(!m_perfrag_shader->AddShader(GL_VERTEX_SHADER, "../shaders/pervertexlighting.vert"))
+  {
+    printf("Vertex Shader failed to Initialize\n");
+    return false;
+  }
+
+  // Add the fragment shader
+  if(!m_perfrag_shader->AddShader(GL_FRAGMENT_SHADER, "../shaders/pervertexlighting.frag"))
+  {
+    printf("Fragment Shader failed to Initialize\n");
+    return false;
+  }  
+
+  // Connect the program
+  if(!m_perfrag_shader->Finalize())
+  {
+    printf("Program to Finalize\n");
+    return false;
+  }
+
+  //current_shader = m_perfrag_shader;
   current_shader = m_pervertex_shader;
 
   //Gui Setup
