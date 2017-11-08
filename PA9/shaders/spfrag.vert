@@ -20,7 +20,7 @@ void main(void)
 {
   uv = v_uv;
 
-  world_position = mat3(model_matrix) * v_position; 
+  world_position = (model_matrix * vec4(v_position, 1.0)).xyz; 
 
   mat4 vm_matrix = view_matrix * model_matrix;
   

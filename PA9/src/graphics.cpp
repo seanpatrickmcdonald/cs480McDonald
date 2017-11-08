@@ -188,8 +188,8 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
     return false;
   }
 
-  //current_shader = m_perfrag_shader;
-  current_shader = m_pervertex_shader;
+  current_shader = m_perfrag_shader;
+  //current_shader = m_pervertex_shader;
 
   //Gui Setup
   m_window = gWindow;
@@ -245,8 +245,15 @@ void Graphics::Render()
     m_physicsObjects[i]->Render();
   }
 
+  glm::vec4 vertex(0.0, 0.0, 0.0, 1.0);
 
-/*
+  glm::vec3 sphere_center = glm::vec3(m_physics->GetModelMatrixAtIndex(1) * vertex);
+
+  //std::cout << "Center x: " << sphere_center.x << " y: " << sphere_center.y << " z: " << sphere_center.z << std::endl;
+  //std::cout << "SPOTFOC: " << current_shader->uniforms[SPOTFOC] << std::endl; 
+
+  glUniform3f(current_shader->uniforms[SPOTFOC], sphere_center.x, sphere_center.y, sphere_center.z);
+
   //Render Gui
   m_gui->NewFrame(m_window);
  
@@ -254,35 +261,38 @@ void Graphics::Render()
 
   //ambient handling
   if (current_shader->uniforms[SPECULARPOW] != -1)
-{
-  float newAmbient = ambient.x;
-  ImGui::SliderFloat("Ambient Brightness", &newAmbient, 0.0f, 1.0f);
-  ambient = glm::vec3(newAmbient, newAmbient, newAmbient);
-  glUniform3f(current_shader->uniforms[AMBIENT], ambient.x, ambient.y, ambient.z);
+  {
+    
+    float newAmbient = ambient.x;
+    ImGui::SliderFloat("Ambient Brightness", &newAmbient, 0.0f, 1.0f);
+    ambient = glm::vec3(newAmbient, newAmbient, newAmbient);
+    glUniform3f(current_shader->uniforms[AMBIENT], ambient.x, ambient.y, ambient.z);
+    
+    //diffuse handling
+    float newDiffuse = diffuse.x;
+    ImGui::SliderFloat("Diffuse Brightness", &newDiffuse, 0.0f, 1.0f);
+    diffuse = glm::vec3(newDiffuse, newDiffuse, newDiffuse);
+    glUniform3f(current_shader->uniforms[DIFFUSE], diffuse.x, diffuse.y, diffuse.z);
 
-  //diffuse handling
-  float newDiffuse = diffuse.x;
-  ImGui::SliderFloat("Diffuse Brightness", &newDiffuse, 0.0f, 1.0f);
-  diffuse = glm::vec3(newDiffuse, newDiffuse, newDiffuse);
-  glUniform3f(current_shader->uniforms[DIFFUSE], diffuse.x, diffuse.y, diffuse.z);
-
-  //specularpower handling
-  float newSpecPower = 1 / specularPower;
-  ImGui::SliderFloat("Specular Power", &newSpecPower, 0.001f, 1.0f);
-  specularPower = 1 / newSpecPower;
-  glUniform1f(current_shader->uniforms[SPECULARPOW], specularPower);
-
-  //specularalbedo handling
-  float newSpecular = specular.x;
-  ImGui::SliderFloat("Specular Albedo", &newSpecular, 0.0f, 100.0f);
-  specular = glm::vec3(newSpecular, newSpecular, newSpecular);
-  glUniform3f(current_shader->uniforms[SPECULARALB], specular.x, specular.y, specular.z);
-}
+    //specularpower handling
+    float newSpecPower = specularPower;
+    ImGui::SliderFloat("Specular Power", &newSpecPower, 0.0f, 128.0f);
+    specularPower = newSpecPower;
+    glUniform1f(current_shader->uniforms[SPECULARPOW], specularPower);
+    
+    //specularalbedo handling
+    float newSpecular = specular.x;
+    ImGui::SliderFloat("Specular Albedo", &newSpecular, 0.0f, 1.0f);
+    specular = glm::vec3(newSpecular, newSpecular, newSpecular);
+    glUniform3f(current_shader->uniforms[SPECULARALB], specular.x, specular.y, specular.z);
+    
+  }
+  
   ImGui::End();
 
   ImGui::Render();
 
-*/
+
 
   // Get any errors from OpenGL
   auto error = glGetError();

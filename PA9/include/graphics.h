@@ -42,6 +42,7 @@ class Graphics
     glm::vec3 diffuse;
     glm::vec3 specular;
     float specularPower;
+    glm::vec3 ballPosition;
 
     Object **m_objects;
     PhysicsObject **m_physicsObjects;

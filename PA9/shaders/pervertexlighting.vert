@@ -17,7 +17,7 @@ uniform float specular_power = 1.0;
 uniform vec3 ambient = vec3(0.1, 0.1, 0.1);
 
 uniform vec3 spot_position = vec3(0.0, 10.0, 0.0);
-uniform vec3 spot_direction = vec3(0.0, -10.0, 0.0);
+uniform vec3 spot_focus = vec3(0.0, -10.0, 0.0);
 uniform float spot_angle = 5.0;
 
 void main(void)
@@ -44,7 +44,7 @@ void main(void)
     light = diffuse + ambient + specular;
 
     vec3 lightPosition = normalize(spot_position - (model_matrix * vec4(v_position, 1.0)).xyz);
-    vec3 spotDirection = normalize(spot_direction);
+    vec3 spotDirection = normalize(spot_focus - spot_position);
     vec4 vertex = view_matrix * model_matrix * vec4(v_position, 1.0);
     vec3 lightDirection = normalize(vertex.xyz - lightPosition.xyz);
     float angle = degrees(acos(dot(normalize(spotDirection), -normalize(lightPosition))));

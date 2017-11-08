@@ -31,7 +31,7 @@ class Shader
     GLint m_viewMatrix;
     GLint m_modelMatrix;
 
-    std::string UniformName[8] =
+    std::string UniformName[9] =
     {
       "model_matrix",
       "view_matrix",
@@ -40,7 +40,8 @@ class Shader
       "diffuse_albedo",
       "specular_albedo",
       "specular_power",
-      "light_position"
+      "light_position",
+      "spot_focus"
     };
 
   private:
@@ -58,7 +59,8 @@ enum Uniform
     DIFFUSE = 4,
     SPECULARALB = 5,
     SPECULARPOW = 6,
-    LIGHTPOS = 7
+    LIGHTPOS = 7,
+    SPOTFOC = 8
 };
 
 

@@ -121,3 +121,14 @@ void PhysicsManager::MoveKinematic(btVector3 movementVector)
   else
     std::cout << "invalid object" << std::endl; 
 }
+
+glm::vec3 PhysicsManager::getTranslation(int index)
+{
+  btRigidBody* object = btRigidBody::upcast(dynamicsWorld->getCollisionObjectArray()[index]);
+  btTransform tr;
+  object->getMotionState()->getWorldTransform(tr);
+  btVector3 btTranslation = tr.getOrigin();
+  glm::vec3 translation = glm::vec3(btTranslation[0], btTranslation[1], btTranslation[2]);
+
+  return translation;
+}
