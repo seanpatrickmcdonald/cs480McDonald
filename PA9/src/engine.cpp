@@ -115,6 +115,11 @@ void Engine::Keyboard()
     {
       trans_vector += glm::vec3(-ms, 0.0f, 0.0f);
     }
+
+    if (m_event.key.keysym.sym == SDLK_r)
+    {
+      m_graphics->ToggleShader();
+    }
     
     m_graphics->getPhysicsManager()->MoveKinematic(btVector3(trans_vector.x, trans_vector.y, trans_vector.z));
   }

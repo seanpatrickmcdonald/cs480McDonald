@@ -1,12 +1,13 @@
 #version 330
   
-  in vec3 diffuse_color; 
-  in vec3 specular_color; 
-  in vec2 uv;
+ in vec2 uv;
+ in vec3 light;
 
-  uniform sampler2D mySampler;  
+ out vec4 out_color;
 
-  void main(void) 
-  { 
-     gl_FragColor = vec4(diffuse_color * vec3(texture(mySampler, uv)) + specular_color, 1.0); 
-  } 
+ uniform sampler2D mySampler;  
+
+ void main(void) 
+ { 
+    out_color = texture(mySampler, uv) * vec4(light, 1.0) ;
+ } 

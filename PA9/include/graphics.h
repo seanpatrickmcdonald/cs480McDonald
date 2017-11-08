@@ -23,6 +23,8 @@ class Graphics
     PhysicsManager* getPhysicsManager();
     glm::vec3 trans_vector = glm::vec3(0.0f, 0.0f, 0.0f);
 
+    void ToggleShader();
+
     //GuiHandle and window handle
     GuiHandle *m_gui;    
     SDL_Window* m_window;    

@@ -157,12 +157,10 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
     return false;
   }
   
-  ///\\\///\\\///\\\///\\\///\\\///\\\///\\\///\\\///\\\///\\\///\\\///\\\
-  ///\\\///\\\///\\\///\\\///\\\///\\\///\\\///\\\///\\\///\\\///\\\///\\\
   
   m_perfrag_shader = new Shader();
 
-  bool progInit2 = m_perfrag_shaderr->Initialize();
+  bool progInit2 = m_perfrag_shader->Initialize();
   if(!progInit2)
   {
     printf("Shader Program Failed to Initialize\n");
@@ -170,14 +168,14 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
   }
 
   // Add the vertex shader
-  if(!m_perfrag_shader->AddShader(GL_VERTEX_SHADER, "../shaders/perFraglighting.vert"))
+  if(!m_perfrag_shader->AddShader(GL_VERTEX_SHADER, "../shaders/spfrag.vert"))
   {
     printf("Vertex Shader failed to Initialize\n");
     return false;
   }
 
   // Add the fragment shader
-  if(!m_perfrag_shader->AddShader(GL_FRAGMENT_SHADER, "../shaders/perFraglighting.frag"))
+  if(!m_perfrag_shader->AddShader(GL_FRAGMENT_SHADER, "../shaders/spfrag.frag"))
   {
     printf("Fragment Shader failed to Initialize\n");
     return false;
@@ -248,12 +246,15 @@ void Graphics::Render()
   }
 
 
+/*
   //Render Gui
   m_gui->NewFrame(m_window);
  
   ImGui::Begin("Stat Window");
 
   //ambient handling
+  if (current_shader->uniforms[SPECULARPOW] != -1)
+{
   float newAmbient = ambient.x;
   ImGui::SliderFloat("Ambient Brightness", &newAmbient, 0.0f, 1.0f);
   ambient = glm::vec3(newAmbient, newAmbient, newAmbient);
@@ -276,11 +277,12 @@ void Graphics::Render()
   ImGui::SliderFloat("Specular Albedo", &newSpecular, 0.0f, 100.0f);
   specular = glm::vec3(newSpecular, newSpecular, newSpecular);
   glUniform3f(current_shader->uniforms[SPECULARALB], specular.x, specular.y, specular.z);
-
-
+}
   ImGui::End();
 
   ImGui::Render();
+
+*/
 
   // Get any errors from OpenGL
   auto error = glGetError();
@@ -323,6 +325,21 @@ std::string Graphics::ErrorString(GLenum error)
   }
 
   
+}
+
+void Graphics::ToggleShader()
+{
+  if (current_shader == m_pervertex_shader) 
+    current_shader = m_perfrag_shader;
+
+  else
+  current_shader = m_pervertex_shader;
+
+
+  ambient = current_shader->GetUniform3f(current_shader->uniforms[AMBIENT]);
+  diffuse = current_shader->GetUniform3f(current_shader->uniforms[DIFFUSE]);
+  specular = current_shader->GetUniform3f(current_shader->uniforms[SPECULARALB]);
+  specularPower = current_shader->GetUniformf(current_shader->uniforms[SPECULARPOW]);
 }
 
 PhysicsManager* Graphics::getPhysicsManager()
