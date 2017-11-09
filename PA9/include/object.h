@@ -5,6 +5,7 @@
 #include "assimp/scene.h"
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
+#include "bullet/btBulletDynamicsCommon.h"
 
 
 class Object
@@ -20,6 +21,7 @@ class Object
 
     GLuint loadBMP(std::string textureName);
     const aiMesh* LoadAssimp(std::string objFilename);
+	btTriangleMesh* collisionMesh;
 
   private:
     glm::mat4 model;
@@ -28,6 +30,7 @@ class Object
     GLuint VB;
     GLuint IB;
     GLuint texture_int;
+	 
 };
 
 #endif /* OBJECT_H */

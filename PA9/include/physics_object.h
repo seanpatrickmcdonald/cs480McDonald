@@ -26,6 +26,7 @@ struct PhysicsObjectStruct
   btVector3 inertia;
   bool kinematic;
   std::string primitiveType;
+  
 };
 
 

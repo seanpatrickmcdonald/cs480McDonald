@@ -36,7 +36,7 @@ class PhysicsManager
         glm::vec3 getTranslation(int index);
 
     private:
-
+		
         btBroadphaseInterface* broadphase;
         btDefaultCollisionConfiguration* collisionConfiguration;
         btCollisionDispatcher *dispatcher;

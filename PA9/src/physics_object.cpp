@@ -37,9 +37,11 @@ PhysicsObject::PhysicsObject(PhysicsObjectStruct objStruct, PhysicsManager *phys
   /*
     Replace this cout statement with triangulate code
   */
-  else
-      std::cout << "No primitive type for object name: " << objStruct.objName << std::endl;
-
+  else{
+      //std::cout << "No primitive type for object name: " << objStruct.objName << std::endl;
+	  collisionMesh = new btTriangleMesh();
+	  collisionShape = new btBvhTriangleMeshShape(collisionMesh, true);
+	}
 
   btVector3 origin     = objStruct.origin;
   btScalar mass        = btScalar(objStruct.mass);

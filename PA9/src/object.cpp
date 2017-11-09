@@ -54,6 +54,7 @@ const aiMesh* Object::LoadAssimp(std::string objFilename)
 
 Object::Object(std::string objFilename, std::string texFilename)
 {
+	collisionMesh = NULL;
     //bring in textures and load to opengl
     texture_int = loadBMP(texFilename);
 
@@ -70,6 +71,7 @@ Object::Object(std::string objFilename, std::string texFilename)
     {
         //Position
         glm::vec3 vertexVec;
+		
 
         vertexVec.x = modelMesh->mVertices[i].x;
         vertexVec.y = modelMesh->mVertices[i].y;
@@ -112,18 +114,32 @@ Object::Object(std::string objFilename, std::string texFilename)
         Vertex dummyVertex(vertexVec, normal, uv);
         Vertices.push_back(dummyVertex);        
     }
+	//std::cout<<"seg?"<<std::endl;
     //Load Indices
+	btVector3 triArray[3]; //triangulation
     for (unsigned int i = 0; i < modelMesh->mNumFaces; i++)
     {
-        if (modelMesh->mFaces[i].mNumIndices == 3)  //only if it's a triangle
-        {
-            for (unsigned int j = 0; j < 3; j++)
+		const aiFace& face = modelMesh->mFaces[i];
+
+            for (int j = 0; j < face.mNumIndices; j++)
             {
+				//std::cout<<j<<std::endl;
+				aiVector3D position = modelMesh->mVertices[face.mIndices[j]];
+
+				std::cout<<position.x<<" "<<position.y<<" "<<position.z<<" "<<std::endl;
+
+				triArray[j] = btVector3(position.x, position.y, position.z);
+
+				std::cout<<(*triArray[j])<<std::endl;
+
                 Indices.push_back(modelMesh->mFaces[i].mIndices[j]);
             }
-        }
-    }
+			std::cout<<"noooo"<<std::endl;
+			//collisionMesh->addTriangle(triArray[0], triArray[1], triArray[2]);
+			std::cout<<"noooo"<<std::endl;
 
+    }
+	std::cout<<"pimp?"<<std::endl;
 
   glGenBuffers(1, &VB);
   glBindBuffer(GL_ARRAY_BUFFER, VB);
