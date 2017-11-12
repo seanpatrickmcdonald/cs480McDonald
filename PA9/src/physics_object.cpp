@@ -30,7 +30,7 @@ PhysicsObject::PhysicsObject(PhysicsObjectStruct objStruct, PhysicsManager *phys
   else if (objStruct.primitiveType == "box")
       collisionShape = new btBoxShape(btVector3(0.25f, 0.25f, 0.25f));
   else if (objStruct.primitiveType == "plane")
-      collisionShape = new btStaticPlaneShape(Yup, 0);
+      collisionShape = new btStaticPlaneShape(Yup, 1);
 
   
 
@@ -48,5 +48,8 @@ PhysicsObject::PhysicsObject(PhysicsObjectStruct objStruct, PhysicsManager *phys
   bool kinematic       = objStruct.kinematic;
 
   physics_manager->AddRigidBody(collisionShape, origin, mass, restitution, inertia, kinematic);
+
+
+  physicsIndex = objStruct.physicsIndex;
 }
 

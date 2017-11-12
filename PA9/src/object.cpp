@@ -37,7 +37,7 @@ GLuint Object::loadBMP(std::string textureName)
     return tex;
 }
 
-const aiMesh* Object::LoadAssimp(std::string objFilename)
+const aiScene* Object::LoadAssimp(std::string objFilename)
 {
     //Use assimp namespace for this function only
     using namespace Assimp;
@@ -47,9 +47,8 @@ const aiMesh* Object::LoadAssimp(std::string objFilename)
     //Create Assimp Importer
     modelImporter = new Importer();
     const aiScene* modelScene = modelImporter->ReadFile(objFilename, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate);
-    const aiMesh *modelMesh = modelScene->mMeshes[0];
-
-    return modelMesh;
+       
+    return modelScene;
 }
 
 Object::Object(std::string objFilename, std::string texFilename)
@@ -58,72 +57,90 @@ Object::Object(std::string objFilename, std::string texFilename)
     texture_int = loadBMP(texFilename);
 
     //build our aimesh object
-    const aiMesh *modelMesh = LoadAssimp(objFilename);
+    const aiScene *modelScene = LoadAssimp(objFilename);
 
-    if (modelMesh == nullptr)
+    if (modelScene == nullptr)
     {
-        std::cout << "Invalid Mesh: " << objFilename << std::endl;
+        std::cout.flush() << "Invalid Mesh: " << objFilename << std::endl;
     }
 
-    //Load Vertex Positions and TextureCoords
-    for (unsigned int i = 0; i < modelMesh->mNumVertices; i++)
+    for (unsigned int mesh_index = 0; mesh_index < modelScene->mNumMeshes; mesh_index++)
     {
-        //Position
-        glm::vec3 vertexVec;
+        const aiMesh *modelMesh = modelScene->mMeshes[mesh_index];
 
-        vertexVec.x = modelMesh->mVertices[i].x;
-        vertexVec.y = modelMesh->mVertices[i].y;
-        vertexVec.z = modelMesh->mVertices[i].z;
+       
 
 
-        //Normal
-        glm::vec3 normal;
-
-        if (modelMesh->HasNormals() > 0)
+        //Load Vertex Positions and TextureCoords
+        for (unsigned int i = 0; i < modelMesh->mNumVertices; i++)
         {
-            normal.x = modelMesh->mNormals[i].x;
-            normal.y = modelMesh->mNormals[i].y;
-            normal.z = modelMesh->mNormals[i].z;
-        }
+            //Position
+            glm::vec3 vertexVec;
 
-        else
-        {
-            normal.x = 0;
-            normal.y = 0;
-            normal.z = 0;
-        }
+            vertexVec.x = modelMesh->mVertices[i].x;
+            vertexVec.y = modelMesh->mVertices[i].y;
+            vertexVec.z = modelMesh->mVertices[i].z;
 
 
-        //Texture uv coords
-        glm::vec2 uv;
+            //Normal
+            glm::vec3 normal;
 
-        if (modelMesh->GetNumUVChannels() > 0)
-        {
-            uv.x = modelMesh->mTextureCoords[0][i].x;
-            uv.y = modelMesh->mTextureCoords[0][i].y;
-        }
-
-        else
-        {
-            uv.x = 1.0f;
-            uv.y = 1.0f;
-        }        
-	        
-        Vertex dummyVertex(vertexVec, normal, uv);
-        Vertices.push_back(dummyVertex);        
-    }
-    //Load Indices
-    for (unsigned int i = 0; i < modelMesh->mNumFaces; i++)
-    {
-        if (modelMesh->mFaces[i].mNumIndices == 3)  //only if it's a triangle
-        {
-            for (unsigned int j = 0; j < 3; j++)
+            if (modelMesh->HasNormals() > 0)
             {
-                Indices.push_back(modelMesh->mFaces[i].mIndices[j]);
+                normal.x = modelMesh->mNormals[i].x;
+                normal.y = modelMesh->mNormals[i].y;
+                normal.z = modelMesh->mNormals[i].z;
+            }
+
+            else
+            {
+                normal.x = 0;
+                normal.y = 0;
+                normal.z = 0;
+            }
+
+            //Texture uv coords
+            glm::vec2 uv;
+
+            if (modelMesh->GetNumUVChannels() > 0)
+            {
+                uv.x = modelMesh->mTextureCoords[0][i].x;
+                uv.y = modelMesh->mTextureCoords[0][i].y;
+            }
+
+            else
+            {
+                uv.x = 1.0f;
+                uv.y = 1.0f;
+            }        
+	            
+            Vertex dummyVertex(vertexVec, normal, uv);
+            Vertices.push_back(dummyVertex);        
+        }
+        //Load Indices
+        for (unsigned int i = 0; i < modelMesh->mNumFaces; i++)
+        {
+            if (modelMesh->mFaces[i].mNumIndices == 3)  //only if it's a triangle
+            {
+                for (unsigned int j = 0; j < 3; j++)
+                {
+                    Indices.push_back(modelMesh->mFaces[i].mIndices[j]);
+                }
             }
         }
+    }//numMeshes
+    
+    /* Debug Vertices with cout
+    if (objFilename == "../assets/pinball.obj")
+    {
+        for (unsigned int i = 0; i < Vertices.size(); i++)
+        {
+            std::cout << "x: " << Vertices[i].vertex.x 
+                      << " y: " << Vertices[i].vertex.y 
+                      << " z: " << Vertices[i].vertex.z << std::endl;
+        }         
     }
-
+    */
 
   glGenBuffers(1, &VB);
   glBindBuffer(GL_ARRAY_BUFFER, VB);

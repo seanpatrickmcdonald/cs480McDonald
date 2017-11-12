@@ -19,15 +19,17 @@ class Object
     glm::mat4 GetModel();
 
     GLuint loadBMP(std::string textureName);
-    const aiMesh* LoadAssimp(std::string objFilename);
+    const aiScene* LoadAssimp(std::string objFilename);
+    glm::mat4 model;
 
   private:
-    glm::mat4 model;
     std::vector<Vertex> Vertices;
     std::vector<unsigned int> Indices;
     GLuint VB;
     GLuint IB;
     GLuint texture_int;
+
+    float radius;
 };
 
 #endif /* OBJECT_H */

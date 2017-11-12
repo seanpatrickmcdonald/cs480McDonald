@@ -84,7 +84,8 @@ void Engine::Keyboard()
   {
     m_running = false;
   }
-  else if (m_event.type == SDL_KEYDOWN)
+
+  if (m_event.type == SDL_KEYDOWN)
   {
     // handle key down events here
     if (m_event.key.keysym.sym == SDLK_ESCAPE)
@@ -92,37 +93,33 @@ void Engine::Keyboard()
       m_running = false;
     }
 
-    float ms = 0.125f;
-
-    glm::vec3 trans_vector = glm::vec3(0.0f, 0.0f, 0.0f);
-
-    if (m_event.key.keysym.sym == SDLK_w)
-    {
-      trans_vector += glm::vec3(0.0f, 0.0f, ms);
-    }
-
-    if (m_event.key.keysym.sym == SDLK_s)
-    {
-      trans_vector += glm::vec3(0.0f, 0.0f, -ms);
-    }
-
-    if (m_event.key.keysym.sym == SDLK_a)
-    {
-      trans_vector += glm::vec3(ms, 0.0f, 0.0f);
-    }
-
-    if (m_event.key.keysym.sym == SDLK_d)
-    {
-      trans_vector += glm::vec3(-ms, 0.0f, 0.0f);
-    }
-
     if (m_event.key.keysym.sym == SDLK_r)
     {
-      m_graphics->ToggleShader();
+      m_graphics->m_plunger->triggeringPlunger = true;
     }
-    
-    m_graphics->getPhysicsManager()->MoveKinematic(btVector3(trans_vector.x, trans_vector.y, trans_vector.z));
   }
+
+/*
+  if (m_graphics->triggeringPlunger)
+  {
+    const Uint8 *keystate = SDL_GetKeyboardState(NULL);
+
+    if (keystate == NULL)
+    {
+        std::cout << "keystate null" << std::endl;
+    }
+
+    else if (keystate[SDL_SCANCODE_DOWN])
+    {
+      m_graphics->m_plunger->triggeringPlunger = true;
+    }
+
+    else
+    {
+      m_graphics->m_plunger->triggeringPlunger = false;
+    }
+  }
+*/
 }
 
 unsigned int Engine::getDT()
