@@ -11,7 +11,7 @@ Object::Object()
 
 }
 
-GLuint Object::loadBMP(std::string textureName)
+GLuint Object::loadTexture(std::string textureName)
 {    
     int width, height, n;
     stbi_set_flip_vertically_on_load(true);
@@ -54,7 +54,7 @@ const aiScene* Object::LoadAssimp(std::string objFilename)
 Object::Object(std::string objFilename, std::string texFilename)
 {
     //bring in textures and load to opengl
-    texture_int = loadBMP(texFilename);
+    texture_int = loadTexture(texFilename);
 
     //build our aimesh object
     const aiScene *modelScene = LoadAssimp(objFilename);
@@ -128,19 +128,7 @@ Object::Object(std::string objFilename, std::string texFilename)
                 }
             }
         }
-    }//numMeshes
-    
-    /* Debug Vertices with cout
-    if (objFilename == "../assets/pinball.obj")
-    {
-        for (unsigned int i = 0; i < Vertices.size(); i++)
-        {
-            std::cout << "x: " << Vertices[i].vertex.x 
-                      << " y: " << Vertices[i].vertex.y 
-                      << " z: " << Vertices[i].vertex.z << std::endl;
-        }         
     }
-    */
 
   glGenBuffers(1, &VB);
   glBindBuffer(GL_ARRAY_BUFFER, VB);
@@ -151,11 +139,34 @@ Object::Object(std::string objFilename, std::string texFilename)
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * Indices.size(), &Indices[0], GL_STATIC_DRAW);
 }
 
+Object::Object(std::string texFilename)
+{
+    //bring in textures and load to opengl
+    texture_int = loadTexture(texFilename);    
+}
+
+void Object::InitializeVertices()
+{
+    glGenBuffers(1, &VB);
+    glBindBuffer(GL_ARRAY_BUFFER, VB);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * Vertices.size(), &Vertices[0], GL_STATIC_DRAW);
+
+    glGenBuffers(1, &IB);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * Indices.size(), &Indices[0], GL_STATIC_DRAW);
+}
+
+
+
 Object::~Object()
 {
   Vertices.clear();
   Indices.clear();
 }
+
+
+
+
 
 void Object::Update(unsigned int dt)
 {

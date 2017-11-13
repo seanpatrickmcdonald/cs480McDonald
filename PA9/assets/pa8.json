@@ -1,7 +1,7 @@
 { "physicsobjects":[{
 
-	"name":"machine", 
-  	"mesh":"../assets/pinballmachine.obj",
+	"name":"MachineBase", 
+  	"mesh":"../assets/MachineBase.obj",
   	"texture":"../assets/PinballMachine_AlbedoTransparency.png", 
   	"mass":0,
   	"inertia":0,
@@ -16,7 +16,7 @@
 
     {
     "name":"ball", 
-  	"mesh":"../assets/64Sphere.obj",
+  	"mesh":"../assets/Ball.obj",
   	"texture":"../assets/brushed-metal.png", 
   	"mass":0.01,
   	"inertia":0,
@@ -32,20 +32,13 @@
     
 
 	],
-    "shaderprograms":[
-    {
-    "type":"pervertex",
-    "vertshader": "../shaders/vertlighting.ve rt",
-    "fragshader": "../shaders/vertlighting.frag"
-    },
-    {
-    "type":"perfragment",
-    "vertshader": "../shaders/fraglighting.vert",
-    "fragshader": "../shaders/fraglighting.frag"
-    }
-    ],
 
     "objects":[
+    {
+	"name":"Machine", 
+  	"mesh":"../assets/Machine.obj",
+  	"texture":"../assets/PinballMachine_AlbedoTransparency.png"
+	}
 
     ],
 

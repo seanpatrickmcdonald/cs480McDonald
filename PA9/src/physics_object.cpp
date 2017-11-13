@@ -12,33 +12,59 @@ PhysicsObject::~PhysicsObject()
 
 
 PhysicsObject::PhysicsObject(PhysicsObjectStruct objStruct, PhysicsManager *physics_manager)
-: Object(objStruct.objFilename, objStruct.texFilename)
+: Object( objStruct.texFilename)
 {  
-  btCollisionShape *collisionShape;
-    
+  btCollisionShape *collisionShape;   
 
   btVector3 Yup(0.0f, 1.0f, 0.0f);
-/*
 
-    Note: Replace the Constants with parameters passed from json to struct, etc. This is for primitives
+  /*
 
-*/
+    Data is loaded into vertices, so we can do with it as we need. Structure names on next lines.
+
+
+    std::vector<Vertex> Vertices
+    std::vector<unsigned int> Indices  
+
+
+    (Vertex Struct from graphics_headers.h)
+
+    struct Vertex
+    {
+      glm::vec3 vertex;
+      glm::vec3 normal;
+      glm::vec2 uv;
+
+      Vertex(glm::vec3 v, glm::vec3 n, glm::vec2 u): vertex(v), normal(n), uv(u) {}
+    }
+
+    
+    Example: 
+        Vertices[index].vertex will give a glm::vec3, so access this with .x, .y, .z, or use the 
+            glm::value_ptr casting.
+
+    Indices is also initalized, and that will also have to be used to get all of the triangles.
+
+  */
+  loadVertexData(objStruct.objFilename);
+
+
+
   if (objStruct.primitiveType == "sphere")
-      collisionShape = new btSphereShape(btScalar(0.25f));
+      collisionShape = new btSphereShape(btScalar(0.016f));
   else if (objStruct.primitiveType == "cylinder")
       collisionShape = new btCylinderShape(btVector3(0.25f, 0.5f, 0.5f));
   else if (objStruct.primitiveType == "box")
       collisionShape = new btBoxShape(btVector3(0.25f, 0.25f, 0.25f));
   else if (objStruct.primitiveType == "plane")
-      collisionShape = new btStaticPlaneShape(Yup, 1);
-
-  
-
+      collisionShape = new btStaticPlaneShape(Yup, 1.1);
   /*
     Replace this cout statement with triangulate code
   */
   else
-      std::cout << "No primitive type for object name: " << objStruct.objName << std::endl;
+  {
+    std::cout << "No primitive type for object name: " << objStruct.objName << std::endl;
+  }
 
 
   btVector3 origin     = objStruct.origin;
@@ -51,5 +77,90 @@ PhysicsObject::PhysicsObject(PhysicsObjectStruct objStruct, PhysicsManager *phys
 
 
   physicsIndex = objStruct.physicsIndex;
+
+  Object::InitializeVertices();
+}
+
+void PhysicsObject::loadVertexData(std::string objFilename)
+{
+    //Use assimp namespace for this function only
+    using namespace Assimp;
+
+    Importer *modelImporter;
+
+    //Create Assimp Importer
+    modelImporter = new Importer();
+    const aiScene* modelScene = modelImporter->ReadFile(objFilename, 
+                    aiProcess_JoinIdenticalVertices | aiProcess_Triangulate);
+    const aiMesh *modelMesh = modelScene->mMeshes[0];
+
+    
+    if (modelScene == nullptr)
+    {
+        std::cout.flush() << "Invalid Mesh: " << objFilename << std::endl;
+    }
+
+    //Load Vertex Positions and TextureCoords
+    for (unsigned int i = 0; i < modelMesh->mNumVertices; i++)
+    {
+        //Position
+        glm::vec3 vertexVec;
+
+        vertexVec.x = modelMesh->mVertices[i].x;
+        vertexVec.y = modelMesh->mVertices[i].y;
+        vertexVec.z = modelMesh->mVertices[i].z;
+
+
+        //Normal
+        glm::vec3 normal;
+
+        if (modelMesh->HasNormals() > 0)
+        {
+            normal.x = modelMesh->mNormals[i].x;
+            normal.y = modelMesh->mNormals[i].y;
+            normal.z = modelMesh->mNormals[i].z;
+        }
+
+        else
+        {
+            normal.x = 0;
+            normal.y = 0;
+            normal.z = 0;
+        }
+
+        //Texture uv coords
+        glm::vec2 uv;
+
+        if (modelMesh->GetNumUVChannels() > 0)
+        {
+            uv.x = modelMesh->mTextureCoords[0][i].x;
+            uv.y = modelMesh->mTextureCoords[0][i].y;
+        }
+
+        else
+        {
+            uv.x = 1.0f;
+            uv.y = 1.0f;
+        }        
+            
+        Vertex dummyVertex(vertexVec, normal, uv);
+        Vertices.push_back(dummyVertex); 
+
+    }
+
+
+    //Load Indices
+    for (unsigned int i = 0; i < modelMesh->mNumFaces; i++)
+    {
+        if (modelMesh->mFaces[i].mNumIndices == 3)  //only if it's a triangle
+        {
+            for (unsigned int j = 0; j < 3; j++)
+            {
+                Indices.push_back(modelMesh->mFaces[i].mIndices[j]);
+            }
+        }
+    }
+    
+
 }
 

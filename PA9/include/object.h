@@ -11,23 +11,32 @@ class Object
 {
   public:
     Object();
+
+    //Standard Render-Only Constructor
     Object(std::string objFilename, std::string texFilename);
+
+    //Physics Constructor
+    Object(std::string texFilename);
+
     ~Object();
+
     void Update(unsigned int dt);
     void Render();
 
     glm::mat4 GetModel();
 
-    GLuint loadBMP(std::string textureName);
+    GLuint loadTexture(std::string textureName);
     const aiScene* LoadAssimp(std::string objFilename);
     glm::mat4 model;
 
-  private:
+  protected:
     std::vector<Vertex> Vertices;
     std::vector<unsigned int> Indices;
     GLuint VB;
     GLuint IB;
     GLuint texture_int;
+
+    void InitializeVertices();
 
     float radius;
 };
