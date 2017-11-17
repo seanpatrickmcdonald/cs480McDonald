@@ -1,0 +1,444 @@
+{ "physicsobjects":[
+
+    {
+    "name":"Ball", 
+  	"mesh":"../assets/Ball.obj",
+  	"texture":"../assets/PinballMachine_AlbedoTransparency.png", 
+  	"mass":0.1,
+  	"inertia":0,
+	"restitution":1,
+ 	"scale":3,
+	"kinematic":false ,
+    "origin.x": 0.34046,
+    "origin.y": 0.9980,
+    "origin.z": 0.69679,
+    "primitive": "sphere",
+    "radius":1
+    },
+
+    {
+    "name":"RightLowerBumper", 
+    "mesh":"../assets/RightLowerBumper.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.00,
+    "inertia":0,
+  "restitution":0.5,
+  "scale":3,
+  "kinematic":false ,
+    "origin.x": 0,
+    "origin.y": 0,
+    "origin.z": 0,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"LeftLowerBumper", 
+    "mesh":"../assets/LeftLowerBumper.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.00,
+    "inertia":0,
+  "restitution":0.5,
+  "scale":3,
+  "kinematic":false ,
+    "origin.x": 0,
+    "origin.y": 0,
+    "origin.z": 0,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"RightBallKeep", 
+    "mesh":"../assets/RightBallKeep.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.00,
+    "inertia":0,
+  "restitution":0,
+  "scale":3,
+  "kinematic":false ,
+    "origin.x": 0,
+    "origin.y": 0,
+    "origin.z": 0,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"LeftBallKeep", 
+    "mesh":"../assets/LeftBallKeep.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.00,
+    "inertia":0,
+  "restitution":0,
+  "scale":3,
+  "kinematic":false ,
+    "origin.x": 0,
+    "origin.y": 0,
+    "origin.z": 0,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"Puncher", 
+    "mesh":"../assets/Puncher.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.00,
+    "inertia":0,
+  "restitution":0,
+  "scale":3,
+  "kinematic":false ,
+    "origin.x": 0,
+    "origin.y": 0,
+    "origin.z": 0,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"LeftFlipper", 
+    "mesh":"../assets/LeftFlipper.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.0,
+    "inertia":0,
+  "restitution":0.25,
+  "scale":3,
+  "kinematic":true ,
+    "origin.x": -0.17,
+    "origin.y": 1.00799,
+    "origin.z": 0.605,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"LeftCorner", 
+    "mesh":"../assets/LeftCorner.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.00,
+    "inertia":0,
+  "restitution":0.5,
+  "scale":3,
+  "kinematic":false,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 0.0,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"RightCorner", 
+    "mesh":"../assets/RightCorner.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.00,
+    "inertia":0,
+  "restitution":0.5,
+  "scale":3,
+  "kinematic":false ,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 0.0,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"RightFlipper", 
+    "mesh":"../assets/RightFlipper.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.0,
+    "inertia":0,
+  "restitution":0.25,
+  "scale":3,
+  "kinematic":true ,
+    "origin.x": 0.08715,
+    "origin.y": 1.01,
+    "origin.z": 0.615,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"HoleBumper", 
+    "mesh":"../assets/HoleBumper.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.00,
+    "inertia":0,
+  "restitution":0.5,
+  "scale":3,
+  "kinematic":false ,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 0.0,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"Base", 
+    "mesh":"../assets/Base.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.00,
+    "inertia":0,
+  "restitution":0.65,
+  "scale":3,
+  "kinematic":false ,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 0.0,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"LargeBumperBase", 
+    "mesh":"../assets/LargeBumperBase.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.00,
+    "inertia":0,
+  "restitution":0.5,
+  "scale":3,
+  "kinematic":false ,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 0.0,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"Target", 
+    "mesh":"../assets/Target1.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.00,
+    "inertia":0,
+  "restitution":0.5,
+  "scale":3,
+  "kinematic":false ,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 0.0,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"50Trigger", 
+    "mesh":"../assets/Trigger1.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.00,
+    "inertia":0,
+  "restitution":0.5,
+  "scale":3,
+  "kinematic":false ,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 0.0,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"50Trigger", 
+    "mesh":"../assets/Trigger4.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.00,
+    "inertia":0,
+  "restitution":0.5,
+  "scale":3,
+  "kinematic":false ,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 0.0,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"25Trigger", 
+    "mesh":"../assets/Trigger2.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.00,
+    "inertia":0,
+  "restitution":0.5,
+  "scale":3,
+  "kinematic":false ,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 0.0,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"25Trigger", 
+    "mesh":"../assets/Trigger3.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.00,
+    "inertia":0,
+  "restitution":0.5,
+  "scale":3,
+  "kinematic":false ,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 0.0,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"NormBumper", 
+    "mesh":"../assets/NormBumper1.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.00,
+    "inertia":0,
+  "restitution":0.5,
+  "scale":3,
+  "kinematic":false ,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 0.0,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"NormBumper", 
+    "mesh":"../assets/NormBumper2.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.00,
+    "inertia":0,
+  "restitution":0.5,
+  "scale":3,
+  "kinematic":false ,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 0.0,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"TargetBumper1", 
+    "mesh":"../assets/TargetBumper1.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.00,
+    "inertia":0,
+  "restitution":0.5,
+  "scale":3,
+  "kinematic":false ,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 0.0,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"10Target", 
+    "mesh":"../assets/BumperTarget1.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.00,
+    "inertia":0,
+  "restitution":0.5,
+  "scale":3,
+  "kinematic":false ,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 0.0,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"10Target", 
+    "mesh":"../assets/BumperTarget2.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.00,
+    "inertia":0,
+  "restitution":0.5,
+  "scale":3,
+  "kinematic":false ,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 0.0,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"TargetBumper2", 
+    "mesh":"../assets/TargetBumper2.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.00,
+    "inertia":0,
+  "restitution":0.5,
+  "scale":3,
+  "kinematic":false ,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 0.0,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"100Bumper", 
+    "mesh":"../assets/100Bumper.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.00,
+    "inertia":0,
+  "restitution":0.5,
+  "scale":3,
+  "kinematic":false ,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 0.0,
+    "primitive": "triangle",
+    "radius":1
+    }
+    ,
+
+    {
+    "name":"100Target", 
+    "mesh":"../assets/100Target.obj",
+    "texture":"../assets/PinballBoard_AlbedoTransparency.png", 
+    "mass":0.00,
+    "inertia":0,
+  "restitution":0.5,
+  "scale":3,
+  "kinematic":false ,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 0.0,
+    "primitive": "triangle",
+    "radius":1
+    }
+    
+    
+    
+    
+    
+    
+
+	],
+
+    "objects":[{
+      "name":"table",
+      "mesh":"../assets/table.obj",
+      "texture":"../assets/PinballMachine_AlbedoTransparency.png"
+    }
+
+    ],
+
+    "plunger":
+    {
+  	"mesh":"../assets/Plunger.obj",
+  	"texture":"../assets/PinballBoard_AlbedoTransparency.png"
+    }
+    
+
+ 
+}
