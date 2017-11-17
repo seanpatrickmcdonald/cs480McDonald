@@ -121,6 +121,11 @@ void PhysicsManager::AddRigidBody(btCollisionShape* collisionShape, btVector3 or
 
 	}
 
+    if (objName == "100Target")
+    {       
+        hundredTarget = body;
+    }
+
 	if (objName == "50Target")
 	{
 		fiftyTarget.push_back(body);
@@ -151,6 +156,7 @@ void PhysicsManager::AddRigidBody(btCollisionShape* collisionShape, btVector3 or
 		body->setCollisionFlags(body->getCollisionFlags() |
     btCollisionObject::CF_NO_CONTACT_RESPONSE);
 	}
+
 }
 
 int PhysicsManager::GetNumObjects()
@@ -177,7 +183,7 @@ glm::mat4 PhysicsManager::GetModelMatrixAtIndex(int index)
 
 void PhysicsManager::Update(unsigned int dt)
 {	
-    dynamicsWorld->stepSimulation(1); //1 is max time step
+    dynamicsWorld->stepSimulation(dt, 1); //1 is max time step
 
     MyContactResultCallback targetHitTest;
 
@@ -199,7 +205,10 @@ void PhysicsManager::Update(unsigned int dt)
             dynamicsWorld->contactPairTest(ball, twentyfiveTarget[i], targetHitTest);
            
             if (targetHitTest.collision)
+            {
                 Engine::score += 25;
+                break;
+            }
         }  
     }
 
@@ -210,8 +219,21 @@ void PhysicsManager::Update(unsigned int dt)
     	    dynamicsWorld->contactPairTest(ball, tenTarget[i], targetHitTest);
     	   
     	    if (targetHitTest.collision)
+            {
     	    	Engine::score += 10;
+                break;
+            }
     	}
+    }
+
+    else
+    {
+        dynamicsWorld->contactPairTest(ball, hundredTarget, targetHitTest);
+
+        if (targetHitTest.collision)
+        {
+            Engine::score += 100;
+        }
     }
 
 	//double asdf;

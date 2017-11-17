@@ -11,7 +11,7 @@ PhysicsManager::PhysicsManager()
     solver                 = new btSequentialImpulseConstraintSolver();
     dynamicsWorld          = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
     // Add gravity
-    dynamicsWorld->setGravity(btVector3(0, -9.81, .125));
+    dynamicsWorld->setGravity(btVector3(0, -9.81, 0));
 }
 
 PhysicsManager::~PhysicsManager()

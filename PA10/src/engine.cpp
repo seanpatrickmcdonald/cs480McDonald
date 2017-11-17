@@ -94,10 +94,14 @@ void Engine::Run()
         score = 0;
       }
 
+      else
+      {
+        num_balls--;
+      }
+
       m_graphics->getPhysicsManager()->ResetBall();
       m_graphics->m_plunger->triggeringPlunger = true;
       m_graphics->m_plunger->displacement = 1;
-      num_balls--;
     }
 
 
@@ -135,7 +139,7 @@ void Engine::Keyboard()
     if (m_event.key.keysym.sym == SDLK_SPACE)
     {
       m_graphics->m_plunger->triggeringPlunger = false;
-      m_graphics->getPhysicsManager()->ApplyForceAtIndex(btVector3(0, 0, -.2 * m_graphics->m_plunger->displacement), 0);
+      m_graphics->getPhysicsManager()->ApplyForceAtIndex(btVector3(0, 0, -.18 * m_graphics->m_plunger->displacement), 0);
     }
 
 
@@ -213,7 +217,7 @@ void Engine::LeftFlipperUpdate()
     left_flipper_dt = 0;
   }
 
-  m_graphics->getPhysicsManager()->RotateFlipper(6, left_flipper_angle);
+  m_graphics->getPhysicsManager()->RotateFlipper(1, left_flipper_angle);
 
 
 }
@@ -239,5 +243,5 @@ void Engine::RightFlipperUpdate()
     right_flipper_dt = 0;
   }
 
-  m_graphics->getPhysicsManager()->RotateFlipper(9, right_flipper_angle);
+  m_graphics->getPhysicsManager()->RotateFlipper(2, right_flipper_angle);
 }

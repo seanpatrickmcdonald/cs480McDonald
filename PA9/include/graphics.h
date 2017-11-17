@@ -2,17 +2,15 @@
 #define GRAPHICS_H
 
 #include <iostream>
+using namespace std;
 
 #include "graphics_headers.h"
 #include "camera.h"
 #include "shader.h"
 #include "object.h"
 #include "physics_object.h"
-#include "Plunger.h"
 #include "json.hpp"
 #include "gui.h"
-
-using namespace std;
 
 class Graphics
 {
@@ -23,21 +21,13 @@ class Graphics
     void Update(unsigned int dt);
     void Render();
     PhysicsManager* getPhysicsManager();
+    glm::vec3 trans_vector = glm::vec3(0.0f, 0.0f, 0.0f);
 
     void ToggleShader();
 
     //GuiHandle and window handle
     GuiHandle *m_gui;    
-    SDL_Window* m_window;  
-
-
-    std::vector<Object *> m_object;
-    PhysicsObject **m_physicsObjects;
-    Plunger *m_plunger;
-    //Flipper *m_flippers[2];  
-
-
-    bool triggeringPlunger = true;
+    SDL_Window* m_window;    
 
   private:
     std::string ErrorString(GLenum error);
@@ -54,7 +44,8 @@ class Graphics
     float specularPower;
     glm::vec3 ballPosition;
 
-
+    Object **m_objects;
+    PhysicsObject **m_physicsObjects;
 
     size_t numObjects;
     size_t num_physics_objects;

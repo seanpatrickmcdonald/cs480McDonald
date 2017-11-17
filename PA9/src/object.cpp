@@ -11,7 +11,7 @@ Object::Object()
 
 }
 
-GLuint Object::loadTexture(std::string textureName)
+GLuint Object::loadBMP(std::string textureName)
 {    
     int width, height, n;
     stbi_set_flip_vertically_on_load(true);
@@ -37,7 +37,7 @@ GLuint Object::loadTexture(std::string textureName)
     return tex;
 }
 
-const aiScene* Object::LoadAssimp(std::string objFilename)
+const aiMesh* Object::LoadAssimp(std::string objFilename)
 {
     //Use assimp namespace for this function only
     using namespace Assimp;
@@ -47,88 +47,99 @@ const aiScene* Object::LoadAssimp(std::string objFilename)
     //Create Assimp Importer
     modelImporter = new Importer();
     const aiScene* modelScene = modelImporter->ReadFile(objFilename, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate);
-       
-    return modelScene;
+    const aiMesh *modelMesh = modelScene->mMeshes[0];
+
+    return modelMesh;
 }
 
 Object::Object(std::string objFilename, std::string texFilename)
 {
+	collisionMesh = NULL;
     //bring in textures and load to opengl
-    texture_int = loadTexture(texFilename);
+    texture_int = loadBMP(texFilename);
 
     //build our aimesh object
-    const aiScene *modelScene = LoadAssimp(objFilename);
+    const aiMesh *modelMesh = LoadAssimp(objFilename);
 
-    if (modelScene == nullptr)
+    if (modelMesh == nullptr)
     {
-        std::cout.flush() << "Invalid Mesh: " << objFilename << std::endl;
+        std::cout << "Invalid Mesh: " << objFilename << std::endl;
     }
 
-    for (unsigned int mesh_index = 0; mesh_index < modelScene->mNumMeshes; mesh_index++)
+    //Load Vertex Positions and TextureCoords
+    for (unsigned int i = 0; i < modelMesh->mNumVertices; i++)
     {
-        const aiMesh *modelMesh = modelScene->mMeshes[mesh_index];
+        //Position
+        glm::vec3 vertexVec;
+		
 
-       
+        vertexVec.x = modelMesh->mVertices[i].x;
+        vertexVec.y = modelMesh->mVertices[i].y;
+        vertexVec.z = modelMesh->mVertices[i].z;
 
 
-        //Load Vertex Positions and TextureCoords
-        for (unsigned int i = 0; i < modelMesh->mNumVertices; i++)
+        //Normal
+        glm::vec3 normal;
+
+        if (modelMesh->HasNormals() > 0)
         {
-            //Position
-            glm::vec3 vertexVec;
-
-            vertexVec.x = modelMesh->mVertices[i].x;
-            vertexVec.y = modelMesh->mVertices[i].y;
-            vertexVec.z = modelMesh->mVertices[i].z;
-
-
-            //Normal
-            glm::vec3 normal;
-
-            if (modelMesh->HasNormals() > 0)
-            {
-                normal.x = modelMesh->mNormals[i].x;
-                normal.y = modelMesh->mNormals[i].y;
-                normal.z = modelMesh->mNormals[i].z;
-            }
-
-            else
-            {
-                normal.x = 0;
-                normal.y = 0;
-                normal.z = 0;
-            }
-
-            //Texture uv coords
-            glm::vec2 uv;
-
-            if (modelMesh->GetNumUVChannels() > 0)
-            {
-                uv.x = modelMesh->mTextureCoords[0][i].x;
-                uv.y = modelMesh->mTextureCoords[0][i].y;
-            }
-
-            else
-            {
-                uv.x = 1.0f;
-                uv.y = 1.0f;
-            }        
-	            
-            Vertex dummyVertex(vertexVec, normal, uv);
-            Vertices.push_back(dummyVertex);        
+            normal.x = modelMesh->mNormals[i].x;
+            normal.y = modelMesh->mNormals[i].y;
+            normal.z = modelMesh->mNormals[i].z;
         }
-        //Load Indices
-        for (unsigned int i = 0; i < modelMesh->mNumFaces; i++)
+
+        else
         {
-            if (modelMesh->mFaces[i].mNumIndices == 3)  //only if it's a triangle
-            {
-                for (unsigned int j = 0; j < 3; j++)
-                {
-                    Indices.push_back(modelMesh->mFaces[i].mIndices[j]);
-                }
-            }
+            normal.x = 0;
+            normal.y = 0;
+            normal.z = 0;
         }
+
+
+        //Texture uv coords
+        glm::vec2 uv;
+
+        if (modelMesh->GetNumUVChannels() > 0)
+        {
+            uv.x = modelMesh->mTextureCoords[0][i].x;
+            uv.y = modelMesh->mTextureCoords[0][i].y;
+        }
+
+        else
+        {
+            uv.x = 1.0f;
+            uv.y = 1.0f;
+        }        
+	        
+        Vertex dummyVertex(vertexVec, normal, uv);
+        Vertices.push_back(dummyVertex);        
     }
+	//std::cout<<"seg?"<<std::endl;
+    //Load Indices
+	btVector3 triArray[3]; //triangulation
+    for (unsigned int i = 0; i < modelMesh->mNumFaces; i++)
+    {
+		const aiFace& face = modelMesh->mFaces[i];
+
+            for (int j = 0; j < face.mNumIndices; j++)
+            {
+				//std::cout<<j<<std::endl;
+				aiVector3D position = modelMesh->mVertices[face.mIndices[j]];
+
+				std::cout<<position.x<<" "<<position.y<<" "<<position.z<<" "<<std::endl;
+
+				triArray[j] = btVector3(position.x, position.y, position.z);
+
+				std::cout<<(*triArray[j])<<std::endl;
+
+                Indices.push_back(modelMesh->mFaces[i].mIndices[j]);
+            }
+			std::cout<<"noooo"<<std::endl;
+			//collisionMesh->addTriangle(triArray[0], triArray[1], triArray[2]);
+			std::cout<<"noooo"<<std::endl;
+
+    }
+	std::cout<<"pimp?"<<std::endl;
 
   glGenBuffers(1, &VB);
   glBindBuffer(GL_ARRAY_BUFFER, VB);
@@ -139,34 +150,11 @@ Object::Object(std::string objFilename, std::string texFilename)
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * Indices.size(), &Indices[0], GL_STATIC_DRAW);
 }
 
-Object::Object(std::string texFilename)
-{
-    //bring in textures and load to opengl
-    texture_int = loadTexture(texFilename);    
-}
-
-void Object::InitializeVertices()
-{
-    glGenBuffers(1, &VB);
-    glBindBuffer(GL_ARRAY_BUFFER, VB);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * Vertices.size(), &Vertices[0], GL_STATIC_DRAW);
-
-    glGenBuffers(1, &IB);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * Indices.size(), &Indices[0], GL_STATIC_DRAW);
-}
-
-
-
 Object::~Object()
 {
   Vertices.clear();
   Indices.clear();
 }
-
-
-
-
 
 void Object::Update(unsigned int dt)
 {

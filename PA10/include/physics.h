@@ -54,6 +54,7 @@ class PhysicsManager
         std::vector<btRigidBody *> tenTarget;
         std::vector<btRigidBody *> twentyfiveTarget;
         std::vector<btRigidBody *> fiftyTarget;
+        btRigidBody *hundredTarget;
 };
 
 

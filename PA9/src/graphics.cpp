@@ -30,7 +30,6 @@ PhysicsObjectStruct* structFromJSON(json j, size_t index)
                                 j["physicsobjects"][index]["origin.z"]        
                                 );
   passStruct->primitiveType = j["physicsobjects"][index]["primitive"];
-  passStruct->physicsIndex = index;
 
   return passStruct;
 }
@@ -45,10 +44,10 @@ void createTables(PhysicsManager *physicsManager)
   btCollisionShape *wall3 = new btBoxShape(btVector3(2.00f, 0.5f, 0.01f));
   btCollisionShape *wall4 = new btBoxShape(btVector3(2.00f, 0.5f, 0.01f));
  
-  btVector3 originwall1 = btVector3( 1.0f, 1.0f, 0.0f);
-  btVector3 originwall2 = btVector3(-1.0f, 1.0f, 0.0f);
-  btVector3 originwall3 = btVector3(0.0f, 1.0f, 1.0f);
-  btVector3 originwall4 = btVector3(0.0f, 1.0f, -1.0f);
+  btVector3 originwall1 = btVector3( 2.0f, 0.0f, 0.0f);
+  btVector3 originwall2 = btVector3(-2.0f, 0.0f, 0.0f);
+  btVector3 originwall3 = btVector3(0.0f, 0.0f, 2.0f);
+  btVector3 originwall4 = btVector3(0.0f, 0.0f, -2.0f);
 
   btScalar mass        = btScalar(0.0f);
   btScalar restitution = btScalar(1.0f);
@@ -105,12 +104,12 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
   i >> j ;
 
   //Create non-physics render only objects
-  numObjects = j["objects"].size();
+  numObjects = j["objects"].size();;
+  m_objects = new Object*[numObjects];
 
   for (unsigned int i = 0; i < numObjects; i++)
   {     
-      Object *dummyObject = new Object(j["objects"][i]["mesh"], j["objects"][i]["texture"]);
-      m_object.push_back(dummyObject);
+      m_objects[i] = new Object(j["objects"][i]["mesh"], j["objects"][i]["texture"]);
   }
 
   // Create Physics Objects  
@@ -121,10 +120,6 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
   {     
       m_physicsObjects[i] = new PhysicsObject(*(structFromJSON(j, i)), m_physics);
   }
-
-  //Create Plunger
-  m_plunger = new Plunger(j["plunger"]["mesh"], j["plunger"]["texture"]);
-  m_object.push_back((Object *)(m_plunger));
 
   createTables(m_physics);
 
@@ -221,8 +216,6 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
 void Graphics::Update(unsigned int dt)
 {
   m_physics->Update(dt);
-
-  m_plunger->Update(dt);
 }
 
 void Graphics::Render()
@@ -238,11 +231,11 @@ void Graphics::Render()
   glUniformMatrix4fv(current_shader->m_projectionMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetProjection())); 
   glUniformMatrix4fv(current_shader->m_viewMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetView())); 
 
-  //Render Objects    
-  for (unsigned int i = 0; i < m_object.size(); i++)
+  //Render Objects
+  for (unsigned int i = 0; i < numObjects; i++)
   {
-    glUniformMatrix4fv(current_shader->m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_object[i]->GetModel()));
-    m_object[i]->Render();
+    glUniformMatrix4fv(current_shader->m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_objects[i]->GetModel()));
+    m_objects[i]->Render();
   }
 
   // Render physics objects
@@ -255,6 +248,9 @@ void Graphics::Render()
   glm::vec4 vertex(0.0, 0.0, 0.0, 1.0);
 
   glm::vec3 sphere_center = glm::vec3(m_physics->GetModelMatrixAtIndex(1) * vertex);
+
+  //std::cout << "Center x: " << sphere_center.x << " y: " << sphere_center.y << " z: " << sphere_center.z << std::endl;
+  //std::cout << "SPOTFOC: " << current_shader->uniforms[SPOTFOC] << std::endl; 
 
   glUniform3f(current_shader->uniforms[SPOTFOC], sphere_center.x, sphere_center.y, sphere_center.z);
 
@@ -291,29 +287,8 @@ void Graphics::Render()
     glUniform3f(current_shader->uniforms[SPECULARALB], specular.x, specular.y, specular.z);
     
   }
-
-  ImGui::End();
-
-  if (m_plunger->triggeringPlunger)
-  {
-    ImGui::Begin(" ");
-
-    float depth = m_plunger->displacement * 100;
-
-    //ImGui::InputFloat("Plunger Power", &depth, 0.0f, 100.0f);
-    ImGui::SliderFloat("Plunger Power", &depth, 0.0f, 100.0f);
-
-    if (ImGui::Button("Plunge!"))
-    {
-        m_plunger->triggeringPlunger = false;
-    }
-
-
-    m_plunger->displacement = depth/100;
-
-    ImGui::End();
-  }
   
+  ImGui::End();
 
   ImGui::Render();
 

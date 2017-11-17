@@ -13,10 +13,6 @@ public:
   PhysicsObject();
   ~PhysicsObject();
   PhysicsObject(PhysicsObjectStruct objStruct, PhysicsManager *physics_manager);
-
-  void loadVertexData(std::string objFilename);
-
-  unsigned int physicsIndex;
 };
 
 struct PhysicsObjectStruct
@@ -30,7 +26,7 @@ struct PhysicsObjectStruct
   btVector3 inertia;
   bool kinematic;
   std::string primitiveType;
-  unsigned int physicsIndex;
+  
 };
 
 

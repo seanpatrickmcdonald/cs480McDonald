@@ -314,7 +314,7 @@ void Graphics::Render(unsigned int score, unsigned int num_balls)
         if (ImGui::Button("Plunge!"))
         {   
             m_plunger->triggeringPlunger = false;
-            m_physics->ApplyForceAtIndex(btVector3(0, 0, -.2 * depth/100), 0);
+            m_physics->ApplyForceAtIndex(btVector3(0, 0, -.18 * depth/100), 0);
         }
 
         m_plunger->displacement = depth/100;

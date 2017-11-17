@@ -33,10 +33,11 @@ class PhysicsManager
         void ApplyForceAtIndex(btVector3 force, int index);
 
         void MoveKinematic(btVector3);
+        void ResetBall();
         glm::vec3 getTranslation(int index);
 
     private:
-
+		
         btBroadphaseInterface* broadphase;
         btDefaultCollisionConfiguration* collisionConfiguration;
         btCollisionDispatcher *dispatcher;
