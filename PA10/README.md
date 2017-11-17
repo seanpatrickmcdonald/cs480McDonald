@@ -1,5 +1,4 @@
 ## PA10 Sean McDonald and Bruce Martin
-Notes: The program begins on the fragment shader. The spotlight is per fragment and per vertex accordingly, so when on per vertex it is easier to see the spotlight by turning down all other light (ambient diffuse, etc.) The spotlight points at the sphere and will follow it around.
 
 # Dependencies, Building, and Running
 
