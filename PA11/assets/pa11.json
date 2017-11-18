@@ -1,0 +1,39 @@
+{ "physicsobjects": [
+  {
+    "name":"Crate", 
+  	"mesh":"../assets/cube.obj",
+  	"texture":"../assets/crate.jpg", 
+  	"mass":0.1,
+  	"inertia":0,
+	"restitution":0.75,
+ 	"scale":3,
+	"kinematic":false ,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 0.0,
+    "primitive": "box",
+    "radius":1
+    },
+
+    {
+    "name":"Ground", 
+  	"mesh":"../assets/ground.obj",
+  	"texture":"../assets/grey.jpg", 
+  	"mass":0.0,
+  	"inertia":0,
+	"restitution":0.0,
+ 	"scale":3,
+	"kinematic":false,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 0.0,
+    "primitive": "plane",
+    "radius":1
+    }
+    ],
+
+    "objects":[
+
+]
+
+}
