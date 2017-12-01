@@ -20,7 +20,7 @@ Engine::Engine(string name)
 Engine::~Engine()
 {
   if (m_window)
-  delete m_window;
+    delete m_window;
   if (m_graphics)
   	delete m_graphics;
 
@@ -69,8 +69,10 @@ void Engine::Run()
     }
 
     // Update and render the graphics
+    m_graphics->getCamera()->Update(m_DT);
     m_graphics->Update(m_DT);
     m_graphics->Render();
+
 
     // Swap to the Window
     m_window->Swap();
@@ -98,16 +100,72 @@ void Engine::Keyboard()
         m_graphics->getPhysicsManager()->ApplyForceAtIndex(btVector3(0, 0, 0.25), 0);
     }
 
-    // handle key down events here
-    if (m_event.key.keysym.sym == SDLK_SPACE)
+    if (m_event.key.keysym.sym == SDLK_w)
     {
-
+        m_graphics->getCamera()->movement[CAMERA_TRANSLATE][CAMERA_Z] = -1;
     }
 
+    if (m_event.key.keysym.sym == SDLK_a)
+    {
+        m_graphics->getCamera()->movement[CAMERA_TRANSLATE][CAMERA_X] = -1;
+    }
 
+    if (m_event.key.keysym.sym == SDLK_s)
+    {
+        m_graphics->getCamera()->movement[CAMERA_TRANSLATE][CAMERA_Z] = 1;
+    }
+
+    if (m_event.key.keysym.sym == SDLK_d)
+    {
+        m_graphics->getCamera()->movement[CAMERA_TRANSLATE][CAMERA_X] = 1;
+    }
+
+    if (m_event.key.keysym.sym == SDLK_q)
+    {
+        m_graphics->getCamera()->movement[CAMERA_ROTATE][CAMERA_X] = 1;
+    }
+
+    if (m_event.key.keysym.sym == SDLK_e)
+    {
+        m_graphics->getCamera()->movement[CAMERA_ROTATE][CAMERA_X] = -1;
+    }
   }
 
+  if (m_event.type == SDL_KEYUP)
+  {
+
+    if (m_event.key.keysym.sym == SDLK_w)
+    {
+        m_graphics->getCamera()->movement[CAMERA_TRANSLATE][CAMERA_Z] = 0;
+    }
+
+    if (m_event.key.keysym.sym == SDLK_a)
+    {
+        m_graphics->getCamera()->movement[CAMERA_TRANSLATE][CAMERA_X] = 0;
+    }
+
+    if (m_event.key.keysym.sym == SDLK_s)
+    {
+        m_graphics->getCamera()->movement[CAMERA_TRANSLATE][CAMERA_Z] = 0;
+    }
+
+    if (m_event.key.keysym.sym == SDLK_d)
+    {
+        m_graphics->getCamera()->movement[CAMERA_TRANSLATE][CAMERA_X] = 0;
+    }
+
+    if (m_event.key.keysym.sym == SDLK_q)
+    {
+        m_graphics->getCamera()->movement[CAMERA_ROTATE][CAMERA_X] = 0;
+    }
+
+    if (m_event.key.keysym.sym == SDLK_e)
+    {
+        m_graphics->getCamera()->movement[CAMERA_ROTATE][CAMERA_X] = 0;
+    }
+  }
   
+  /*  
   const Uint8 *keystate = SDL_GetKeyboardState(NULL);
 
   if (keystate == NULL)
@@ -115,16 +173,32 @@ void Engine::Keyboard()
       std::cout << "keystate null" << std::endl;
   }
 
-  if (keystate[SDL_SCANCODE_D] || keystate[SDL_SCANCODE_RIGHT])
-  {
 
+  if (keystate[SDL_SCANCODE_W])
+  {
+    camera_translation += glm::vec3(0, 0, -camera_speed);
   }  
 
-  if (keystate[SDL_SCANCODE_A] || keystate[SDL_SCANCODE_LEFT])
+  if (keystate[SDL_SCANCODE_A])
   {
+    camera_translation += glm::vec3(-camera_speed, 0, 0);
+  }
 
+  if (keystate[SDL_SCANCODE_S])
+  {
+    camera_translation += glm::vec3(0, 0, camera_speed);
+  }
+
+  if (keystate[SDL_SCANCODE_D])
+  {
+    camera_translation += glm::vec3(camera_speed, 0, 0);
   }
   
+  std::cout << camera_translation.x << " " << camera_translation.y << " " << camera_translation.z << std::endl;
+
+  m_graphics->getCamera()->Translate(camera_translation);
+  */
+
 }
 
 unsigned int Engine::getDT()

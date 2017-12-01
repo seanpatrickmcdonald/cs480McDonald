@@ -42,7 +42,7 @@ class Graphics
     glm::vec3 diffuse;
     glm::vec3 specular;
     float specularPower;
-    glm::vec3 ballPosition;
+    glm::vec3 spot_focus = glm::vec3(0.0, -1.0, 0.0);
 
     Object **m_objects;
     PhysicsObject **m_physicsObjects;

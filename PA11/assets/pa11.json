@@ -1,15 +1,15 @@
 { "physicsobjects": [
   {
     "name":"Crate", 
-  	"mesh":"../assets/cube.obj",
-  	"texture":"../assets/crate.jpg", 
+  	"mesh":"../assets/anvil.obj",
+  	"texture":"../assets/grey.jpg", 
   	"mass":0.1,
   	"inertia":0,
 	"restitution":0.75,
  	"scale":3,
 	"kinematic":false ,
     "origin.x": 0.0,
-    "origin.y": 0.0,
+    "origin.y": 2.0,
     "origin.z": 0.0,
     "primitive": "box",
     "radius":1
@@ -21,7 +21,7 @@
   	"texture":"../assets/grey.jpg", 
   	"mass":0.0,
   	"inertia":0,
-	"restitution":0.0,
+	"restitution":0.01,
  	"scale":3,
 	"kinematic":false,
     "origin.x": 0.0,
@@ -29,7 +29,24 @@
     "origin.z": 0.0,
     "primitive": "plane",
     "radius":1
+    },
+
+    {
+    "name":"WallSegment", 
+  	"mesh":"../assets/wall.obj",
+  	"texture":"../assets/stone_wall_1_d.png", 
+  	"mass":0.0,
+  	"inertia":0,
+	"restitution":0.01,
+ 	"scale":3,
+	"kinematic":false,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 0.0,
+    "primitive": "box",
+    "radius":1
     }
+
     ],
 
     "objects":[

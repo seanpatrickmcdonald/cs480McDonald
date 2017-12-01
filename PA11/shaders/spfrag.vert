@@ -14,7 +14,8 @@ out vec3 v_L;
 out vec3 v_V;
 out vec3 world_position;
 
-uniform vec3 light_position = vec3(-100.0, 100.0, 100.0);
+uniform vec3 light_position = vec3(5.0, 0.0, 0.0);
+uniform float light_strength = 0.0;
 
 void main(void)
 {

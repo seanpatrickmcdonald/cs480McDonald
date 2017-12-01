@@ -64,11 +64,17 @@ Object::Object(std::string objFilename, std::string texFilename)
         std::cout.flush() << "Invalid Mesh: " << objFilename << std::endl;
     }
 
+    std::cout << modelScene->HasTextures() << std::endl;
+
+    if (modelScene->HasTextures())
+    {
+        std::cout << modelScene->mNumTextures << std::endl;
+    }
+
     for (unsigned int mesh_index = 0; mesh_index < modelScene->mNumMeshes; mesh_index++)
     {
         const aiMesh *modelMesh = modelScene->mMeshes[mesh_index];
 
-       
 
 
         //Load Vertex Positions and TextureCoords
@@ -179,7 +185,7 @@ glm::mat4 Object::GetModel()
   return model;
 }
 
-void Object::Render()
+void Object::Render(Shader *shader)
 {
   glBindTexture(GL_TEXTURE_2D, texture_int);  
 

@@ -7,8 +7,6 @@
 #include "window.h"
 #include "graphics.h"
 
-
-
 class Engine
 {
   public:

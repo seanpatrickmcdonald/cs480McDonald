@@ -127,6 +127,13 @@ void Engine::Keyboard()
       m_running = false;
     }
 
+
+    // handle key down events here
+    if (m_event.key.keysym.sym == SDLK_p)
+    {
+      m_graphics->ToggleShader();
+    }
+
     // handle key down events here
     if (m_event.key.keysym.sym == SDLK_r)
     {
@@ -139,7 +146,7 @@ void Engine::Keyboard()
     if (m_event.key.keysym.sym == SDLK_SPACE)
     {
       m_graphics->m_plunger->triggeringPlunger = false;
-      m_graphics->getPhysicsManager()->ApplyForceAtIndex(btVector3(0, 0, -.18 * m_graphics->m_plunger->displacement), 0);
+      m_graphics->getPhysicsManager()->ApplyForceAtIndex(btVector3(0, 0, -.18), 0);
     }
 
 

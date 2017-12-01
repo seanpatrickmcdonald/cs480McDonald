@@ -5,7 +5,7 @@
 #include "assimp/scene.h"
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
-
+#include "shader.h"
 
 class Object
 {
@@ -21,7 +21,7 @@ class Object
     ~Object();
 
     void Update(unsigned int dt);
-    void Render();
+    void Render(Shader*);
 
     glm::mat4 GetModel();
 

@@ -227,7 +227,7 @@ bool Shader::Finalize()
   m_viewMatrix = GetUniformLocation("view_matrix");
   m_projectionMatrix = GetUniformLocation("projection_matrix");
 
-  for (int i = 0; i < 9; i++)
+  for (int i = 0; i < 11; i++)
   {
     uniforms.push_back(GetUniformLocation(UniformName[i].c_str())); 
   }

@@ -61,6 +61,34 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
 
+
+  /*
+  // The framebuffer, which regroups 0, 1, or more textures, and 0 or 1 depth buffer.
+  GLuint FramebufferName;
+  glGenFramebuffers(1, &FramebufferName);
+  glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+
+  // Depth texture. Slower than a depth buffer, but you can sample it later in your shader
+  GLuint depthTexture;
+  glGenTextures(1, &depthTexture);
+  glBindTexture(GL_TEXTURE_2D, depthTexture);
+  glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT16, 1024, 1024, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+  glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTexture, 0);
+
+  glDrawBuffer(GL_NONE); // No color buffer is drawn to.
+
+  // Always check that our framebuffer is ok
+  if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+  {
+    std::cout << "FrameBuffer failure" << std::endl;
+    return false;
+  }
+  */
   // Init Camera
   m_camera = new Camera();
   if(!m_camera->Initialize(width, height))
@@ -71,7 +99,6 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
 
   //Initialize our PhysicsManager
   m_physics = new PhysicsManager();
-
   
   //read in our json
   std::ifstream i("../assets/pa11.json");
@@ -87,7 +114,7 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
       m_object.push_back(dummyObject);
   }
 
-  unsigned int num_cubes = 4;
+  unsigned int num_cubes = 1;
 
   // Create Physics Objects  
   num_physics_objects = j["physicsobjects"].size() - 1 + num_cubes;
@@ -102,7 +129,7 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
   }
 
 
-  for (unsigned int i = 1; i < 2; i++)
+  for (unsigned int i = 1; i < num_physics_objects - num_cubes + 1; i++)
   {     
       m_physicsObjects[i - 1 + num_cubes] = new PhysicsObject(*(structFromJSON(j, i)), m_physics);
   }
@@ -185,6 +212,7 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
   diffuse = current_shader->GetUniform3f(current_shader->uniforms[DIFFUSE]);
   specular = current_shader->GetUniform3f(current_shader->uniforms[SPECULARALB]);
   specularPower = current_shader->GetUniformf(current_shader->uniforms[SPECULARPOW]);
+  lightStrength = 10.0;
 
   //enable depth testing
   glEnable(GL_DEPTH_TEST);
@@ -217,6 +245,9 @@ void Graphics::Render()
       // Start the correct program
       current_shader->Enable();
 
+      if (current_shader->uniforms[SPOTFOC] >= 0)
+      glUniform3f(current_shader->uniforms[SPOTFOC], spot_focus.x, spot_focus.y, spot_focus.z);
+
       // Send in the projection and view to the shader
       glUniformMatrix4fv(current_shader->m_projectionMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetProjection())); 
       glUniformMatrix4fv(current_shader->m_viewMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetView())); 
@@ -225,14 +256,14 @@ void Graphics::Render()
       for (unsigned int i = 0; i < m_object.size(); i++)
       {
         glUniformMatrix4fv(current_shader->m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_object[i]->GetModel()));
-        m_object[i]->Render();
+        m_object[i]->Render(current_shader);
       }
 
       // Render Physics objects
       for (unsigned int i = 0; i < num_physics_objects; i++)
       {
         glUniformMatrix4fv(current_shader->m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_physics->GetModelMatrixAtIndex(i)));
-        m_physicsObjects[i]->Render();
+        m_physicsObjects[i]->Render(current_shader);
       }
 
       //Render Gui
@@ -265,7 +296,19 @@ void Graphics::Render()
         ImGui::SliderFloat("Specular Albedo", &newSpecular, 0.0f, 1.0f);
         specular = glm::vec3(newSpecular, newSpecular, newSpecular);
         glUniform3f(current_shader->uniforms[SPECULARALB], specular.x, specular.y, specular.z);
+
+        //specularalbedo handling
+        /*
+        float newStrength = lightStrength;
+        ImGui::SliderFloat("Light Strength", &newStrength, 0.0f, 100.0f);
+        lightStrength = newStrength;
+        glUniform1f(current_shader->uniforms[LIGHTSTR], newStrength);
+        */
       }
+
+      float newStrength = (float(rand()) / RAND_MAX) + 9.0;
+      std::cout << newStrength << std::endl;
+      glUniform1f(current_shader->uniforms[LIGHTSTR], newStrength);
 
       ImGui::End();
 
@@ -326,7 +369,7 @@ void Graphics::ToggleShader()
     current_shader = m_perfrag_shader;
 
   else
-  current_shader = m_pervertex_shader;
+    current_shader = m_pervertex_shader;
 
   ambient = current_shader->GetUniform3f(current_shader->uniforms[AMBIENT]);
   diffuse = current_shader->GetUniform3f(current_shader->uniforms[DIFFUSE]);
@@ -337,4 +380,10 @@ void Graphics::ToggleShader()
 PhysicsManager* Graphics::getPhysicsManager()
 {
   return m_physics;
+}
+
+
+Camera* Graphics::getCamera()
+{
+  return m_camera;
 }

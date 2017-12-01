@@ -23,6 +23,7 @@ class Graphics
     void Update(unsigned int dt);
     void Render();
     PhysicsManager* getPhysicsManager();
+    Camera* getCamera();
 
     void ToggleShader();
 
@@ -46,6 +47,8 @@ class Graphics
     glm::vec3 diffuse;
     glm::vec3 specular;
     float specularPower;
+    glm::vec3 spot_focus = glm::vec3(0.0, -1.0, 0.0);
+    float lightStrength;
 
     bool renderObjects;
     bool renderPhysics;

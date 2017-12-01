@@ -25,6 +25,13 @@
 #include "physics.h"
 #include <vector>
 
+#define CAMERA_X 0
+#define CAMERA_Y 1
+#define CAMERA_Z 2
+#define CAMERA_TRANSLATE 0
+#define CAMERA_LOOK 1
+#define CAMERA_ROTATE 2
+
 struct Vertex
 {
   glm::vec3 vertex;

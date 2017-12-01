@@ -44,7 +44,10 @@ void main(void)
   //vec3 lightDirection = normalize(vertex.xyz - lightPosition.xyz);
   float angle = degrees(acos(dot(normalize(spotDirection), normalize(lightPosition))));
   if (angle < spot_angle)
-     light = vec4(0.9, 0.9, 0.9, 1.0); 
+  {
+     float spot_brightness = angle / 5.0f;
+     light = vec4( spot_brightness, spot_brightness, spot_brightness, 1.0); 
+  }
 
 
 

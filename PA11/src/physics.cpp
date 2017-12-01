@@ -96,7 +96,7 @@ glm::mat4 PhysicsManager::GetModelMatrixAtIndex(int index)
 {
     if(index < 0 || index >= GetNumObjects())
     {
-        cout << "ERROR! PhysicsManager::GetModelMatrixAtIndex tried to access: " << index << " which is not between 0 and " << GetNumObjects() << "." << endl;
+        cout << "ERROR! PhysicsManager::GetModelMatrixAtIndex tried to access: " << index << " which is not between 0 and " << GetNumObjects() - 1 << "." << endl;
         return glm::mat4(1.0f);
     }
 
