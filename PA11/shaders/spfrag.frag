@@ -1,16 +1,18 @@
-#version 330
+#version 330 core
 
 out vec4 out_color;
 
 in vec2 uv;
 uniform sampler2D mySampler;
+uniform sampler2DShadow shadowSampler;
 
 in vec3 v_N;
 in vec3 v_L;
 in vec3 v_V;
-
+in vec3 v_Lspot;
 
 in vec3 world_position;
+in vec4 ShadowCoord;
 
 uniform vec3 diffuse_albedo = vec3(0.8);
 uniform vec3 specular_albedo = vec3(0.5);
@@ -22,72 +24,107 @@ uniform mat4 model_matrix;
 uniform mat4 view_matrix;
 uniform mat4 projection_matrix;
 
-uniform vec3 spot_position = vec3(5.0, 10.0, 0.0);
-uniform vec3 spot_focus = vec3(0.0, -1.0, 0.0);
+uniform vec3 spot_position;
+uniform vec3 spot_focus = vec3(3.0, -1.0, 0.0);
 uniform float spot_inner_radius = 10.0;
-uniform float spot_outer_radius = 10.5;
+uniform float spot_outer_radius = 11.0;
 uniform float spot_max_brightness = 1.0;
 
-uniform vec3 light_position;
 uniform float light_strength;
 uniform float light_falloff = 2;
+
+in vec3 v_Ls[128];
+
+uniform int num_lights;
+uniform vec3 light_positions[128];
 
 //255, 102, 0
 uniform vec3 light_color = vec3(1.0, 102.0/255.0, 0.0);
 
 void main(void)
 {
-  float x_diff = pow(world_position.x - light_position.x, 2);
-  float y_diff = pow(world_position.y - light_position.y, 2);
-  float z_diff = pow(world_position.z - light_position.z, 2);
-  float distance_from_light = sqrt(x_diff + y_diff + z_diff);
-  float distance_factor = distance_from_light / light_strength;
 
   vec3 N = normalize(v_N);
-  vec3 L = normalize(v_L);
+  vec3 L;
   vec3 V = normalize(v_V);
 
-  vec3 R = reflect(-L, N);
+  vec3 R;
 
-  vec3 diffuse = max(dot(N, L), 0.0) * diffuse_albedo / (distance_factor) * light_color;
-  vec3 specular = pow(max(dot(R, V), 0.0), specular_power) * specular_albedo * light_color;
+  vec4 light = vec4(0, 0, 0, 0);
 
-  vec4 light = vec4(diffuse + specular + ambient, 1.0);
-
-  vec3 lightPosition = normalize(world_position - spot_position);
-  vec3 spotDirection = normalize(spot_focus - spot_position);
-  float angle = degrees(acos(dot(normalize(spotDirection), normalize(lightPosition))));
-
-  if (angle < spot_outer_radius)
+  for (int i = 0; i < num_lights; i++)
   {
-    float spot_brightness;
+    L = normalize(v_L);
+    R = reflect(-L, N);
+
+    float x_diff = pow(world_position.x - light_positions[i].x, 2);
+    float y_diff = pow(world_position.y - light_positions[i].y, 2);
+    float z_diff = pow(world_position.z - light_positions[i].z, 2);
+    float distance_from_light = sqrt(x_diff + y_diff + z_diff);
+    float distance_factor = distance_from_light / light_strength;
+
+    vec3 diffuse = max(dot(N, L), 0.0) * diffuse_albedo / (distance_factor) * light_color;
+    vec3 specular = pow(max(dot(R, V), 0.0), specular_power) * specular_albedo * light_color;
+
+    light = vec4(diffuse + specular + ambient, 1.0);
+  }
+
+
+  vec3 spotPosition = normalize(world_position - spot_position);
+  vec3 spotDirection = normalize(spot_focus - spot_position);
+  float angle = degrees(acos(dot(normalize(spotDirection), normalize(spotPosition))));
+
+  float spot_distance = distance(spot_position, world_position) ;
+  angle = angle * spot_distance / 5;
+  
+
+  if (angle < spot_outer_radius && angle >= 0)
+  {
+    L = normalize(v_Lspot);
+    R = reflect(-L, N);
+
+
+    vec3 diffuse = max(dot(N, L), 0.0) * diffuse_albedo;
+    vec3 specular = pow(max(dot(R, V), 0.0), specular_power) * specular_albedo;
+
+    vec3 spot_brightness;
     float angle_modifier = spot_outer_radius / 5.0f;
 
     float outin_ratio = spot_inner_radius / (spot_outer_radius - spot_inner_radius);
 
     if (angle <= spot_inner_radius)
-      spot_brightness = spot_max_brightness;
+      spot_brightness = diffuse + specular;
     else if (angle < spot_outer_radius)
-      spot_brightness = (exp(-(angle - spot_inner_radius) * outin_ratio / angle_modifier));
+      spot_brightness =(diffuse + specular) * vec3((exp(-(angle - spot_inner_radius) * outin_ratio / angle_modifier)));
 
-    if (light.x < spot_brightness)
+
+    /*
+    if (light.x < spot_brightness.x)
     {
-      light.x = spot_brightness;
+      light.x = spot_brightness.x;
     }
 
-    if (light.y < spot_brightness)
+    if (light.y < spot_brightness.y)
     {
-      light.y = spot_brightness;
+      light.y = spot_brightness.y;
     }
 
-    if (light.z < spot_brightness)
+    if (light.z < spot_brightness.z)
     {
-      light.z = spot_brightness;
+      light.z = spot_brightness.z;
     }
+    */
+
+    float visibility = 1.0;
+    //if ( texture( shadowSampler, ShadowCoord.xyw)  <  ShadowCoord.z/ShadowCoord.w){
+    //visibility = 0.0; 
+    //}
+
+    light += vec4(spot_brightness * visibility, 1.0);
   }
 
   //Clamp light to 1.0
-  light = vec4(clamp(light.x, 0, 1), clamp(light.y, 0, 1), clamp(light.z, 0, 1), light.w);
+  //light = vec4(clamp(light.x, 0, 1), clamp(light.y, 0, 1), clamp(light.z, 0, 1), light.w);
 
   out_color = texture(mySampler, uv) * light;
   //out_color = light;

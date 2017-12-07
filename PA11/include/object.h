@@ -15,6 +15,9 @@ class Object
     //Standard Render-Only Constructor
     Object(std::string objFilename, std::string texFilename);
 
+    //Standard Render-Only Constructor non origin origin
+    Object(std::string objFilename, std::string texFilename, btVector3 origin);
+
     //Physics Constructor
     Object(std::string texFilename);
 
@@ -22,6 +25,7 @@ class Object
 
     void Update(unsigned int dt);
     void Render(Shader*);
+    void ShadowRender(GLuint);
 
     glm::mat4 GetModel();
 

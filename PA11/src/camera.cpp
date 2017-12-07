@@ -26,13 +26,25 @@ bool Camera::Initialize(int w, int h)
 
 void Camera::Update(unsigned int dt)
 {
-	float speed = camera_speed * dt;
 
+	float speed = camera_speed * dt;
+    /*
 	glm::vec3 translationVector = glm::vec3(speed * movement[CAMERA_TRANSLATE][CAMERA_X],
 								 		    speed * movement[CAMERA_TRANSLATE][CAMERA_Y],
 								 		    speed * movement[CAMERA_TRANSLATE][CAMERA_Z]);
-
 	Translate(translationVector);
+
+	*/
+
+    if (movement[CAMERA_ROTATE][CAMERA_X] == 1)
+    {
+    	euler_rotation_angle -= speed;
+    }
+
+    else if (movement[CAMERA_ROTATE][CAMERA_X] == -1)
+    {
+    	euler_rotation_angle += speed;
+    }
 }
 
 void Camera::Translate(glm::vec3 translationVector)
@@ -45,9 +57,25 @@ void Camera::Translate(glm::vec3 translationVector)
 
 void Camera::LookAt(glm::vec3 lookAtVector)
 {
-	eye_focus = eye_focus + lookAtVector;
+	eye_focus = lookAtVector;
 
 	view = glm::lookAt( eye_position, eye_focus, y_up);
+}
+
+void Camera::SetPosition(glm::vec3 positionVector)
+{
+	eye_position = glm::vec3(4 * cos(euler_rotation_angle) + positionVector.x, 
+							 positionVector.y, 
+							 4 * sin(euler_rotation_angle) + positionVector.z);
+
+	view = glm::lookAt( eye_position, eye_focus, y_up);
+}
+
+void Camera::Rotate(float eulerAngle)
+{
+	//float speed = camera_speed * dt;
+
+	euler_rotation_angle += eulerAngle;
 }
 
 glm::mat4 Camera::GetProjection()

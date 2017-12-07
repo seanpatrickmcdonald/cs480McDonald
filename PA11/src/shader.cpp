@@ -227,10 +227,25 @@ bool Shader::Finalize()
   m_viewMatrix = GetUniformLocation("view_matrix");
   m_projectionMatrix = GetUniformLocation("projection_matrix");
 
-  for (int i = 0; i < 11; i++)
+  for (int i = 0; i < 14; i++)
   {
     uniforms.push_back(GetUniformLocation(UniformName[i].c_str())); 
+    //std::cout << UniformName[i].c_str() << ": " << uniforms[i] << std::endl;
   }
+
+  GLint num_lights = GetUniformLocation("num_lights");
+  GLint light_positions = GetUniformLocation("light_positions");
+  
+  if (num_lights >= 0)
+  {
+    Enable();
+
+    glm::vec3 lightPosition = glm::vec3(5.0, 0.0, 0.0);
+
+    glUniform1i(num_lights, 1);
+    glUniform3fv(light_positions, 1, glm::value_ptr(lightPosition));
+  }
+
   return true;
 }
 

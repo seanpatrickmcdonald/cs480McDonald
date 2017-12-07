@@ -61,34 +61,6 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
 
-
-  /*
-  // The framebuffer, which regroups 0, 1, or more textures, and 0 or 1 depth buffer.
-  GLuint FramebufferName;
-  glGenFramebuffers(1, &FramebufferName);
-  glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-
-  // Depth texture. Slower than a depth buffer, but you can sample it later in your shader
-  GLuint depthTexture;
-  glGenTextures(1, &depthTexture);
-  glBindTexture(GL_TEXTURE_2D, depthTexture);
-  glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT16, 1024, 1024, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-  glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTexture, 0);
-
-  glDrawBuffer(GL_NONE); // No color buffer is drawn to.
-
-  // Always check that our framebuffer is ok
-  if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-  {
-    std::cout << "FrameBuffer failure" << std::endl;
-    return false;
-  }
-  */
   // Init Camera
   m_camera = new Camera();
   if(!m_camera->Initialize(width, height))
@@ -133,6 +105,9 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
   {     
       m_physicsObjects[i - 1 + num_cubes] = new PhysicsObject(*(structFromJSON(j, i)), m_physics);
   }
+
+  btVector3 characterOrigin = btVector3(j["player"][0]["origin"][0], j["player"][0]["origin"][1], j["player"][0]["origin"][2]);
+  characterObject = new Character(j["player"][0]["mesh"], j["player"][0]["texture"], m_physics, characterOrigin);
 
   // Set up the shaders
   m_pervertex_shader = new Shader();
@@ -198,6 +173,8 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
 
   current_shader = m_perfrag_shader;
 
+  shadowMap = new ShadowMap();
+
   //Gui Setup
   m_window = gWindow;
   m_gui = new GuiHandle();  
@@ -231,22 +208,94 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
 
 void Graphics::Update(unsigned int dt)
 {
+
   m_physics->Update(dt);
+
+  btTransform trans;
+  btScalar m[16];	
+  trans = characterObject->controller->getGhostObject()->getWorldTransform();
+  trans.getOpenGLMatrix(m);
+  glm::mat4 modelMatrix = glm::make_mat4(m);
+  glUniformMatrix4fv(current_shader->m_modelMatrix, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+  characterObject->Render(current_shader);
+
+  glm::vec3 characterLocation = glm::vec3(trans.getOrigin()[0], trans.getOrigin()[1], trans.getOrigin()[2]);
+
+  m_camera->SetPosition(characterLocation + glm::vec3(0.0, 4.0, 0.0));
+  m_camera->LookAt(characterLocation);
+
+  spot_dt += 1.0/100.0;
 }
 
 void Graphics::Render()
 {
-  //clear the screen
-  glClearColor(0.0, 0.0, 0.0, 0.0);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   if (renderObjects)
   {
+      //moving the spotlight     
+      spot_focus = glm::vec3(3 * cos(spot_dt) * 5, spot_focus.y, spot_focus.z * sin(spot_dt));
+
+      /*
+
+	  SHADOW RENDER PASS
+
+      */
+
+  
+  	  //Bind our shadowBuffer
+      glBindFramebuffer(GL_FRAMEBUFFER, shadowMap->shadow_buffer);
+
+      glEnable(GL_CULL_FACE);
+      glCullFace(GL_BACK); 
+
+      //Start our shadowmap program
+      shadowMap->Enable();
+
+      //Light Depth Model Matrix
+	    glm::mat4 depthProjectionMatrix = glm::perspective<float>(45.0f, 1.0f, 0.5f, 50.0f);
+      glm::mat4 depthViewMatrix = glm::lookAt(spot_position, spot_focus, glm::vec3(0,1,0));
+	    glm::mat4 depthModelMatrix = glm::mat4(1.0);
+
+	    glm::mat4 depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+
+      glUniformMatrix4fv(shadowMap->depthMVP, 1, GL_FALSE, glm::value_ptr(depthMVP));
+
+      //Physics Object Pass
+      for (unsigned int i = 0; i < num_physics_objects; i++)
+      {
+      	//glUniformMatrix4fv(shadowMap->model_matrix, 1, GL_FALSE, glm::value_ptr(m_physics->GetModelMatrixAtIndex(i)));
+        m_physicsObjects[i]->ShadowRender(shadowMap->shadow_tex);
+      }
+
+      /*
+
+		ACTUAL RENDER PASS
+
+      */
+
+      //re-bind output buffer
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	  //clear the screen
+	  glClearColor(0.0, 0.0, 0.0, 0.0);
+	  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
       // Start the correct program
       current_shader->Enable();
 
-      if (current_shader->uniforms[SPOTFOC] >= 0)
+      glUniformMatrix4fv(current_shader->uniforms[DEPTHMVP], 1, GL_FALSE, glm::value_ptr(depthMVP));
+
+      //PAss in spotlight focus
       glUniform3f(current_shader->uniforms[SPOTFOC], spot_focus.x, spot_focus.y, spot_focus.z);
+
+	    glActiveTexture(GL_TEXTURE1);
+	    glBindTexture(GL_TEXTURE_2D, shadowMap->shadow_tex);
+	    glUniform1i(current_shader->uniforms[SDWSAMPLER], 1);
+
+      float newStrength = (float(rand()) / RAND_MAX) + 9.0;
+      //newStrength = 10.0;
+      glUniform1f(current_shader->uniforms[LIGHTSTR], newStrength);
+
 
       // Send in the projection and view to the shader
       glUniformMatrix4fv(current_shader->m_projectionMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetProjection())); 
@@ -266,53 +315,65 @@ void Graphics::Render()
         m_physicsObjects[i]->Render(current_shader);
       }
 
-      //Render Gui
-      m_gui->NewFrame(m_window);
-     
-      ImGui::Begin("Stat Window");
+      btTransform trans;
+	    btScalar m[16];	
+	    trans = characterObject->controller->getGhostObject()->getWorldTransform();
+	    trans.getOpenGLMatrix(m);
+	    glm::mat4 modelMatrix = glm::make_mat4(m);
+      //glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), -m_camera->euler_rotation_angle + float(3.141592653 / 2.0), glm::vec3(0.0, 1.0, 0.0));
+      //modelMatrix = rotationMatrix * modelMatrix;
+      glUniformMatrix4fv(current_shader->m_modelMatrix, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+      characterObject->Render(current_shader);
 
-      //ambient handling
-      if (current_shader->uniforms[SPECULARPOW] != -1)
+      //printf("characterLocation: %f, %f, %f \n", characterLocation.x, characterLocation.y, characterLocation.z);
+      
+
+      if (renderGUIDebug)
       {
-        float newAmbient = ambient.x;
-        ImGui::SliderFloat("Ambient", &newAmbient, 0.0f, 1.0f);
-        ambient = glm::vec3(newAmbient, newAmbient, newAmbient);
-        glUniform3f(current_shader->uniforms[AMBIENT], ambient.x, ambient.y, ambient.z);
-        
-        //diffuse handling
-        float newDiffuse = diffuse.x;
-        ImGui::SliderFloat("Diffuse", &newDiffuse, 0.0f, 1.0f);
-        diffuse = glm::vec3(newDiffuse, newDiffuse, newDiffuse);
-        glUniform3f(current_shader->uniforms[DIFFUSE], diffuse.x, diffuse.y, diffuse.z);
+          //Render Gui
+	      m_gui->NewFrame(m_window);
+	     
+	      ImGui::Begin("Stat Window");
 
-        //specularpower handling
-        float newSpecPower = specularPower;
-        ImGui::SliderFloat("Specular Power", &newSpecPower, 0.0f, 128.0f);
-        specularPower = newSpecPower;
-        glUniform1f(current_shader->uniforms[SPECULARPOW], specularPower);
-        
-        //specularalbedo handling
-        float newSpecular = specular.x;
-        ImGui::SliderFloat("Specular Albedo", &newSpecular, 0.0f, 1.0f);
-        specular = glm::vec3(newSpecular, newSpecular, newSpecular);
-        glUniform3f(current_shader->uniforms[SPECULARALB], specular.x, specular.y, specular.z);
+	      //ambient handling
+	      if (current_shader->uniforms[SPECULARPOW] != -1)
+	      {
+	        float newAmbient = ambient.x;
+	        ImGui::SliderFloat("Ambient", &newAmbient, 0.0f, 1.0f);
+	        ambient = glm::vec3(newAmbient, newAmbient, newAmbient);
+	        glUniform3f(current_shader->uniforms[AMBIENT], ambient.x, ambient.y, ambient.z);
+	        
+	        //diffuse handling
+	        float newDiffuse = diffuse.x;
+	        ImGui::SliderFloat("Diffuse", &newDiffuse, 0.0f, 1.0f);
+	        diffuse = glm::vec3(newDiffuse, newDiffuse, newDiffuse);
+	        glUniform3f(current_shader->uniforms[DIFFUSE], diffuse.x, diffuse.y, diffuse.z);
 
-        //specularalbedo handling
-        /*
-        float newStrength = lightStrength;
-        ImGui::SliderFloat("Light Strength", &newStrength, 0.0f, 100.0f);
-        lightStrength = newStrength;
-        glUniform1f(current_shader->uniforms[LIGHTSTR], newStrength);
-        */
+	        //specularpower handling
+	        float newSpecPower = specularPower;
+	        ImGui::SliderFloat("Specular Power", &newSpecPower, 0.0f, 128.0f);
+	        specularPower = newSpecPower;
+	        glUniform1f(current_shader->uniforms[SPECULARPOW], specularPower);
+	        
+	        //specularalbedo handling
+	        float newSpecular = specular.x;
+	        ImGui::SliderFloat("Specular Albedo", &newSpecular, 0.0f, 1.0f);
+	        specular = glm::vec3(newSpecular, newSpecular, newSpecular);
+	        glUniform3f(current_shader->uniforms[SPECULARALB], specular.x, specular.y, specular.z);
+
+	        //point light strength handling
+	        /*
+	        float newStrength = lightStrength;
+	        ImGui::SliderFloat("Light Strength", &newStrength, 0.0f, 100.0f);
+	        lightStrength = newStrength;
+	        glUniform1f(current_shader->uniforms[LIGHTSTR], newStrength);
+	        */
+	      }
+
+	      ImGui::End();
       }
-
-      float newStrength = (float(rand()) / RAND_MAX) + 9.0;
-      std::cout << newStrength << std::endl;
-      glUniform1f(current_shader->uniforms[LIGHTSTR], newStrength);
-
-      ImGui::End();
-
       ImGui::Render();
+
   }
 
   if (renderPhysics)

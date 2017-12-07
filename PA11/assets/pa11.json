@@ -8,10 +8,10 @@
 	"restitution":0.75,
  	"scale":3,
 	"kinematic":false ,
-    "origin.x": 0.0,
+    "origin.x": -4.0,
     "origin.y": 2.0,
     "origin.z": 0.0,
-    "primitive": "box",
+    "primitive": "triangle",
     "radius":1
     },
 
@@ -42,15 +42,62 @@
 	"kinematic":false,
     "origin.x": 0.0,
     "origin.y": 0.0,
-    "origin.z": 0.0,
-    "primitive": "box",
+    "origin.z": -4.0,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"Stairs", 
+  	"mesh":"../assets/Stairs.obj",
+  	"texture":"../assets/stone_wall_3_d.png", 
+  	"mass":0.0,
+  	"inertia":0,
+	"restitution":0.01,
+ 	"scale":3,
+	"kinematic":false,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 8.0,
+    "primitive": "triangle",
+    "radius":1
+    },
+
+    {
+    "name":"Stairs", 
+  	"mesh":"../assets/BrokenTowerWall.obj",
+  	"texture":"../assets/stone_wall_3_d.png", 
+  	"mass":0.0,
+  	"inertia":0,
+	"restitution":0.01,
+ 	"scale":3,
+	"kinematic":false,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 12.0,
+    "primitive": "triangle",
     "radius":1
     }
 
+
+
+
     ],
+
+
+
 
     "objects":[
 
-]
+],
+
+    "player":[
+      {
+      "name":"Player", 
+      "mesh":"../assets/crystal.obj",
+      "texture":"../assets/crystal.jpg",
+      "origin":[0.0, 2, 0.0]
+      }
+    ]
 
 }

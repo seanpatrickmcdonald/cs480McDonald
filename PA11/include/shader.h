@@ -33,7 +33,7 @@ class Shader
 
 
 
-    std::string UniformName[11] =
+    std::string UniformName[14] =
     {
       "model_matrix",
       "view_matrix",
@@ -45,7 +45,10 @@ class Shader
       "light_position",
       "spot_focus",
       "spot_position",
-      "light_strength"
+      "light_strength",
+      "mySampler",
+      "shadowSampler",
+      "depthMVP"
     };
 
   private:
@@ -66,7 +69,10 @@ enum Uniform
     LIGHTPOS = 7,
     SPOTFOC = 8,
     SPOTPOS = 9,
-    LIGHTSTR = 10
+    LIGHTSTR = 10,
+    TEXSAMPLER = 11,
+    SDWSAMPLER = 12,
+    DEPTHMVP = 13
 };
 
 

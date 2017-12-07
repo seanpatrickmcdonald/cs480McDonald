@@ -2,6 +2,10 @@
 #define __PHYSICS__H
 
 #include "bullet/btBulletDynamicsCommon.h"
+#include "bullet/btBulletCollisionCommon.h"
+#include "bullet/BulletDynamics/Character/btCharacterControllerInterface.h"
+#include "bullet/BulletDynamics/Character/btKinematicCharacterController.h"
+#include "bullet/BulletCollision/CollisionDispatch/btGhostObject.h"
 #include "BulletCollision/CollisionShapes/btShapeHull.h"
 #include "json.hpp"
 #include "graphics_headers.h"

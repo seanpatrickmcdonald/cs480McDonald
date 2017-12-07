@@ -33,6 +33,9 @@ class Engine
     long long m_currentTimeMillis;
     bool m_running;
 
+    float characterMovementSpeed = 0.1;
+    glm::vec3 characterMovementDirection = glm::vec3(0.0, 0.0, 0.0);
+
 };
 
 

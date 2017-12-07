@@ -60,10 +60,11 @@ PhysicsObject::PhysicsObject(PhysicsObjectStruct objStruct, PhysicsManager *phys
       collisionShape = new btBoxShape(btVector3(0.25f, 0.25f, 0.25f));
   else if (objStruct.primitiveType == "plane")
       collisionShape = new btStaticPlaneShape(Yup, 0);
-  else
-  {
+  else if (objStruct.mass == 0)
 	  collisionShape = new btBvhTriangleMeshShape(collisionMesh, true);
-  }
+  else
+    collisionShape = new btConvexTriangleMeshShape(collisionMesh, true);
+  
 
   //btConvexTriangleMeshShape
   //btBvhTriangleMeshShape
@@ -95,9 +96,13 @@ void PhysicsObject::loadVertexData(std::string objFilename)
     const aiScene* modelScene = modelImporter->ReadFile(objFilename, 
                     aiProcess_JoinIdenticalVertices | aiProcess_Triangulate);
 
+    if (modelScene == nullptr)
+    {
+        std::cout.flush() << "Invalid Mesh: " << objFilename << std::endl;
+    }
+
     const aiMesh *modelMesh = modelScene->mMeshes[0];
 
-    std::cout << objFilename << std::endl;
     if (modelScene->HasMaterials())
     {
       const aiMaterial* material = modelScene->mMaterials[0];
@@ -105,36 +110,14 @@ void PhysicsObject::loadVertexData(std::string objFilename)
       int texIndex = 0;
       aiString path;  // filename
 
-      for (uint i = 0; i < material->mProperties[0]->mDataLength; i++)
-        std::cout << material->mProperties[0]->mData[i];
-      std::cout << '\n';
-
-      std::cout << material->GetTextureCount(aiTextureType_NONE) << std::endl;
-      std::cout << material->GetTextureCount(aiTextureType_DISPLACEMENT ) << std::endl;
-      std::cout << material->GetTextureCount(aiTextureType_LIGHTMAP) << std::endl;
-      std::cout << material->GetTextureCount(aiTextureType_REFLECTION) << std::endl;
-      std::cout << material->GetTextureCount(aiTextureType_UNKNOWN) << std::endl;
-
       if(material->GetTexture(aiTextureType_DIFFUSE, texIndex, &path) == AI_SUCCESS)
       {
         std::cout << path.C_Str() << std::endl;
         std::cout << a << std::endl;
 
       } 
-
-      else
-      {
-        std::cout << "Whoopsies" << std::endl;
-      }
-
-      std::cout << std::endl;
     }
     
-    if (modelScene == nullptr)
-    {
-        std::cout.flush() << "Invalid Mesh: " << objFilename << std::endl;
-    }
-
     //Load Vertex Positions and TextureCoords
     for (unsigned int i = 0; i < modelMesh->mNumVertices; i++)
     {

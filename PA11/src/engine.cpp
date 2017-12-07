@@ -62,13 +62,20 @@ void Engine::Run()
     // Update the DT
     m_DT = getDT();
 
-    // Check the keyboard input
+    // Check the  input
     while(SDL_PollEvent(&m_event) != 0)
     {
       Keyboard();
     }
-
+    float rotation = m_graphics->getCamera()->euler_rotation_angle;
     // Update and render the graphics
+    //printf("characterMovementDirection: %f, %f, %f \n", characterMovementDirection.x, characterMovementDirection.y, characterMovementDirection.z);
+    m_graphics->characterObject->controller->setWalkDirection(
+        btVector3(characterMovementDirection.x * cos(rotation - (3.141592653 / 2)) + characterMovementDirection.z * cos(rotation), 
+                  characterMovementDirection.y, 
+                  characterMovementDirection.z * sin(rotation) + characterMovementDirection.x * sin(rotation - (3.141592653 / 2))));
+                  
+
     m_graphics->getCamera()->Update(m_DT);
     m_graphics->Update(m_DT);
     m_graphics->Render();
@@ -86,6 +93,8 @@ void Engine::Keyboard()
     m_running = false;
   }
 
+  float rotation = m_graphics->getCamera()->euler_rotation_angle;
+
   if (m_event.type == SDL_KEYDOWN)
   {
     // handle key down events here
@@ -102,22 +111,22 @@ void Engine::Keyboard()
 
     if (m_event.key.keysym.sym == SDLK_w)
     {
-        m_graphics->getCamera()->movement[CAMERA_TRANSLATE][CAMERA_Z] = -1;
+        characterMovementDirection.z = -characterMovementSpeed;
     }
 
     if (m_event.key.keysym.sym == SDLK_a)
     {
-        m_graphics->getCamera()->movement[CAMERA_TRANSLATE][CAMERA_X] = -1;
+        characterMovementDirection.x = -characterMovementSpeed;
     }
 
     if (m_event.key.keysym.sym == SDLK_s)
     {
-        m_graphics->getCamera()->movement[CAMERA_TRANSLATE][CAMERA_Z] = 1;
+        characterMovementDirection.z = characterMovementSpeed;
     }
 
     if (m_event.key.keysym.sym == SDLK_d)
     {
-        m_graphics->getCamera()->movement[CAMERA_TRANSLATE][CAMERA_X] = 1;
+        characterMovementDirection.x = characterMovementSpeed;
     }
 
     if (m_event.key.keysym.sym == SDLK_q)
@@ -129,6 +138,11 @@ void Engine::Keyboard()
     {
         m_graphics->getCamera()->movement[CAMERA_ROTATE][CAMERA_X] = -1;
     }
+
+    if (m_event.key.keysym.sym == SDLK_SPACE)
+    {
+      m_graphics->characterObject->controller->jump();
+    }
   }
 
   if (m_event.type == SDL_KEYUP)
@@ -136,22 +150,22 @@ void Engine::Keyboard()
 
     if (m_event.key.keysym.sym == SDLK_w)
     {
-        m_graphics->getCamera()->movement[CAMERA_TRANSLATE][CAMERA_Z] = 0;
+        characterMovementDirection.z = 0;
     }
 
     if (m_event.key.keysym.sym == SDLK_a)
     {
-        m_graphics->getCamera()->movement[CAMERA_TRANSLATE][CAMERA_X] = 0;
+        characterMovementDirection.x = 0;
     }
 
     if (m_event.key.keysym.sym == SDLK_s)
-    {
-        m_graphics->getCamera()->movement[CAMERA_TRANSLATE][CAMERA_Z] = 0;
+    {     
+        characterMovementDirection.z = 0;
     }
 
     if (m_event.key.keysym.sym == SDLK_d)
     {
-        m_graphics->getCamera()->movement[CAMERA_TRANSLATE][CAMERA_X] = 0;
+        characterMovementDirection.x = 0;
     }
 
     if (m_event.key.keysym.sym == SDLK_q)
@@ -163,6 +177,11 @@ void Engine::Keyboard()
     {
         m_graphics->getCamera()->movement[CAMERA_ROTATE][CAMERA_X] = 0;
     }
+  }
+
+  if (m_event.type == SDL_CONTROLLERAXISMOTION)
+  {
+    std::cout << "SDL_CONTROLLERAXISMOTION" << std::endl;
   }
   
   /*  
