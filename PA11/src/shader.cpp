@@ -212,7 +212,7 @@ bool Shader::Finalize()
     glGetProgramInfoLog(m_shaderProg, sizeof(ErrorLog), NULL, ErrorLog);
     std::cerr << "Invalid shader program: " << ErrorLog << std::endl;
     return false;
-  }
+  };
 
   // Delete the intermediate shader objects that have been added to the program
   for (std::vector<GLuint>::iterator it = m_shaderObjList.begin(); it != m_shaderObjList.end(); it++)

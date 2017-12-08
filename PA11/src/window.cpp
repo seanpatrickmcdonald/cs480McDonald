@@ -16,7 +16,7 @@ Window::~Window()
 bool Window::Initialize(const string &name, int* width, int* height)
 {
     // Start SDL
-  if(SDL_Init(SDL_INIT_VIDEO) < 0)
+  if(SDL_Init(SDL_INIT_EVERYTHING) < 0)
   {
     printf("SDL failed to initialize: %s\n", SDL_GetError());
     return false;
@@ -42,6 +42,11 @@ bool Window::Initialize(const string &name, int* width, int* height)
     *width = current.w;
   //}
 
+  m_width = current.w;
+  m_height = current.h;
+
+  std::cout << "\nVideo Resolution: " << m_width << " x " << m_height << "\n\n";
+
   gWindow = SDL_CreateWindow(name.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, *width, *height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
   if(gWindow == NULL)
   {
@@ -64,6 +69,22 @@ bool Window::Initialize(const string &name, int* width, int* height)
     return false;
   }
 
+    printf("%i joysticks were found.\n\n", SDL_NumJoysticks() );
+    printf("The names of the joysticks are:\n");
+    
+    SDL_Joystick *joystick;
+
+    SDL_JoystickEventState(SDL_ENABLE);
+    joystick = SDL_JoystickOpen(0);
+    
+    for(int i=0; i < SDL_NumJoysticks(); i++ ) 
+    {
+        printf("    %s\n", SDL_JoystickName(joystick));
+    }
+
+    printf("\n");
+    
+ 
   return true;
 }
 

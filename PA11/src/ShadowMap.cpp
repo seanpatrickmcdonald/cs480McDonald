@@ -10,10 +10,19 @@ ShadowMap::ShadowMap()
   glGenTextures(1, &shadow_tex);
   glBindTexture(GL_TEXTURE_2D, shadow_tex);
   glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT32, 1024, 1024);
+  /*
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_EQUAL);
+  */
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
 
   glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadow_tex, 0);
 
@@ -93,7 +102,6 @@ ShadowMap::ShadowMap()
   Enable();
 
   depthMVP = glGetUniformLocation(m_shaderProg, "depthMVP");
- // model_matrix = glGetUniformLocation(m_shaderProg, "model_matrix");
 }
 
 ShadowMap::~ShadowMap()

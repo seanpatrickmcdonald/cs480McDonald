@@ -51,8 +51,8 @@ class Shader
       "depthMVP"
     };
 
-  private:
-    GLuint m_shaderProg;    
+    GLuint m_shaderProg;   
+  private: 
     std::vector<GLuint> m_shaderObjList;
 };
 

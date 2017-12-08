@@ -3,7 +3,7 @@
     "name":"Crate", 
   	"mesh":"../assets/anvil.obj",
   	"texture":"../assets/grey.jpg", 
-  	"mass":0.1,
+  	"mass":100.0,
   	"inertia":0,
 	"restitution":0.75,
  	"scale":3,
@@ -64,17 +64,17 @@
     },
 
     {
-    "name":"Stairs", 
-  	"mesh":"../assets/BrokenTowerWall.obj",
+    "name":"TowerStairs", 
+  	"mesh":"../assets/TowerStairs.obj",
   	"texture":"../assets/stone_wall_3_d.png", 
   	"mass":0.0,
   	"inertia":0,
 	"restitution":0.01,
  	"scale":3,
 	"kinematic":false,
-    "origin.x": 0.0,
+    "origin.x": -2.0,
     "origin.y": 0.0,
-    "origin.z": 12.0,
+    "origin.z": 7.0,
     "primitive": "triangle",
     "radius":1
     }
@@ -96,7 +96,7 @@
       "name":"Player", 
       "mesh":"../assets/crystal.obj",
       "texture":"../assets/crystal.jpg",
-      "origin":[0.0, 2, 0.0]
+      "origin":[0.0, 0.0, 0.0]
       }
     ]
 

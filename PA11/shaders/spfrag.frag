@@ -25,7 +25,7 @@ uniform mat4 view_matrix;
 uniform mat4 projection_matrix;
 
 uniform vec3 spot_position;
-uniform vec3 spot_focus = vec3(3.0, -1.0, 0.0);
+uniform vec3 spot_focus = vec3(-4.75, -1.0, 0.0);
 uniform float spot_inner_radius = 10.0;
 uniform float spot_outer_radius = 11.0;
 uniform float spot_max_brightness = 1.0;
@@ -40,6 +40,7 @@ uniform vec3 light_positions[128];
 
 //255, 102, 0
 uniform vec3 light_color = vec3(1.0, 102.0/255.0, 0.0);
+//uniform vec3 light_color = vec3(1.0, 1.0, 1.0);
 
 void main(void)
 {
@@ -98,27 +99,12 @@ void main(void)
       spot_brightness =(diffuse + specular) * vec3((exp(-(angle - spot_inner_radius) * outin_ratio / angle_modifier)));
 
 
-    /*
-    if (light.x < spot_brightness.x)
-    {
-      light.x = spot_brightness.x;
-    }
+    float bias = 0.005;
 
-    if (light.y < spot_brightness.y)
-    {
-      light.y = spot_brightness.y;
-    }
+    vec4 shadowCoord = ShadowCoord;
+    shadowCoord.z -= bias;
 
-    if (light.z < spot_brightness.z)
-    {
-      light.z = spot_brightness.z;
-    }
-    */
-
-    float visibility = 1.0;
-    //if ( texture( shadowSampler, ShadowCoord.xyw)  <  ShadowCoord.z/ShadowCoord.w){
-    //visibility = 0.0; 
-    //}
+    float visibility = textureProj( shadowSampler, shadowCoord);   
 
     light += vec4(spot_brightness * visibility, 1.0);
   }

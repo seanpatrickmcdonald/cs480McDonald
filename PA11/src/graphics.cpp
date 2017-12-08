@@ -2,6 +2,15 @@
 
 using json = nlohmann::json;
 
+static const GLfloat g_quad_vertex_buffer_data[18] = { 
+        -1.0f, -1.0f, 0.0f,
+         1.0f, -1.0f, 0.0f,
+        -1.0f,  1.0f, 0.0f,
+        -1.0f,  1.0f, 0.0f,
+         1.0f, -1.0f, 0.0f,
+         1.0f,  1.0f, 0.0f,
+};
+
 Graphics::Graphics()
 {
 
@@ -203,6 +212,46 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
   renderObjects = true;
   renderPhysics = false;
 
+  window_width = width, window_height = height;
+
+
+
+
+  passThroughShader = new Shader();
+
+  progInit = passThroughShader->Initialize();
+  if(!progInit)
+  {
+    printf("Shader Program Failed to Initialize\n");
+    return false;
+  }
+
+  // Add the vertex shader
+  if(!passThroughShader->AddShader(GL_VERTEX_SHADER, "../shaders/passthrutex.vert"))
+  {
+    printf("Vertex Shader failed to Initialize\n");
+    return false;
+  }
+
+  // Add the fragment shader
+  if(!passThroughShader->AddShader(GL_FRAGMENT_SHADER, "../shaders/passthrutex.frag"))
+  {
+    printf("Fragment Shader failed to Initialize\n");
+    return false;
+  }  
+
+  // Connect the program
+  if(!passThroughShader->Finalize())
+  {
+    printf("Program to Finalize\n");
+    return false;
+  }
+  
+
+  glGenBuffers(1, &quad_vertexbuffer);
+  glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data, GL_STATIC_DRAW);
+
   return true;
 }
 
@@ -210,6 +259,9 @@ void Graphics::Update(unsigned int dt)
 {
 
   m_physics->Update(dt);
+  
+  current_shader->Enable();
+
 
   btTransform trans;
   btScalar m[16];	
@@ -232,18 +284,23 @@ void Graphics::Render()
 
   if (renderObjects)
   {
+      glClearColor(0.0, 0.0, 0.0, 0.0);
+
       //moving the spotlight     
       spot_focus = glm::vec3(3 * cos(spot_dt) * 5, spot_focus.y, spot_focus.z * sin(spot_dt));
 
       /*
 
-	  SHADOW RENDER PASS
+	    SHADOW RENDER PASS
 
       */
 
   
   	  //Bind our shadowBuffer
       glBindFramebuffer(GL_FRAMEBUFFER, shadowMap->shadow_buffer);
+      glViewport(0,0,1024,1024);
+
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
       glEnable(GL_CULL_FACE);
       glCullFace(GL_BACK); 
@@ -252,40 +309,54 @@ void Graphics::Render()
       shadowMap->Enable();
 
       //Light Depth Model Matrix
-	    glm::mat4 depthProjectionMatrix = glm::perspective<float>(45.0f, 1.0f, 0.5f, 50.0f);
+	    glm::mat4 depthProjectionMatrix = glm::perspective<float>(45.0f, 1.0f, 0.5f, 1000.0f);
+      //glm::mat4 depthProjectionMatrix = glm::ortho<float>(-10,10,-10,10,-10,20);
       glm::mat4 depthViewMatrix = glm::lookAt(spot_position, spot_focus, glm::vec3(0,1,0));
-	    glm::mat4 depthModelMatrix = glm::mat4(1.0);
 
-	    glm::mat4 depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+      glm::mat4 depthModelMatrix;
+	    glm::mat4 depthMVP; 
 
-      glUniformMatrix4fv(shadowMap->depthMVP, 1, GL_FALSE, glm::value_ptr(depthMVP));
 
       //Physics Object Pass
       for (unsigned int i = 0; i < num_physics_objects; i++)
       {
-      	//glUniformMatrix4fv(shadowMap->model_matrix, 1, GL_FALSE, glm::value_ptr(m_physics->GetModelMatrixAtIndex(i)));
+        depthModelMatrix = m_physics->GetModelMatrixAtIndex(i);
+        depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+
+        glUniformMatrix4fv(shadowMap->depthMVP, 1, GL_FALSE, glm::value_ptr(depthMVP));
         m_physicsObjects[i]->ShadowRender(shadowMap->shadow_tex);
       }
 
+      btTransform trans;
+      btScalar m[16]; 
+      trans = characterObject->controller->getGhostObject()->getWorldTransform();
+      trans.getOpenGLMatrix(m);
+      glm::mat4 modelMatrix = glm::make_mat4(m);
+
+      depthMVP = depthProjectionMatrix * depthViewMatrix * modelMatrix;
+      glUniformMatrix4fv(shadowMap->depthMVP, 1, GL_FALSE, glm::value_ptr(depthMVP));
+
+      characterObject->ShadowRender(shadowMap->shadow_tex);
+
       /*
 
-		ACTUAL RENDER PASS
+		  ACTUAL RENDER PASS
 
       */
 
       //re-bind output buffer
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
+      glViewport(0, 0, window_width, window_height);
 
-	  //clear the screen
-	  glClearColor(0.0, 0.0, 0.0, 0.0);
-	  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	    //clear the screen
+	    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+      glDisable(GL_CULL_FACE);
       // Start the correct program
       current_shader->Enable();
 
-      glUniformMatrix4fv(current_shader->uniforms[DEPTHMVP], 1, GL_FALSE, glm::value_ptr(depthMVP));
 
-      //PAss in spotlight focus
+      //Pass in spotlight focus
       glUniform3f(current_shader->uniforms[SPOTFOC], spot_focus.x, spot_focus.y, spot_focus.z);
 
 	    glActiveTexture(GL_TEXTURE1);
@@ -305,6 +376,7 @@ void Graphics::Render()
       for (unsigned int i = 0; i < m_object.size(); i++)
       {
         glUniformMatrix4fv(current_shader->m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_object[i]->GetModel()));
+
         m_object[i]->Render(current_shader);
       }
 
@@ -312,24 +384,56 @@ void Graphics::Render()
       for (unsigned int i = 0; i < num_physics_objects; i++)
       {
         glUniformMatrix4fv(current_shader->m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_physics->GetModelMatrixAtIndex(i)));
+
+        depthModelMatrix = m_physics->GetModelMatrixAtIndex(i);
+        depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+        
+        glUniformMatrix4fv(current_shader->uniforms[DEPTHMVP], 1, GL_FALSE, glm::value_ptr(depthMVP));
+
         m_physicsObjects[i]->Render(current_shader);
       }
 
-      btTransform trans;
-	    btScalar m[16];	
-	    trans = characterObject->controller->getGhostObject()->getWorldTransform();
-	    trans.getOpenGLMatrix(m);
-	    glm::mat4 modelMatrix = glm::make_mat4(m);
-      //glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), -m_camera->euler_rotation_angle + float(3.141592653 / 2.0), glm::vec3(0.0, 1.0, 0.0));
-      //modelMatrix = rotationMatrix * modelMatrix;
+
       glUniformMatrix4fv(current_shader->m_modelMatrix, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+
+      depthMVP = depthProjectionMatrix * depthViewMatrix * modelMatrix;
+      
+      glUniformMatrix4fv(current_shader->uniforms[DEPTHMVP], 1, GL_FALSE, glm::value_ptr(depthMVP));
+
       characterObject->Render(current_shader);
 
       //printf("characterLocation: %f, %f, %f \n", characterLocation.x, characterLocation.y, characterLocation.z);
       
 
+      if (renderShadowMap);
+      {
+        glViewport(0, 0, 256, 256);
+
+        passThroughShader->Enable(); 
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, shadowMap->shadow_tex); 
+
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+        glVertexAttribPointer(
+          0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+          3,                  // size
+          GL_FLOAT,           // type
+          GL_FALSE,           // normalized?
+          0,                  // stride
+          (void*)0            // array buffer offset
+        );
+
+        // Draw the triangle !
+        // You have to disable GL_COMPARE_R_TO_TEXTURE above in order to see anything !
+        glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting at 0 -> 2 triangles
+        glDisableVertexAttribArray(0);
+      }
+
       if (renderGUIDebug)
       {
+        current_shader->Enable();
           //Render Gui
 	      m_gui->NewFrame(m_window);
 	     
@@ -371,9 +475,11 @@ void Graphics::Render()
 	      }
 
 	      ImGui::End();
-      }
-      ImGui::Render();
 
+      ImGui::Render();
+      }
+
+      current_shader->Enable();
   }
 
   if (renderPhysics)

@@ -10,7 +10,7 @@ Character::Character(std::string objFilename, std::string texFilename, PhysicsMa
 {
   	convexShape = new btCapsuleShape(0.25, 0.25);
   	ghostObject = new btPairCachingGhostObject();
-	ghostObject->setWorldTransform(btTransform(btQuaternion(0,0,0,0.5),characterOrigin));
+	ghostObject->setWorldTransform(btTransform(btQuaternion(0, 0, 0),characterOrigin));
 	physics_manager->dynamicsWorld->getPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
 	ghostObject->setCollisionShape(convexShape);
 	ghostObject->setCollisionFlags(btCollisionObject::CF_CHARACTER_OBJECT);

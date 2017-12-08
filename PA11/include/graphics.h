@@ -45,13 +45,14 @@ class Graphics
     Shader *m_pervertex_shader;
     Shader *m_perfrag_shader;
     Shader *current_shader;
+    Shader *passThroughShader;
     PhysicsManager *m_physics;
 
     glm::vec3 ambient;
     glm::vec3 diffuse;
     glm::vec3 specular;
     float specularPower;
-    glm::vec3 spot_position = glm::vec3(3.0, 10.0, 0.0);
+    glm::vec3 spot_position = glm::vec3(0.0, 5.0, 0.0);
     glm::vec3 spot_focus = glm::vec3(-4.75, -1.0, 0.0);
     float lightStrength;
 
@@ -64,8 +65,16 @@ class Graphics
     size_t num_physics_objects;
 
     bool renderGUIDebug = true;
+    bool renderShadowMap = true;
 
     mDebugDraw *debugDrawer;
+
+    int window_width, window_height;
+
+    GLuint quad_vertexbuffer;
+    GLuint quad_programID;
+    GLuint quad_texID;
+    
 
 };
 

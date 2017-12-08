@@ -22,7 +22,7 @@ out vec4 ShadowCoord;
 uniform int num_lights = 0;
 uniform vec3 light_positions[128]; 
 
-uniform vec3 spot_position = vec3(3.0, 10.0, 0.0);
+uniform vec3 spot_position = vec3(0.0, 5.0, 0.0);
 
 void main(void)
 {

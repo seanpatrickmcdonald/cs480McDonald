@@ -38,6 +38,9 @@ bool Engine::Initialize(int argc, char **argv)
     return false;
   }
 
+  m_WINDOW_WIDTH = m_window->m_width;
+  m_WINDOW_HEIGHT = m_window->m_height;
+
   // Start the graphics
   m_graphics = new Graphics();
   if(!m_graphics->Initialize(m_WINDOW_WIDTH, m_WINDOW_HEIGHT, argc, argv, m_window->GetWindow()))
@@ -75,6 +78,8 @@ void Engine::Run()
                   characterMovementDirection.y, 
                   characterMovementDirection.z * sin(rotation) + characterMovementDirection.x * sin(rotation - (3.141592653 / 2))));
                   
+    btVector3 characterOrigin = m_graphics->characterObject->ghostObject->getWorldTransform().getOrigin();
+    m_graphics->characterObject->ghostObject->setWorldTransform(btTransform(btQuaternion(-rotation + (3.141592653 / 2), 0, 0), characterOrigin));              
 
     m_graphics->getCamera()->Update(m_DT);
     m_graphics->Update(m_DT);
@@ -92,8 +97,6 @@ void Engine::Keyboard()
   {
     m_running = false;
   }
-
-  float rotation = m_graphics->getCamera()->euler_rotation_angle;
 
   if (m_event.type == SDL_KEYDOWN)
   {
@@ -179,10 +182,46 @@ void Engine::Keyboard()
     }
   }
 
-  if (m_event.type == SDL_CONTROLLERAXISMOTION)
+  if (m_event.type == SDL_JOYAXISMOTION)
   {
-    std::cout << "SDL_CONTROLLERAXISMOTION" << std::endl;
+    if (m_event.jaxis.axis == 0)
+    {
+      if (m_event.jaxis.value > 5000 || m_event.jaxis.value < -5000)
+        characterMovementDirection.x = characterMovementSpeed * m_event.jaxis.value / 32767;
+
+      else
+        characterMovementDirection.x = 0;   
+    }
+
+    if (m_event.jaxis.axis == 1)
+    {
+      if (m_event.jaxis.value > 5000 || m_event.jaxis.value < -5000)
+        characterMovementDirection.z = characterMovementSpeed * m_event.jaxis.value / 32767;
+
+      else
+        characterMovementDirection.z = 0;   
+    }
+
+    if (m_event.jaxis.axis == 3)
+    {
+      if (m_event.jaxis.value > 6400)
+        m_graphics->getCamera()->movement[CAMERA_ROTATE][CAMERA_X] = -1;
+      else if (m_event.jaxis.value < -6400)
+        m_graphics->getCamera()->movement[CAMERA_ROTATE][CAMERA_X] = 1;
+      else
+        m_graphics->getCamera()->movement[CAMERA_ROTATE][CAMERA_X] = 0; 
+    }
+
+
   }
+  if (m_event.type == SDL_JOYBUTTONDOWN)
+  {
+    if (m_event.jbutton.button == 0)
+      m_graphics->characterObject->controller->jump();
+
+    //std::cout << m_event.jbutton.button + 48 << std::endl;
+  }
+
   
   /*  
   const Uint8 *keystate = SDL_GetKeyboardState(NULL);

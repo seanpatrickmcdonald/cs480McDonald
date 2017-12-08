@@ -14,6 +14,7 @@ class Window
     bool Initialize(const string &name, int* width, int* height);
     void Swap();
 
+    int m_width, m_height;
 
     SDL_Window* GetWindow();
 
