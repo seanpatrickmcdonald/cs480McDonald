@@ -13,6 +13,8 @@
 #include "DebugDraw.h"
 #include "character.h"
 #include "ShadowMap.h"
+#include "Light.h"
+#include "Mesh.h"
 
 using namespace std;
 
@@ -28,13 +30,15 @@ class Graphics
     Camera* getCamera();
 
     void ToggleShader();
-    ShadowMap *shadowMap;
+    
+    std::vector<Light*> lightVector;
+    Light *pointLight;
 
     //GuiHandle and window handle
     GuiHandle *m_gui;    
     SDL_Window* m_window; 
 
-    std::vector<Object *> m_object;
+    std::vector<Mesh *> m_object;
     PhysicsObject **m_physicsObjects;
     Character *characterObject;
 

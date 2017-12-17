@@ -41,6 +41,8 @@ PhysicsManager::PhysicsManager()
     dynamicsWorld->setGravity(btVector3(0, -10, 0));
 
     gContactProcessedCallback = (ContactProcessedCallback)callbackFunc;
+
+    
 }
 
 PhysicsManager::~PhysicsManager()

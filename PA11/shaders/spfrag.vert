@@ -9,26 +9,26 @@ uniform mat4 view_matrix;
 uniform mat4 projection_matrix;
 
 uniform mat4 depthMVP;
+uniform mat4 cubeDepthMVP;
 
 out vec2 uv;
 out vec3 v_N;
 out vec3 v_L;
-out vec3 v_Ls[128];
-out vec3 v_Lspot;
+out vec3 v_Ls[25];
+out vec3 v_Lspot[25];
 out vec3 v_V;
 out vec3 world_position;
 out vec4 ShadowCoord;
 
 uniform int num_lights = 0;
-uniform vec3 light_positions[128]; 
+uniform vec3 light_positions[25]; 
 
-uniform vec3 spot_position = vec3(0.0, 5.0, 0.0);
+uniform int num_spots = 0;
+uniform vec3 spot_position[25];
 
 void main(void)
 {
   //Shadow Calculations
-  mat4 spot_model_matrix = mat4(1.0);
-
   mat4 biasMatrix = mat4(
       0.5, 0.0, 0.0, 0.0, 
       0.0, 0.5, 0.0, 0.0,
@@ -52,11 +52,14 @@ void main(void)
   //Calculate Light Vector
   v_L = light_positions[0].xyz - P.xyz;
 
-  v_Lspot = spot_position - P.xyz;
-
   for (int i = 0; i < num_lights; i++)
   {
     v_Ls[i] = light_positions[i].xyz - P.xyz;
+  }
+
+  for (int i = 0; i < num_spots; i++)
+  {
+    v_Lspot[i] = spot_position[i] - P.xyz;
   }
 
   //Calculate View Vector

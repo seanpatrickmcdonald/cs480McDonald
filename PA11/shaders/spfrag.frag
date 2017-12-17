@@ -3,13 +3,16 @@
 out vec4 out_color;
 
 in vec2 uv;
+
 uniform sampler2D mySampler;
-uniform sampler2DShadow shadowSampler;
+uniform sampler2DShadow shadowSpotSampler;
+uniform samplerCube shadowCubeSampler;
 
 in vec3 v_N;
 in vec3 v_L;
 in vec3 v_V;
-in vec3 v_Lspot;
+in vec3 v_Lspot[25];
+in vec3 v_Ls[25];
 
 in vec3 world_position;
 in vec4 ShadowCoord;
@@ -24,23 +27,37 @@ uniform mat4 model_matrix;
 uniform mat4 view_matrix;
 uniform mat4 projection_matrix;
 
-uniform vec3 spot_position;
-uniform vec3 spot_focus = vec3(-4.75, -1.0, 0.0);
-uniform float spot_inner_radius = 10.0;
-uniform float spot_outer_radius = 11.0;
+uniform int num_spots;
+uniform vec3 spot_position[25];
+uniform vec3 spot_focus[25];
+uniform float spot_inner_radius = 20.0;
+uniform float spot_outer_radius = 22.0;
 uniform float spot_max_brightness = 1.0;
 
 uniform float light_strength;
 uniform float light_falloff = 2;
 
-in vec3 v_Ls[128];
 
 uniform int num_lights;
-uniform vec3 light_positions[128];
+uniform vec3 light_positions[25];
 
 //255, 102, 0
 uniform vec3 light_color = vec3(1.0, 102.0/255.0, 0.0);
 //uniform vec3 light_color = vec3(1.0, 1.0, 1.0);
+
+#define EPSILON 0.00001
+
+float CalcShadowFactor(vec3 LightDirection)
+{
+    float SampledDistance = texture(shadowCubeSampler, LightDirection).r;
+
+    float Distance = length(LightDirection);
+
+    if (Distance < SampledDistance + EPSILON)
+        return 1.0; // Inside the light
+    else
+        return 0.5; // Inside the shadow
+} 
 
 void main(void)
 {
@@ -67,48 +84,51 @@ void main(void)
     vec3 diffuse = max(dot(N, L), 0.0) * diffuse_albedo / (distance_factor) * light_color;
     vec3 specular = pow(max(dot(R, V), 0.0), specular_power) * specular_albedo * light_color;
 
-    light = vec4(diffuse + specular + ambient, 1.0);
+    float shadowFactor = CalcShadowFactor(world_position - light_positions[0]);
+
+    light = vec4((diffuse + specular) * 0.0 + ambient, 1.0);
   }
 
-
-  vec3 spotPosition = normalize(world_position - spot_position);
-  vec3 spotDirection = normalize(spot_focus - spot_position);
-  float angle = degrees(acos(dot(normalize(spotDirection), normalize(spotPosition))));
-
-  float spot_distance = distance(spot_position, world_position) ;
-  angle = angle * spot_distance / 5;
-  
-
-  if (angle < spot_outer_radius && angle >= 0)
+  //Process Spot Lights
+  for (int i = 0; i < num_spots; i++)
   {
-    L = normalize(v_Lspot);
-    R = reflect(-L, N);
+    vec3 spotPosition = normalize(world_position - spot_position[i]);
+    vec3 spotDirection = normalize(spot_focus[i] - spot_position[i]);
+    float angle = degrees(acos(dot(normalize(spotDirection), normalize(spotPosition))));
 
+    //float spot_distance = distance(spot_position[0], world_position) ;
+    //angle = angle * spot_distance / 5;
+    
+    if (angle < spot_outer_radius && angle >= 0)
+    {
+      L = normalize(v_Lspot[i]);
+      R = reflect(-L, N);
 
-    vec3 diffuse = max(dot(N, L), 0.0) * diffuse_albedo;
-    vec3 specular = pow(max(dot(R, V), 0.0), specular_power) * specular_albedo;
+      vec3 diffuse = max(dot(N, L), 0.0) * diffuse_albedo;
+      vec3 specular = pow(max(dot(R, V), 0.0), specular_power) * specular_albedo;
 
-    vec3 spot_brightness;
-    float angle_modifier = spot_outer_radius / 5.0f;
+      vec3 spot_brightness;
+      float angle_modifier = spot_outer_radius / 5.0f;
 
-    float outin_ratio = spot_inner_radius / (spot_outer_radius - spot_inner_radius);
+      float outin_ratio = spot_inner_radius / (spot_outer_radius - spot_inner_radius);
 
-    if (angle <= spot_inner_radius)
-      spot_brightness = diffuse + specular;
-    else if (angle < spot_outer_radius)
-      spot_brightness =(diffuse + specular) * vec3((exp(-(angle - spot_inner_radius) * outin_ratio / angle_modifier)));
+      if (angle <= spot_inner_radius)
+        spot_brightness = diffuse + specular;
+      else if (angle < spot_outer_radius)
+        spot_brightness =(diffuse + specular) * vec3((exp(-(angle - spot_inner_radius) * outin_ratio / angle_modifier)));
 
+      float bias = 0.005;
 
-    float bias = 0.005;
+      vec4 shadowCoord = ShadowCoord;
+      shadowCoord.z -= bias;
 
-    vec4 shadowCoord = ShadowCoord;
-    shadowCoord.z -= bias;
+      float visibility = textureProj( shadowSpotSampler, shadowCoord);   
 
-    float visibility = textureProj( shadowSampler, shadowCoord);   
-
-    light += vec4(spot_brightness * visibility, 1.0);
+      light += vec4(spot_brightness * visibility, 1.0);
+    } 
   }
 
+  
   //Clamp light to 1.0
   //light = vec4(clamp(light.x, 0, 1), clamp(light.y, 0, 1), clamp(light.z, 0, 1), light.w);
 

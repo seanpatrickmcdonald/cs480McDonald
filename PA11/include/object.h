@@ -20,12 +20,13 @@ class Object
 
     //Physics Constructor
     Object(std::string texFilename);
+    Object(std::vector<std::string> texFilenames);
 
     ~Object();
 
     void Update(unsigned int dt);
     void Render(Shader*);
-    void ShadowRender(GLuint);
+    void ShadowRender();
 
     glm::mat4 GetModel();
 
@@ -35,14 +36,20 @@ class Object
 
   protected:
     std::vector<Vertex> Vertices;
-    std::vector<unsigned int> Indices;
+    std::vector<uint> Indices;
+    std::vector<uint> IndicesIndices;
     GLuint VB;
     GLuint IB;
     GLuint texture_int;
+    std::vector<GLuint> texture_ints;
+    std::vector<uint> texture_indices;
+    uint num_textures;
 
     void InitializeVertices();
 
     float radius;
 };
+
+
 
 #endif /* OBJECT_H */

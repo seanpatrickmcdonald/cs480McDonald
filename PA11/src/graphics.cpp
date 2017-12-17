@@ -21,6 +21,15 @@ Graphics::~Graphics()
   if(m_physics)
   	delete m_physics;
   m_physics = nullptr;
+
+  for (uint i = 0; i < lightVector.size(); i++)
+  {
+  	delete lightVector[i];
+  	lightVector[i] = nullptr;
+  }
+
+  delete characterObject;
+  characterObject = nullptr;
 }
 
 PhysicsObjectStruct* structFromJSON(json j, size_t index)
@@ -91,7 +100,8 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
 
   for (unsigned int i = 0; i < numObjects; i++)
   {     
-      Object *dummyObject = new Object(j["objects"][i]["mesh"], j["objects"][i]["texture"]);
+      Mesh *dummyObject = new Mesh;
+      dummyObject->LoadVertexData(j["objects"][i]["mesh"]);
       m_object.push_back(dummyObject);
   }
 
@@ -115,10 +125,11 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
       m_physicsObjects[i - 1 + num_cubes] = new PhysicsObject(*(structFromJSON(j, i)), m_physics);
   }
 
-  btVector3 characterOrigin = btVector3(j["player"][0]["origin"][0], j["player"][0]["origin"][1], j["player"][0]["origin"][2]);
-  characterObject = new Character(j["player"][0]["mesh"], j["player"][0]["texture"], m_physics, characterOrigin);
+  //btVector3 characterOrigin = btVector3(j["player"][0]["origin"][0], j["player"][0]["origin"][1], j["player"][0]["origin"][2]);
+  characterObject = new Character(j["player"][0]["mesh"], j["player"][0]["texture"], m_physics, true);
 
   // Set up the shaders
+/*
   m_pervertex_shader = new Shader();
 
   bool progInit = m_pervertex_shader->Initialize();
@@ -148,7 +159,7 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
     printf("Program to Finalize\n");
     return false;
   }
-  
+  */
   
   m_perfrag_shader = new Shader();
 
@@ -182,7 +193,62 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
 
   current_shader = m_perfrag_shader;
 
-  shadowMap = new ShadowMap();
+
+
+  btCollisionShape *collisionShape; 
+  collisionShape = new btBoxShape(btVector3(6.0f, 1.0f, 13.6f));
+  
+  btVector3 origin     = btVector3(-0.5, -0.785, -12.8);
+  btScalar mass        = btScalar(0.0f);
+  btScalar restitution = btScalar(0.5f);
+  btVector3 inertia    = btVector3(0.0f, 0.0f, 0.0f);
+  bool kinematic       = false;
+
+  m_physics->AddRigidBody(collisionShape, origin, mass, restitution, inertia, kinematic, "asdf", 1);
+
+
+
+
+  lightVector.push_back(new Light());
+  //lightVector.push_back(new Light());
+
+  LightInitStruct spotStruct; 
+  LightInitStruct spotStructs[2];
+
+  spotStructs[0].light_position = glm::vec3(2.5, 3.0, -5.0);;
+  spotStructs[0].light_direction = glm::vec3(0.0, 0.0, 0.0);
+  spotStructs[0].angle_inner = 20.0;
+  spotStructs[0].angle_outer = 22.0;
+
+  spotStructs[0].light_strength = 1.0;
+  spotStructs[0].light_color = glm::vec3(1.0, 1.0, 1.0);
+  spotStructs[0].light_type = SPOT;
+
+  spotStructs[1] = spotStructs[0];
+
+  lightVector[0]->InitSpot(spotStructs[0]);
+
+
+
+
+
+  LightInitStruct pointStruct;
+
+  pointStruct.light_position = glm::vec3(0.0, 1.0, 0.0);
+  pointStruct.light_strength = 10.0;
+  pointStruct.light_color = glm::vec3(1.0, 1.0, 1.0);
+  pointStruct.light_type = POINT;
+
+  pointLight = new Light();
+  pointLight->InitPoint(pointStruct);
+
+
+
+
+
+  current_shader->Enable();
+
+  glUniform1i(current_shader->uniforms[NUMSPOTS], 1);
 
   //Gui Setup
   m_window = gWindow;
@@ -215,11 +281,9 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
   window_width = width, window_height = height;
 
 
-
-
   passThroughShader = new Shader();
 
-  progInit = passThroughShader->Initialize();
+  bool progInit = passThroughShader->Initialize();
   if(!progInit)
   {
     printf("Shader Program Failed to Initialize\n");
@@ -252,6 +316,9 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
   glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
   glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data, GL_STATIC_DRAW);
 
+  glClearColor(0.0, 0.0, 0.0, 0.0);
+
+
   return true;
 }
 
@@ -267,9 +334,6 @@ void Graphics::Update(unsigned int dt)
   btScalar m[16];	
   trans = characterObject->controller->getGhostObject()->getWorldTransform();
   trans.getOpenGLMatrix(m);
-  glm::mat4 modelMatrix = glm::make_mat4(m);
-  glUniformMatrix4fv(current_shader->m_modelMatrix, 1, GL_FALSE, glm::value_ptr(modelMatrix));
-  characterObject->Render(current_shader);
 
   glm::vec3 characterLocation = glm::vec3(trans.getOrigin()[0], trans.getOrigin()[1], trans.getOrigin()[2]);
 
@@ -284,10 +348,19 @@ void Graphics::Render()
 
   if (renderObjects)
   {
-      glClearColor(0.0, 0.0, 0.0, 0.0);
+      btTransform trans;
+      btScalar m[16]; 
+      trans = characterObject->controller->getGhostObject()->getWorldTransform();
+      trans.getOpenGLMatrix(m);
+      glm::mat4 modelMatrix = glm::make_mat4(m);
 
       //moving the spotlight     
-      spot_focus = glm::vec3(3 * cos(spot_dt) * 5, spot_focus.y, spot_focus.z * sin(spot_dt));
+      //lightVector[0]->LookAt(glm::vec3(3 * cos(spot_dt) * 5, spot_focus.y, spot_focus.z * sin(spot_dt)));
+
+
+
+
+
 
       /*
 
@@ -295,48 +368,70 @@ void Graphics::Render()
 
       */
 
-  
-  	  //Bind our shadowBuffer
-      glBindFramebuffer(GL_FRAMEBUFFER, shadowMap->shadow_buffer);
-      glViewport(0,0,1024,1024);
-
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-      glEnable(GL_CULL_FACE);
-      glCullFace(GL_BACK); 
-
       //Start our shadowmap program
-      shadowMap->Enable();
-
-      //Light Depth Model Matrix
-	    glm::mat4 depthProjectionMatrix = glm::perspective<float>(45.0f, 1.0f, 0.5f, 1000.0f);
-      //glm::mat4 depthProjectionMatrix = glm::ortho<float>(-10,10,-10,10,-10,20);
-      glm::mat4 depthViewMatrix = glm::lookAt(spot_position, spot_focus, glm::vec3(0,1,0));
-
-      glm::mat4 depthModelMatrix;
+      glm::mat4 depthProjectionMatrix, depthViewMatrix, depthModelMatrix;
 	    glm::mat4 depthMVP; 
 
-
-      //Physics Object Pass
-      for (unsigned int i = 0; i < num_physics_objects; i++)
+	    //Iterate over all lights
+      for (unsigned int light_index = 0; light_index < lightVector.size(); light_index++)
       {
-        depthModelMatrix = m_physics->GetModelMatrixAtIndex(i);
-        depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+	      lightVector[light_index]->m_shadow_map->Enable(0);
 
-        glUniformMatrix4fv(shadowMap->depthMVP, 1, GL_FALSE, glm::value_ptr(depthMVP));
-        m_physicsObjects[i]->ShadowRender(shadowMap->shadow_tex);
+        depthProjectionMatrix = lightVector[light_index]->depthProjectionMatrix;
+        depthViewMatrix = lightVector[light_index]->depthViewMatrix;
+
+        //Iterate over all our physics objects
+        for (unsigned int object_index = 0; object_index < num_physics_objects; object_index++)
+        {
+        	depthModelMatrix = m_physics->GetModelMatrixAtIndex(object_index);
+        	depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+
+	        glUniformMatrix4fv(lightVector[light_index]->m_shadow_map->depthMVP, 1, GL_FALSE, glm::value_ptr(depthMVP));
+	        m_physicsObjects[object_index]->ShadowRender();
+        }
+
+        //The Character is a separate object (not a rigid body)
+        depthMVP = depthProjectionMatrix * depthViewMatrix * modelMatrix;
+        glUniformMatrix4fv(lightVector[light_index]->m_shadow_map->depthMVP, 1, GL_FALSE, glm::value_ptr(depthMVP));
+
+        characterObject->ShadowRender(lightVector[light_index]->m_shadow_map->shadow_tex);
       }
 
-      btTransform trans;
-      btScalar m[16]; 
-      trans = characterObject->controller->getGhostObject()->getWorldTransform();
-      trans.getOpenGLMatrix(m);
-      glm::mat4 modelMatrix = glm::make_mat4(m);
+      //Iterate over Point Lights
 
-      depthMVP = depthProjectionMatrix * depthViewMatrix * modelMatrix;
-      glUniformMatrix4fv(shadowMap->depthMVP, 1, GL_FALSE, glm::value_ptr(depthMVP));
+      glm::mat4 pointProjectionMatrix = pointLight->depthProjectionMatrix;
 
-      characterObject->ShadowRender(shadowMap->shadow_tex);
+      //Iterate over all sides of cube
+      for (uint i = 0; i < 6; i++)
+      {
+        glm::mat4 pointViewMatrix = glm::lookAt(pointLight->light_position, 
+                                                pointLight->m_shadow_map->gCameraDirections[i].Target,
+                                                pointLight->m_shadow_map->gCameraDirections[i].Up);
+
+        pointLight->m_shadow_map->Enable(pointLight->m_shadow_map->gCameraDirections[i].CubemapFace);
+
+        //Iterate over Physics Objects
+        for (unsigned int object_index = 0; object_index < num_physics_objects; object_index++)
+        {
+          glm::mat4 depModelMatrix = m_physics->GetModelMatrixAtIndex(object_index);
+          depthMVP = pointProjectionMatrix * pointViewMatrix * depModelMatrix;
+
+          glUniformMatrix4fv(pointLight->m_shadow_map->depthMVP, 1, GL_FALSE, glm::value_ptr(depthMVP));
+          glUniformMatrix4fv(pointLight->m_shadow_map->model, 1, GL_FALSE, glm::value_ptr(depModelMatrix));
+
+          m_physicsObjects[object_index]->ShadowRender();
+        }
+
+
+        //The Character is a separate object (not a rigid body)
+        depthMVP = pointProjectionMatrix * pointViewMatrix * modelMatrix;
+
+        glUniformMatrix4fv(pointLight->m_shadow_map->depthMVP, 1, GL_FALSE, glm::value_ptr(depthMVP));
+        glUniformMatrix4fv(pointLight->m_shadow_map->model, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+
+        characterObject->ShadowRender(pointLight->m_shadow_map->shadow_tex);
+      }
+
 
       /*
 
@@ -351,17 +446,44 @@ void Graphics::Render()
 	    //clear the screen
 	    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-      glDisable(GL_CULL_FACE);
+      //glDisable(GL_CULL_FACE);
       // Start the correct program
       current_shader->Enable();
 
+      glm::vec3 spotFocus, spotPosit;
 
       //Pass in spotlight focus
-      glUniform3f(current_shader->uniforms[SPOTFOC], spot_focus.x, spot_focus.y, spot_focus.z);
+      for (unsigned int light_index = 0; light_index < lightVector.size(); light_index++)
+      {
+	      spotFocus = lightVector[light_index]->light_direction;
+	      spotPosit = lightVector[light_index]->light_position;
 
-	    glActiveTexture(GL_TEXTURE1);
-	    glBindTexture(GL_TEXTURE_2D, shadowMap->shadow_tex);
-	    glUniform1i(current_shader->uniforms[SDWSAMPLER], 1);
+	      std::string indexString = "[";
+	      indexString.append(to_string(light_index));
+	      indexString.append("]");
+
+	      std::string focusString = "spot_focus";
+	      focusString.append(indexString);      
+	      GLuint spotFocusUniform = current_shader->GetUniformLocation(focusString.c_str());
+
+	      std::string positionString = "spot_position";
+	      focusString.append(indexString);     
+	      GLuint spotPositUniform = current_shader->GetUniformLocation(positionString.c_str());
+
+	      glUniform3f(spotFocusUniform, spotFocus.x, spotFocus.y, spotFocus.z);
+	      glUniform3f(spotPositUniform, spotPosit.x, spotPosit.y, spotPosit.z);
+
+		    glActiveTexture(GL_TEXTURE1);
+		    glBindTexture(GL_TEXTURE_2D, lightVector[light_index]->m_shadow_map->shadow_tex);
+		    glUniform1i(current_shader->uniforms[SDWSAMPLER], 1);
+      }
+
+      //Point Texture
+      glActiveTexture(GL_TEXTURE2);
+      glBindTexture(GL_TEXTURE_CUBE_MAP, pointLight->m_shadow_map->shadow_tex);
+      glUniform1i(current_shader->uniforms[CUBESAMPLER], 2);
+
+
 
       float newStrength = (float(rand()) / RAND_MAX) + 9.0;
       //newStrength = 10.0;
@@ -376,6 +498,11 @@ void Graphics::Render()
       for (unsigned int i = 0; i < m_object.size(); i++)
       {
         glUniformMatrix4fv(current_shader->m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_object[i]->GetModel()));
+
+        depthModelMatrix = m_object[i]->GetModel();
+        depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+        
+        glUniformMatrix4fv(current_shader->uniforms[DEPTHMVP], 1, GL_FALSE, glm::value_ptr(depthMVP));
 
         m_object[i]->Render(current_shader);
       }
@@ -412,7 +539,7 @@ void Graphics::Render()
         passThroughShader->Enable(); 
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, shadowMap->shadow_tex); 
+        glBindTexture(GL_TEXTURE_2D, lightVector[0]->m_shadow_map->shadow_tex); 
 
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
@@ -470,7 +597,6 @@ void Graphics::Render()
 	        float newStrength = lightStrength;
 	        ImGui::SliderFloat("Light Strength", &newStrength, 0.0f, 100.0f);
 	        lightStrength = newStrength;
-	        glUniform1f(current_shader->uniforms[LIGHTSTR], newStrength);
 	        */
 	      }
 

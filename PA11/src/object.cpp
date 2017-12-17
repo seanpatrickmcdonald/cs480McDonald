@@ -17,7 +17,12 @@ GLuint Object::loadTexture(std::string textureName)
     stbi_set_flip_vertically_on_load(true);
     unsigned char *data;
     data = stbi_load(textureName.c_str(), &width, &height, &n, 3);
-    
+
+    if (!data)
+    {
+        std::cout << textureName << std::endl;
+    }
+
     GLuint tex;
     glCreateTextures(GL_TEXTURE_2D, 1, &tex);   
     glTextureStorage2D(tex, 10, GL_RGBA32F, width, height);     
@@ -34,6 +39,10 @@ GLuint Object::loadTexture(std::string textureName)
     glGenerateMipmap(GL_TEXTURE_2D);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+
+    delete[] data;
+    data = nullptr;
+
     return tex;
 }
 
@@ -143,20 +152,23 @@ Object::Object(std::string objFilename, std::string texFilename, btVector3 origi
     //bring in textures and load to opengl
     texture_int = loadTexture(texFilename);
 
+    texture_indices.push_back(0);
+
     //build our aimesh object
     const aiScene *modelScene = LoadAssimp(objFilename);
 
+    texture_ints.push_back(texture_int);
 
     if (modelScene == nullptr)
     {
         std::cout.flush() << "Invalid Mesh: " << objFilename << std::endl;
     }
     
+    int lastNumVertices = 0;
+
     for (unsigned int mesh_index = 0; mesh_index < modelScene->mNumMeshes; mesh_index++)
     {
         const aiMesh *modelMesh = modelScene->mMeshes[mesh_index];
-
-
 
         //Load Vertex Positions and TextureCoords
         for (unsigned int i = 0; i < modelMesh->mNumVertices; i++)
@@ -211,10 +223,12 @@ Object::Object(std::string objFilename, std::string texFilename, btVector3 origi
             {
                 for (unsigned int j = 0; j < 3; j++)
                 {
-                    Indices.push_back(modelMesh->mFaces[i].mIndices[j]);
+                    Indices.push_back(modelMesh->mFaces[i].mIndices[j] + lastNumVertices);
                 }
             }
         }
+
+        lastNumVertices += modelMesh->mNumVertices;
     }
 
   glGenBuffers(1, &VB);
@@ -232,6 +246,14 @@ Object::Object(std::string texFilename)
 {
     //bring in textures and load to opengl
     texture_int = loadTexture(texFilename);    
+}
+
+Object::Object(std::vector<std::string> texFilenames)
+{
+    //bring in textures and load to opengl
+    num_textures = texFilenames.size();
+    for (uint i = 0; i < num_textures; i++)
+        texture_ints.push_back(loadTexture(texFilenames[i]));    
 }
 
 void Object::InitializeVertices()
@@ -270,30 +292,36 @@ glm::mat4 Object::GetModel()
 
 void Object::Render(Shader *shader)
 {
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, texture_int); 
-  glUniform1i(shader->uniforms[TEXSAMPLER], 0); 
+  if (IndicesIndices.size() == 0)
+    IndicesIndices.push_back(0), IndicesIndices.push_back(Indices.size());
 
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-  glEnableVertexAttribArray(2);
+  for (uint i = 0; i < texture_ints.size(); i++)
+  {
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D, texture_ints[texture_indices[i]]);
+      glUniform1i(shader->uniforms[TEXSAMPLER], 0); 
 
-  glBindBuffer(GL_ARRAY_BUFFER, VB);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex,normal));
-  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex,uv));
+      glEnableVertexAttribArray(0);
+      glEnableVertexAttribArray(1);
+      glEnableVertexAttribArray(2);
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);
+      glBindBuffer(GL_ARRAY_BUFFER, VB);
+      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+      glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex,normal));
+      glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex,uv));
 
-  glDrawElements(GL_TRIANGLES, Indices.size(), GL_UNSIGNED_INT, 0);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);
 
-  glDisableVertexAttribArray(0);
-  glDisableVertexAttribArray(1);
-  glDisableVertexAttribArray(2);
+      glDrawElements(GL_TRIANGLES, IndicesIndices[i + 1] - IndicesIndices[i], 
+            GL_UNSIGNED_INT, (void*)(sizeof(int) * IndicesIndices[i]));
 
+      glDisableVertexAttribArray(0);
+      glDisableVertexAttribArray(1);
+      glDisableVertexAttribArray(2);
+  }
 }
 
-void Object::ShadowRender(GLuint shaderTex)
+void Object::ShadowRender()
 {
   glEnableVertexAttribArray(0);
 

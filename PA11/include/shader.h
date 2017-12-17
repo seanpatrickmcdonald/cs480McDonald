@@ -33,7 +33,7 @@ class Shader
 
 
 
-    std::string UniformName[14] =
+    std::string UniformName[16] =
     {
       "model_matrix",
       "view_matrix",
@@ -47,8 +47,10 @@ class Shader
       "spot_position",
       "light_strength",
       "mySampler",
-      "shadowSampler",
-      "depthMVP"
+      "shadowSpotSampler",
+      "depthMVP",
+      "num_spots",
+      "shadowCubeSampler"
     };
 
     GLuint m_shaderProg;   
@@ -72,7 +74,9 @@ enum Uniform
     LIGHTSTR = 10,
     TEXSAMPLER = 11,
     SDWSAMPLER = 12,
-    DEPTHMVP = 13
+    DEPTHMVP = 13,
+    NUMSPOTS = 14,
+    CUBESAMPLER = 15
 };
 
 

@@ -8,94 +8,103 @@
 	"restitution":0.75,
  	"scale":3,
 	"kinematic":false ,
-    "origin.x": -4.0,
+    "origin.x": 2.5,
     "origin.y": 2.0,
-    "origin.z": 0.0,
+    "origin.z": -5.0,
     "primitive": "triangle",
+    "radius":1
+    },
+
+
+  
+    {
+    "name":"Crate", 
+    "mesh":"../assets/cube.obj",
+    "texture":"../assets/stone_wall_3_d.png", 
+    "mass":0.1,
+    "inertia":0,
+    "restitution":0.01,
+    "scale":3,
+    "kinematic":false,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 0.0,
+    "primitive": "box",
     "radius":1
     },
 
     {
     "name":"Ground", 
-  	"mesh":"../assets/ground.obj",
-  	"texture":"../assets/grey.jpg", 
-  	"mass":0.0,
-  	"inertia":0,
-	"restitution":0.01,
- 	"scale":3,
-	"kinematic":false,
+    "mesh":"../assets/ground.obj",
+    "texture":"../assets/stone_wall_3_d.png", 
+    "mass":0.0,
+    "inertia":0,
+    "restitution":0.01,
+    "scale":3,
+    "kinematic":false,
     "origin.x": 0.0,
-    "origin.y": 0.0,
+    "origin.y": -5.78,
     "origin.z": 0.0,
     "primitive": "plane",
     "radius":1
     },
 
     {
-    "name":"WallSegment", 
-  	"mesh":"../assets/wall.obj",
-  	"texture":"../assets/stone_wall_1_d.png", 
-  	"mass":0.0,
-  	"inertia":0,
-	"restitution":0.01,
- 	"scale":3,
-	"kinematic":false,
-    "origin.x": 0.0,
-    "origin.y": 0.0,
-    "origin.z": -4.0,
-    "primitive": "triangle",
-    "radius":1
-    },
-
-    {
-    "name":"Stairs", 
-  	"mesh":"../assets/Stairs.obj",
-  	"texture":"../assets/stone_wall_3_d.png", 
-  	"mass":0.0,
-  	"inertia":0,
-	"restitution":0.01,
- 	"scale":3,
-	"kinematic":false,
-    "origin.x": 0.0,
-    "origin.y": 0.0,
-    "origin.z": 8.0,
-    "primitive": "triangle",
+    "name":"Crate", 
+    "mesh":"../assets/cube.obj",
+    "texture":"../assets/stone_wall_3_d.png", 
+    "mass":0.1,
+    "inertia":0,
+    "restitution":0.01,
+    "scale":3,
+    "kinematic":false,
+    "origin.x": 8.0,
+    "origin.y": 1.5,
+    "origin.z": 7.0,
+    "primitive": "box",
     "radius":1
     },
 
     {
     "name":"TowerStairs", 
-  	"mesh":"../assets/TowerStairs.obj",
-  	"texture":"../assets/stone_wall_3_d.png", 
-  	"mass":0.0,
-  	"inertia":0,
-	"restitution":0.01,
- 	"scale":3,
-	"kinematic":false,
-    "origin.x": -2.0,
+    "mesh":"../assets/TowerStairs.obj",
+    "texture":"../assets/stone_wall_3_d.png", 
+    "mass":0.0,
+    "inertia":0,
+    "restitution":0.01,
+    "scale":3,
+    "kinematic":false,
+    "origin.x": 0.0,
     "origin.y": 0.0,
-    "origin.z": 7.0,
+    "origin.z": 0.0,
     "primitive": "triangle",
     "radius":1
     }
-
-
-
-
     ],
 
-
-
-
     "objects":[
-
+{
+    "name":"WallWithHole", 
+    "mesh":"../assets/WallHole.obj",
+    "texture":"../assets/stone_wall_3_d.png", 
+    "mass":0.0,
+    "inertia":0,
+    "restitution":0.01,
+    "scale":3,
+    "kinematic":false,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 0.0,
+    "primitive": "triangle",
+    "radius":1
+    }
 ],
 
     "player":[
       {
       "name":"Player", 
-      "mesh":"../assets/crystal.obj",
-      "texture":"../assets/crystal.jpg",
+      "mesh":"../assets/Wolf.fbx",
+      "texture":"../assets/Wolf_Body.jpg",
       "origin":[0.0, 0.0, 0.0]
       }
     ]

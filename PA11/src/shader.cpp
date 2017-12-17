@@ -205,11 +205,24 @@ bool Shader::Finalize()
     return false;
   }
 
+  for (int i = 0; i < 16; i++)
+  {
+    uniforms.push_back(GetUniformLocation(UniformName[i].c_str())); 
+    //std::cout << UniformName[i].c_str() << ": " << uniforms[i] << std::endl;
+  }
+
+  //Set the samplers now, because GL blows
+  glProgramUniform1i(m_shaderProg, uniforms[TEXSAMPLER], 0);
+  glProgramUniform1i(m_shaderProg, uniforms[SDWSAMPLER], 1);
+  glProgramUniform1i(m_shaderProg, uniforms[CUBESAMPLER], 2);
+
+
   glValidateProgram(m_shaderProg);
   glGetProgramiv(m_shaderProg, GL_VALIDATE_STATUS, &Success);
   if (!Success)
   {
     glGetProgramInfoLog(m_shaderProg, sizeof(ErrorLog), NULL, ErrorLog);
+    
     std::cerr << "Invalid shader program: " << ErrorLog << std::endl;
     return false;
   };
@@ -227,11 +240,6 @@ bool Shader::Finalize()
   m_viewMatrix = GetUniformLocation("view_matrix");
   m_projectionMatrix = GetUniformLocation("projection_matrix");
 
-  for (int i = 0; i < 14; i++)
-  {
-    uniforms.push_back(GetUniformLocation(UniformName[i].c_str())); 
-    //std::cout << UniformName[i].c_str() << ": " << uniforms[i] << std::endl;
-  }
 
   GLint num_lights = GetUniformLocation("num_lights");
   GLint light_positions = GetUniformLocation("light_positions");
@@ -240,7 +248,7 @@ bool Shader::Finalize()
   {
     Enable();
 
-    glm::vec3 lightPosition = glm::vec3(5.0, 0.0, 0.0);
+    glm::vec3 lightPosition = glm::vec3(0.0, 1.0, 0.0);
 
     glUniform1i(num_lights, 1);
     glUniform3fv(light_positions, 1, glm::value_ptr(lightPosition));

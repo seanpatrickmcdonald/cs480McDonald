@@ -65,6 +65,8 @@ void Engine::Run()
     // Update the DT
     m_DT = getDT();
 
+    //std::cout << m_DT << std::endl;
+
     // Check the  input
     while(SDL_PollEvent(&m_event) != 0)
     {

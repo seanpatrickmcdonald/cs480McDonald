@@ -21,7 +21,6 @@
 #include <glm/gtx/rotate_vector.hpp>
 
 #define INVALID_UNIFORM_LOCATION 0x7fffffff
-
 #include "physics.h"
 #include <vector>
 
