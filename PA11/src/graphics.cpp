@@ -30,6 +30,23 @@ Graphics::~Graphics()
 
   delete characterObject;
   characterObject = nullptr;
+
+  for (uint i = 0; i < num_physics_objects; i++)
+  {
+    delete m_physicsObjects[i];
+    m_physicsObjects[i] = nullptr;
+  }
+
+  delete[] m_physicsObjects;
+  m_physicsObjects = nullptr;
+
+
+  for (uint i = 0; i < m_object.size(); i++)
+  {
+    delete m_object[i];
+  }
+
+  m_object.clear();
 }
 
 PhysicsObjectStruct* structFromJSON(json j, size_t index)
@@ -204,7 +221,7 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
   btVector3 inertia    = btVector3(0.0f, 0.0f, 0.0f);
   bool kinematic       = false;
 
-  m_physics->AddRigidBody(collisionShape, origin, mass, restitution, inertia, kinematic, "asdf", 1);
+  m_physics->AddRigidBody(collisionShape, origin, mass, restitution, inertia, kinematic, "InitialGround", 1);
 
 
 
@@ -234,7 +251,7 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
 
   LightInitStruct pointStruct;
 
-  pointStruct.light_position = glm::vec3(0.0, 1.0, 0.0);
+  pointStruct.light_position = glm::vec3(10.0, -4.5, 10.0);
   pointStruct.light_strength = 10.0;
   pointStruct.light_color = glm::vec3(1.0, 1.0, 1.0);
   pointStruct.light_type = POINT;
@@ -324,8 +341,8 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
 
 void Graphics::Update(unsigned int dt)
 {
-
-  m_physics->Update(dt);
+  if (m_physics->Update(dt));
+    //m_camera->euler_rotation_angle = 141592653/2 + 3.141592653;
   
   current_shader->Enable();
 
@@ -337,8 +354,11 @@ void Graphics::Update(unsigned int dt)
 
   glm::vec3 characterLocation = glm::vec3(trans.getOrigin()[0], trans.getOrigin()[1], trans.getOrigin()[2]);
 
-  m_camera->SetPosition(characterLocation + glm::vec3(0.0, 4.0, 0.0));
+  m_camera->SetPosition(characterLocation + glm::vec3(0.0, 2.0, 0.0));
   m_camera->LookAt(characterLocation);
+
+  //btVector3 character_location(characterLocation.x, characterLocation.y, characterLocation.z);
+  //m_physics->MoveKinematic(character_location, characterObject->m_kinematic_body);
 
   spot_dt += 1.0/100.0;
 }
@@ -353,6 +373,7 @@ void Graphics::Render()
       trans = characterObject->controller->getGhostObject()->getWorldTransform();
       trans.getOpenGLMatrix(m);
       glm::mat4 modelMatrix = glm::make_mat4(m);
+      glm::vec3 characterLocation = glm::vec3(trans.getOrigin()[0], trans.getOrigin()[1], trans.getOrigin()[2]);
 
       //moving the spotlight     
       //lightVector[0]->LookAt(glm::vec3(3 * cos(spot_dt) * 5, spot_focus.y, spot_focus.z * sin(spot_dt)));
@@ -390,6 +411,19 @@ void Graphics::Render()
 	        m_physicsObjects[object_index]->ShadowRender();
         }
 
+        //Iterate over non physics objects
+        for (unsigned int i = 0; i < m_object.size(); i++)
+        {
+
+          depthModelMatrix = m_object[i]->GetModel();
+          depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+         
+          glUniformMatrix4fv(pointLight->m_shadow_map->depthMVP, 1, GL_FALSE, glm::value_ptr(depthMVP));
+
+          m_object[i]->ShadowRender();
+        }
+
+
         //The Character is a separate object (not a rigid body)
         depthMVP = depthProjectionMatrix * depthViewMatrix * modelMatrix;
         glUniformMatrix4fv(lightVector[light_index]->m_shadow_map->depthMVP, 1, GL_FALSE, glm::value_ptr(depthMVP));
@@ -405,10 +439,14 @@ void Graphics::Render()
       for (uint i = 0; i < 6; i++)
       {
         glm::mat4 pointViewMatrix = glm::lookAt(pointLight->light_position, 
-                                                pointLight->m_shadow_map->gCameraDirections[i].Target,
+                                                pointLight->m_shadow_map->gCameraDirections[i].Target + pointLight->light_position,
                                                 pointLight->m_shadow_map->gCameraDirections[i].Up);
 
         pointLight->m_shadow_map->Enable(pointLight->m_shadow_map->gCameraDirections[i].CubemapFace);
+
+        glm::vec3 light = pointLight->light_position;
+        glUniform3f(pointLight->m_shadow_map->gWorldPos, light.x, light.y, light.z);
+
 
         //Iterate over Physics Objects
         for (unsigned int object_index = 0; object_index < num_physics_objects; object_index++)
@@ -422,6 +460,19 @@ void Graphics::Render()
           m_physicsObjects[object_index]->ShadowRender();
         }
 
+        /*
+        //Iterate over the static non-physics terrain
+        for (unsigned int i = 0; i < m_object.size(); i++)
+        {
+
+          glm::mat4 depModelMatrix = m_object[i]->GetModel();
+          depthMVP = pointProjectionMatrix * pointViewMatrix * depModelMatrix;
+         
+          glUniformMatrix4fv(pointLight->m_shadow_map->depthMVP, 1, GL_FALSE, glm::value_ptr(depthMVP));
+          glUniformMatrix4fv(pointLight->m_shadow_map->model, 1, GL_FALSE, glm::value_ptr(depModelMatrix)); 
+
+          m_object[i]->ShadowRender();
+        }*/
 
         //The Character is a separate object (not a rigid body)
         depthMVP = pointProjectionMatrix * pointViewMatrix * modelMatrix;
@@ -444,6 +495,7 @@ void Graphics::Render()
       glViewport(0, 0, window_width, window_height);
 
 	    //clear the screen
+      glClearColor(0.0, 0.0, 0.0, 0.0);
 	    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
       //glDisable(GL_CULL_FACE);
@@ -475,17 +527,17 @@ void Graphics::Render()
 
 		    glActiveTexture(GL_TEXTURE1);
 		    glBindTexture(GL_TEXTURE_2D, lightVector[light_index]->m_shadow_map->shadow_tex);
-		    glUniform1i(current_shader->uniforms[SDWSAMPLER], 1);
+		    //glUniform1i(current_shader->uniforms[SDWSAMPLER], 1);
       }
 
       //Point Texture
       glActiveTexture(GL_TEXTURE2);
       glBindTexture(GL_TEXTURE_CUBE_MAP, pointLight->m_shadow_map->shadow_tex);
-      glUniform1i(current_shader->uniforms[CUBESAMPLER], 2);
+      //glUniform1i(current_shader->uniforms[CUBESAMPLER], 2);
 
 
 
-      float newStrength = (float(rand()) / RAND_MAX) + 9.0;
+      float newStrength = (float(rand()) / RAND_MAX) + 4.0;
       //newStrength = 10.0;
       glUniform1f(current_shader->uniforms[LIGHTSTR], newStrength);
 
@@ -493,6 +545,8 @@ void Graphics::Render()
       // Send in the projection and view to the shader
       glUniformMatrix4fv(current_shader->m_projectionMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetProjection())); 
       glUniformMatrix4fv(current_shader->m_viewMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetView())); 
+
+      glUniform3fv(current_shader->light_positions, 1, glm::value_ptr(pointLight->light_position));
 
       //Render Non-Physics Objects    
       for (unsigned int i = 0; i < m_object.size(); i++)
@@ -538,8 +592,15 @@ void Graphics::Render()
 
         passThroughShader->Enable(); 
 
+
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pointLight->m_shadow_map->shadow_buffer);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X, 
+            pointLight->m_shadow_map->shadow_tex, 0);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, lightVector[0]->m_shadow_map->shadow_tex); 
+        glBindTexture(GL_TEXTURE_2D, pointLight->m_shadow_map->depth_buffer); 
 
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
@@ -564,7 +625,9 @@ void Graphics::Render()
           //Render Gui
 	      m_gui->NewFrame(m_window);
 	     
-	      ImGui::Begin("Stat Window");
+        ImGui::SetNextWindowPos(ImVec2(0,388)); 
+        ImGui::SetNextWindowSize(ImVec2(256, 122)); 
+	      ImGui::Begin("Stat Window", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
 
 	      //ambient handling
 	      if (current_shader->uniforms[SPECULARPOW] != -1)
@@ -601,6 +664,38 @@ void Graphics::Render()
 	      }
 
 	      ImGui::End();
+
+        ImGui::SetNextWindowPos(ImVec2(0,0)); 
+        ImGui::SetNextWindowSize(ImVec2(189,24)); 
+        ImGui::Begin("CharLocation", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
+
+        std::string char_location = "X: ";
+
+        stringstream stream;
+        stream << fixed << setprecision(2) << characterLocation.x;
+        string s = stream.str();
+
+        char_location.append(s);
+
+        char_location.append(" Y: ");
+
+        stream.str("");
+        stream << fixed << setprecision(2) << characterLocation.y;
+        s = stream.str();
+
+        char_location.append(s);
+
+        char_location.append(" Z: ");
+
+        stream.str("");
+        stream << fixed << setprecision(2) << characterLocation.z;
+        s = stream.str();
+
+        char_location.append(s);
+
+        ImGui::TextUnformatted(char_location.c_str());
+
+        ImGui::End();
 
       ImGui::Render();
       }

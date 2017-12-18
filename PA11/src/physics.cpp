@@ -67,7 +67,7 @@ PhysicsManager::~PhysicsManager()
 }
 
 //restitution is the difference in velocity after a collision of an object new velocity/prev velocity
-void PhysicsManager::AddRigidBody(btCollisionShape* collisionShape, btVector3 origin, btScalar mass, btScalar restitution, btVector3 inertia, bool kinematic, std::string objName, unsigned int user_index)
+btRigidBody* PhysicsManager::AddRigidBody(btCollisionShape* collisionShape, btVector3 origin, btScalar mass, btScalar restitution, btVector3 inertia, bool kinematic, std::string objName, unsigned int user_index)
 { 
     btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), origin));
     if(mass > 0)
@@ -80,13 +80,20 @@ void PhysicsManager::AddRigidBody(btCollisionShape* collisionShape, btVector3 or
     
     if(kinematic)
     {
-        body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+        body->setCollisionFlags( btCollisionObject::CF_KINEMATIC_OBJECT);
+    }
+
+    if (objName == "Chest")
+    {
+        chest = body;
     }
 
 	body->setUserIndex(user_index);
 
     if (dynamicsWorld)
         dynamicsWorld->addRigidBody(body);
+
+    return body;
 }
 
 int PhysicsManager::GetNumObjects()
@@ -111,9 +118,30 @@ glm::mat4 PhysicsManager::GetModelMatrixAtIndex(int index)
     return modelMatrix;
 }
 
-void PhysicsManager::Update(unsigned int dt)
+bool PhysicsManager::Update(unsigned int dt)
 {	
     dynamicsWorld->stepSimulation(dt, 1); //1 is max time step
+
+    
+    if (chest != nullptr && player != nullptr)
+    {
+        MyContactResultCallback targetHitTest;
+
+        dynamicsWorld->contactPairTest(
+            chest, 
+            player, 
+            targetHitTest);
+       
+        if (targetHitTest.collision)
+        {
+            if (controller)
+                controller->warp(Character::character_origin);
+
+            return true;
+        }
+    }
+
+    return false;
 }
 
 //applies force in direction
@@ -160,6 +188,18 @@ void PhysicsManager::MoveKinematic(btVector3 movementVector)
 
   else
     std::cout << "invalid object" << std::endl; 
+}
+
+void PhysicsManager::MoveKinematic(btVector3 position, btRigidBody* body)
+{
+  if (body != nullptr)
+  {
+    btTransform tr;
+    body->getMotionState()->getWorldTransform(tr);
+    tr.setOrigin(position);
+
+    body->getMotionState()->setWorldTransform(tr);
+  }
 }
 
 glm::vec3 PhysicsManager::getTranslation(int index)

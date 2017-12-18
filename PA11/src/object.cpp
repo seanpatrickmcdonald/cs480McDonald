@@ -273,6 +273,9 @@ Object::~Object()
 {
   Vertices.clear();
   Indices.clear();
+
+  glDeleteBuffers(1, (const GLuint *)&IB);
+  glDeleteBuffers(1, (const GLuint *)&VB);
 }
 
 

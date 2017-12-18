@@ -12,7 +12,7 @@ in vec3 v_N;
 in vec3 v_L;
 in vec3 v_V;
 in vec3 v_Lspot[25];
-in vec3 v_Ls[25];
+in vec3 v_Ls[4];
 
 in vec3 world_position;
 in vec4 ShadowCoord;
@@ -30,8 +30,8 @@ uniform mat4 projection_matrix;
 uniform int num_spots;
 uniform vec3 spot_position[25];
 uniform vec3 spot_focus[25];
-uniform float spot_inner_radius = 20.0;
-uniform float spot_outer_radius = 22.0;
+uniform float spot_inner_radius = 30.0;
+uniform float spot_outer_radius = 32.0;
 uniform float spot_max_brightness = 1.0;
 
 uniform float light_strength;
@@ -39,7 +39,7 @@ uniform float light_falloff = 2;
 
 
 uniform int num_lights;
-uniform vec3 light_positions[25];
+uniform vec3 light_positions[4];
 
 //255, 102, 0
 uniform vec3 light_color = vec3(1.0, 102.0/255.0, 0.0);
@@ -49,14 +49,15 @@ uniform vec3 light_color = vec3(1.0, 102.0/255.0, 0.0);
 
 float CalcShadowFactor(vec3 LightDirection)
 {
-    float SampledDistance = texture(shadowCubeSampler, LightDirection).r;
+    float SampledDistance = texture(shadowCubeSampler, LightDirection, EPSILON).r;
+    //float SampledDistance = 1;
 
     float Distance = length(LightDirection);
 
     if (Distance < SampledDistance + EPSILON)
         return 1.0; // Inside the light
     else
-        return 0.5; // Inside the shadow
+        return 0.0; // Inside the shadow
 } 
 
 void main(void)
@@ -72,7 +73,7 @@ void main(void)
 
   for (int i = 0; i < num_lights; i++)
   {
-    L = normalize(v_L);
+    L = normalize(v_Ls[i]);
     R = reflect(-L, N);
 
     float x_diff = pow(world_position.x - light_positions[i].x, 2);
@@ -84,9 +85,16 @@ void main(void)
     vec3 diffuse = max(dot(N, L), 0.0) * diffuse_albedo / (distance_factor) * light_color;
     vec3 specular = pow(max(dot(R, V), 0.0), specular_power) * specular_albedo * light_color;
 
-    float shadowFactor = CalcShadowFactor(world_position - light_positions[0]);
+    float shadowFactor;
 
-    light = vec4((diffuse + specular) * 0.0 + ambient, 1.0);
+    if (i == 0)
+    shadowFactor = CalcShadowFactor(world_position - light_positions[0]);
+
+    else
+    shadowFactor = 1.0;
+
+    light = vec4(shadowFactor * (diffuse + specular) + ambient, 1.0);
+    //light = vec4((diffuse + specular) + ambient, 1.0);
   }
 
   //Process Spot Lights

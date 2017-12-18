@@ -14,17 +14,18 @@ uniform mat4 cubeDepthMVP;
 out vec2 uv;
 out vec3 v_N;
 out vec3 v_L;
-out vec3 v_Ls[25];
 out vec3 v_Lspot[25];
 out vec3 v_V;
 out vec3 world_position;
 out vec4 ShadowCoord;
 
 uniform int num_lights = 0;
-uniform vec3 light_positions[25]; 
+uniform vec3 light_positions[4]; 
 
 uniform int num_spots = 0;
 uniform vec3 spot_position[25];
+
+out vec3 v_Ls[4];
 
 void main(void)
 {

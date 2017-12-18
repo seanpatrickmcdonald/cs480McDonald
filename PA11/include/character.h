@@ -16,11 +16,17 @@ public:
   void Render(Shader*);
   void ShadowRender(GLuint);
 
+  static btVector3 character_origin;
+
+  void UpdateDynamicCollisions();
+
   btConvexShape *convexShape;
   btPairCachingGhostObject *ghostObject;
   btKinematicCharacterController *controller;
 
   Mesh *m_mesh;
+  PhysicsManager *m_physics_manager;
+  btRigidBody* m_kinematic_body;
 
   uint scale;
   uint physicsIndex;

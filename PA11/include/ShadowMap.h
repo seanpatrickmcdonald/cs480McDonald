@@ -35,13 +35,14 @@ public:
     ShadowType m_shadow_type;
 
     GLuint depth_buffer;
-	GLuint shadow_buffer;
-	GLuint shadow_tex;	
+	  GLuint shadow_buffer;
+	  GLuint shadow_tex;	
     static GLuint m_shaderProg;  
     static GLuint m_cubeProg;  
 
     GLuint depthMVP;
     GLuint model;
+    GLuint gWorldPos;
 
     struct CameraDirection
 	{
@@ -52,12 +53,12 @@ public:
 
 	CameraDirection gCameraDirections[6] =
 	{
-      { GL_TEXTURE_CUBE_MAP_POSITIVE_X, glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f) },
-      { GL_TEXTURE_CUBE_MAP_NEGATIVE_X, glm::vec3(-1.0f, 1.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f) },
-      { GL_TEXTURE_CUBE_MAP_POSITIVE_Y, glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f) },
-      { GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f) },
-      { GL_TEXTURE_CUBE_MAP_POSITIVE_Z, glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f) },
-      { GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, glm::vec3(0.0f, 1.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f) }
+      { GL_TEXTURE_CUBE_MAP_POSITIVE_X, glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f) },
+      { GL_TEXTURE_CUBE_MAP_NEGATIVE_X, glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f) },
+      { GL_TEXTURE_CUBE_MAP_POSITIVE_Y, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f) },
+      { GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f) },
+      { GL_TEXTURE_CUBE_MAP_POSITIVE_Z, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f) },
+      { GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f) }
 	}; 
 };
 

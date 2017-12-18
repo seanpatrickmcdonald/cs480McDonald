@@ -72,6 +72,18 @@ void Engine::Run()
     {
       Keyboard();
     }
+
+
+	int camera_axis = SDL_JoystickGetAxis(m_window->joystick, 3);
+
+    if (camera_axis > 10000)
+	    m_graphics->getCamera()->movement[CAMERA_ROTATE][CAMERA_X] = -1;
+	else if (camera_axis < -10000)
+	    m_graphics->getCamera()->movement[CAMERA_ROTATE][CAMERA_X] = 1;
+	else
+	    m_graphics->getCamera()->movement[CAMERA_ROTATE][CAMERA_X] = 0; 
+
+
     float rotation = m_graphics->getCamera()->euler_rotation_angle;
     // Update and render the graphics
     //printf("characterMovementDirection: %f, %f, %f \n", characterMovementDirection.x, characterMovementDirection.y, characterMovementDirection.z);
@@ -204,6 +216,7 @@ void Engine::Keyboard()
         characterMovementDirection.z = 0;   
     }
 
+    /*
     if (m_event.jaxis.axis == 3)
     {
       if (m_event.jaxis.value > 6400)
@@ -213,7 +226,7 @@ void Engine::Keyboard()
       else
         m_graphics->getCamera()->movement[CAMERA_ROTATE][CAMERA_X] = 0; 
     }
-
+    */
 
   }
   if (m_event.type == SDL_JOYBUTTONDOWN)

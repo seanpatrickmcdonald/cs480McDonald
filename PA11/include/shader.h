@@ -30,6 +30,8 @@ class Shader
     GLint m_projectionMatrix;
     GLint m_viewMatrix;
     GLint m_modelMatrix;
+    GLint num_lights;
+    GLint light_positions;
 
 
 

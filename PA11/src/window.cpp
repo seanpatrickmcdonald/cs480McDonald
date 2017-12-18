@@ -72,8 +72,6 @@ bool Window::Initialize(const string &name, int* width, int* height)
     printf("%i joysticks were found.\n\n", SDL_NumJoysticks() );
     printf("The names of the joysticks are:\n");
     
-    SDL_Joystick *joystick;
-
     SDL_JoystickEventState(SDL_ENABLE);
     joystick = SDL_JoystickOpen(0);
     

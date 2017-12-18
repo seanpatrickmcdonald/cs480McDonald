@@ -57,7 +57,22 @@
     "origin.y": 0.25,
     "origin.z": 0,
     "primitive": "box"
-	}
+	},
+  
+  {
+  "name":"cube", 
+    "mesh":"../assets/cube.obj", 
+    "texture":"../assets/crate.jpg", 
+    "mass":0, 
+    "inertia":0,
+  "restitution":0.25,
+  "scale":1,
+  "kinematic":true,
+    "origin.x": -1,
+    "origin.y": 0.25,
+    "origin.z": 1,
+    "primitive": "box"
+  }
 
 	],
     "shaderprograms":[

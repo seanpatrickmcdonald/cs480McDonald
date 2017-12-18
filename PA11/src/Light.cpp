@@ -17,7 +17,7 @@ void Light::InitDirectional(LightInitStruct &lightStruct)
 
 void Light::InitSpot(LightInitStruct &lightStruct)
 {
-	depthProjectionMatrix = glm::perspective<float>(45.0f, 1.0f, 0.5f, 1000.0f);
+	depthProjectionMatrix = glm::perspective<float>(45.0f, 1.0f, 1.0f, 1000.0f);
 
 	light_position = lightStruct.light_position;
 	light_direction = lightStruct.light_direction;
@@ -41,7 +41,7 @@ void Light::InitSpot(LightInitStruct &lightStruct)
 
 void Light::InitPoint(LightInitStruct &lightStruct)
 {	
-	depthProjectionMatrix = glm::perspective<float>(90.0f, 1.0f, 0.5f, 1000.0f);
+	depthProjectionMatrix = glm::perspective<float>(90.0f, 1.0f, 0.5f, 100.0f);
 
 	light_position = lightStruct.light_position;
 	light_color = lightStruct.light_color;

@@ -18,6 +18,8 @@ class Window
 
     SDL_Window* GetWindow();
 
+    SDL_Joystick *joystick;
+
   private:
     SDL_Window* gWindow;
     SDL_GLContext gContext;

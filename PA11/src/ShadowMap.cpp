@@ -26,6 +26,7 @@ void ShadowMap::Enable(GLenum CubeFace)
 
     else if (m_shadow_type == POINT)
     {
+      if (CubeFace == GL_TEXTURE_CUBE_MAP_POSITIVE_X)
       glUseProgram(ShadowMap::m_cubeProg);
 
       glBindFramebuffer(GL_DRAW_FRAMEBUFFER, shadow_buffer);
@@ -36,6 +37,7 @@ void ShadowMap::Enable(GLenum CubeFace)
 
     glViewport(0,0,SHADOWMAP_SIZE,SHADOWMAP_SIZE);
 
+    glClearColor(FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glEnable(GL_CULL_FACE);
@@ -225,8 +227,6 @@ void ShadowMap::InitSpotProg()
     std::cerr << "Invalid shader program: " << ErrorLog << std::endl;
   }
 
-  Enable(0);
-
   depthMVP = glGetUniformLocation(ShadowMap::m_shaderProg, "depthMVP");
 }
 
@@ -302,8 +302,7 @@ void ShadowMap::InitCubeProg()
     std::cerr << "Invalid shader program: " << ErrorLog << std::endl;
   }
 
-  Enable(0);
-
   depthMVP = glGetUniformLocation(ShadowMap::m_cubeProg, "depthMVP");
   model = glGetUniformLocation(ShadowMap::m_cubeProg, "model");
+  gWorldPos = glGetUniformLocation(ShadowMap::m_cubeProg, "gLightWorldPos");
 }

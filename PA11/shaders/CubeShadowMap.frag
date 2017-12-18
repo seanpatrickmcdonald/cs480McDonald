@@ -2,7 +2,7 @@
 
 in vec3 WorldPos;
 
-uniform vec3 gLightWorldPos = vec3(0.0, 1.0, 0.0);
+uniform vec3 gLightWorldPos = vec3(0.0, 1.0, -5.0);
 
 out float FragColor;
 

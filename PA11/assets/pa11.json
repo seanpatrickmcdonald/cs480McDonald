@@ -1,6 +1,6 @@
 { "physicsobjects": [
   {
-    "name":"Crate", 
+    "name":"Anvil", 
   	"mesh":"../assets/anvil.obj",
   	"texture":"../assets/grey.jpg", 
   	"mass":100.0,
@@ -8,28 +8,10 @@
 	"restitution":0.75,
  	"scale":3,
 	"kinematic":false ,
-    "origin.x": 2.5,
-    "origin.y": 2.0,
-    "origin.z": -5.0,
-    "primitive": "triangle",
-    "radius":1
-    },
-
-
-  
-    {
-    "name":"Crate", 
-    "mesh":"../assets/cube.obj",
-    "texture":"../assets/stone_wall_3_d.png", 
-    "mass":0.1,
-    "inertia":0,
-    "restitution":0.01,
-    "scale":3,
-    "kinematic":false,
     "origin.x": 0.0,
-    "origin.y": 0.0,
-    "origin.z": 0.0,
-    "primitive": "box",
+    "origin.y": 0.525,
+    "origin.z": -2.0,
+    "primitive": "triangle",
     "radius":1
     },
 
@@ -43,25 +25,9 @@
     "scale":3,
     "kinematic":false,
     "origin.x": 0.0,
-    "origin.y": -5.78,
+    "origin.y": -5.55,
     "origin.z": 0.0,
     "primitive": "plane",
-    "radius":1
-    },
-
-    {
-    "name":"Crate", 
-    "mesh":"../assets/cube.obj",
-    "texture":"../assets/stone_wall_3_d.png", 
-    "mass":0.1,
-    "inertia":0,
-    "restitution":0.01,
-    "scale":3,
-    "kinematic":false,
-    "origin.x": 8.0,
-    "origin.y": 1.5,
-    "origin.z": 7.0,
-    "primitive": "box",
     "radius":1
     },
 
@@ -79,13 +45,11 @@
     "origin.z": 0.0,
     "primitive": "triangle",
     "radius":1
-    }
-    ],
+    },
 
-    "objects":[
-{
-    "name":"WallWithHole", 
-    "mesh":"../assets/WallHole.obj",
+    {
+    "name":"Maze", 
+    "mesh":"../assets/Maze.obj",
     "texture":"../assets/stone_wall_3_d.png", 
     "mass":0.0,
     "inertia":0,
@@ -97,14 +61,47 @@
     "origin.z": 0.0,
     "primitive": "triangle",
     "radius":1
+    },
+
+    {   
+    "name":"Chest", 
+    "mesh":"../assets/Chest.obj",
+    "texture":"../assets/stone_wall_3_d.png", 
+    "mass":0.0,
+    "inertia":0,
+    "restitution":0.01,
+    "scale":3,
+    "kinematic":false,
+    "origin.x": 60.2361,
+    "origin.y": -5.55,
+    "origin.z": -10.8558,
+    "primitive": "box",
+    "radius":1
+    }
+    ],
+
+    "objects":[
+    {   
+    "name":"WallWithHole", 
+    "mesh":"../assets/WallHole.obj",
+    "texture":"../assets/stone_wall_3_d.png", 
+    "mass":0.0,
+    "inertia":0,
+    "restitution":0.01,
+    "scale":3,
+    "kinematic":false,
+    "origin.x": 0.0,
+    "origin.y": 0.0,
+    "origin.z": 0.0,
+    "radius":1
     }
 ],
 
     "player":[
       {
       "name":"Player", 
-      "mesh":"../assets/Wolf.fbx",
-      "texture":"../assets/Wolf_Body.jpg",
+      "mesh":"../assets/knight.obj",
+      "texture":"../assets/D88C852E.jpg",
       "origin":[0.0, 0.0, 0.0]
       }
     ]

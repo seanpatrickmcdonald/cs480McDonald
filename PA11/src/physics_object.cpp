@@ -9,7 +9,7 @@ PhysicsObject::PhysicsObject()
 
 PhysicsObject::~PhysicsObject()
 {
-
+  
 }
 
 
@@ -56,10 +56,12 @@ PhysicsObject::PhysicsObject(PhysicsObjectStruct objStruct, PhysicsManager *phys
 
   if (objStruct.primitiveType == "sphere")
       collisionShape = new btSphereShape(btScalar(0.016f));
+  else if (objStruct.objFilename == "../assets/Chest.obj")
+       collisionShape = new btBoxShape(btVector3(1.0f, 1.0f, 1.0f));
   else if (objStruct.primitiveType == "cylinder")
       collisionShape = new btCylinderShape(btVector3(0.25f, 0.5f, 0.5f));
   else if (objStruct.primitiveType == "box")
-      collisionShape = new btBoxShape(btVector3(0.25f, 0.25f, 0.25f));
+      collisionShape = new btBoxShape(btVector3(0.5f, 0.5f, 0.5f));
   else if (objStruct.primitiveType == "plane")
       collisionShape = new btStaticPlaneShape(Yup, 0);
   else if (objStruct.mass == 0)

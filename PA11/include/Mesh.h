@@ -21,10 +21,11 @@ public:
 
     void Update(unsigned int dt);
     void Render(Shader*);
-    void ShadowRender(GLuint);
+    void ShadowRender();
 
     glm::mat4 model;
     glm::mat4 GetModel();
+    std::string obj_filename;
 
     const aiScene *m_scene;
     static std::vector<GLuint> texture_ints;

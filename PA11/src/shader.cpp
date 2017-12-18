@@ -241,14 +241,14 @@ bool Shader::Finalize()
   m_projectionMatrix = GetUniformLocation("projection_matrix");
 
 
-  GLint num_lights = GetUniformLocation("num_lights");
-  GLint light_positions = GetUniformLocation("light_positions");
+  num_lights = GetUniformLocation("num_lights");
+  light_positions = GetUniformLocation("light_positions");
   
   if (num_lights >= 0)
   {
     Enable();
 
-    glm::vec3 lightPosition = glm::vec3(0.0, 1.0, 0.0);
+    glm::vec3 lightPosition = glm::vec3(0.0, 1.0, -5.0);
 
     glUniform1i(num_lights, 1);
     glUniform3fv(light_positions, 1, glm::value_ptr(lightPosition));

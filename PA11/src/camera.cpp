@@ -22,6 +22,7 @@ bool Camera::Initialize(int w, int h)
 	for (int i = 0; i < 3; i++){ for (int j = 0; j < 3; j++){ movement[i][j] = 0; }}
 
     camera_speed *= 2;
+	euler_rotation_angle = 3.141592653/2 + 3.141592653;
   
 	return true;
 }

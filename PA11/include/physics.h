@@ -23,7 +23,7 @@ class PhysicsManager
         PhysicsManager();
         ~PhysicsManager();
 
-        void AddRigidBody(btCollisionShape* collisionShape,
+        btRigidBody* AddRigidBody(btCollisionShape* collisionShape,
                           btVector3 origin     = btVector3(0,0,0),
                           btScalar mass        = btScalar(0),
                           btScalar restitution = btScalar(1.0f),
@@ -35,15 +35,20 @@ class PhysicsManager
         glm::mat4 GetModelMatrixAtIndex(int index);
         int GetNumObjects();
 
-        void Update(unsigned int dt);
+        bool Update(unsigned int dt);
 
         void ApplyForceAtIndex(btVector3 force, int index);
         void ApplyTorqueAtIndex(btVector3 torque, int index);
 
         void MoveKinematic(btVector3);
+        void MoveKinematic(btVector3, btRigidBody*);
         glm::vec3 getTranslation(int index);
 
         btDiscreteDynamicsWorld* dynamicsWorld;
+
+        btRigidBody *chest;
+        btGhostObject *player;
+        btKinematicCharacterController *controller;
 
     private:
 

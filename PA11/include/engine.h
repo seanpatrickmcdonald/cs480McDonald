@@ -6,6 +6,7 @@
 
 #include "window.h"
 #include "graphics.h"
+#include "graphics_headers.h"
 
 class Engine
 {
