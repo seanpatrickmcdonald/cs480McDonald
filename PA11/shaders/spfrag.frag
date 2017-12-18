@@ -34,7 +34,7 @@ uniform float spot_inner_radius = 30.0;
 uniform float spot_outer_radius = 32.0;
 uniform float spot_max_brightness = 1.0;
 
-uniform float light_strength;
+uniform float light_strength = 5.0;
 uniform float light_falloff = 2;
 
 
@@ -80,6 +80,17 @@ void main(void)
     float y_diff = pow(world_position.y - light_positions[i].y, 2);
     float z_diff = pow(world_position.z - light_positions[i].z, 2);
     float distance_from_light = sqrt(x_diff + y_diff + z_diff);
+
+    /*
+    float kill_light = 1.0;
+
+    if (distance_from_light >= 10)
+    {
+      kill_light = 0.0;
+    }
+    */
+
+
     float distance_factor = distance_from_light / light_strength;
 
     vec3 diffuse = max(dot(N, L), 0.0) * diffuse_albedo / (distance_factor) * light_color;
@@ -93,7 +104,7 @@ void main(void)
     else
     shadowFactor = 1.0;
 
-    light = vec4(shadowFactor * (diffuse + specular) + ambient, 1.0);
+    light += vec4(shadowFactor * (diffuse + specular), 1.0);
     //light = vec4((diffuse + specular) + ambient, 1.0);
   }
 
@@ -135,6 +146,8 @@ void main(void)
       light += vec4(spot_brightness * visibility, 1.0);
     } 
   }
+
+  light += vec4(ambient, 1.0);
 
   
   //Clamp light to 1.0

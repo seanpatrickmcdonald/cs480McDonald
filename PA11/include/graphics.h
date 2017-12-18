@@ -32,7 +32,7 @@ class Graphics
     void ToggleShader();
     
     std::vector<Light*> lightVector;
-    Light *pointLight;
+    Light *pointLight[4];
 
     //GuiHandle and window handle
     GuiHandle *m_gui;    

@@ -49,7 +49,10 @@ PhysicsObject::PhysicsObject(PhysicsObjectStruct objStruct, PhysicsManager *phys
   */
  
 	
-  collisionMesh = new btTriangleMesh(); 
+
+   collisionMesh = new btTriangleMesh(); 
+  
+
 
   loadVertexData(objStruct.objFilename);
 
@@ -68,7 +71,12 @@ PhysicsObject::PhysicsObject(PhysicsObjectStruct objStruct, PhysicsManager *phys
 	  collisionShape = new btBvhTriangleMeshShape(collisionMesh, true);
   else
     collisionShape = new btConvexTriangleMeshShape(collisionMesh, true);
-  
+
+
+  if (objStruct.primitiveType != "triangle")
+  {
+    delete collisionMesh;
+  }
 
   //btConvexTriangleMeshShape
   //btBvhTriangleMeshShape

@@ -247,23 +247,36 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
 
 
 
-
-
-  LightInitStruct pointStruct;
-
-  pointStruct.light_position = glm::vec3(10.0, -4.5, 10.0);
-  pointStruct.light_strength = 10.0;
-  pointStruct.light_color = glm::vec3(1.0, 1.0, 1.0);
-  pointStruct.light_type = POINT;
-
-  pointLight = new Light();
-  pointLight->InitPoint(pointStruct);
-
-
-
-
-
   current_shader->Enable();
+
+
+  LightInitStruct pointStruct[4];
+
+  pointStruct[0].light_position = glm::vec3(10.0, -4.5, 10.0);
+  pointStruct[0].light_strength = 10.0;
+  pointStruct[0].light_color = glm::vec3(1.0, 1.0, 1.0);
+  pointStruct[0].light_type = POINT;
+
+  pointStruct[1].light_position = glm::vec3(20, -4.5, 20);
+  pointStruct[2].light_position = glm::vec3(57.8, -4.5, -10.8558);
+  pointStruct[3].light_position = glm::vec3(20, -4.5, 20);
+
+  pointLight[0] = new Light();
+  pointLight[0]->InitPoint(pointStruct[0]);
+
+  pointLight[1] = new Light();
+  pointLight[1]->InitPoint(pointStruct[1]);
+
+  pointLight[2] = new Light();
+  pointLight[2]->InitPoint(pointStruct[2]);
+
+  pointLight[3] = new Light();
+  pointLight[3]->InitPoint(pointStruct[3]);
+
+  glUniform1i(current_shader->num_lights, 3);
+
+
+
 
   glUniform1i(current_shader->uniforms[NUMSPOTS], 1);
 
@@ -281,7 +294,7 @@ bool Graphics::Initialize(int width, int height, int argc, char **argv, SDL_Wind
   diffuse = current_shader->GetUniform3f(current_shader->uniforms[DIFFUSE]);
   specular = current_shader->GetUniform3f(current_shader->uniforms[SPECULARALB]);
   specularPower = current_shader->GetUniformf(current_shader->uniforms[SPECULARPOW]);
-  lightStrength = 10.0;
+  lightStrength = 5.0;
 
   //enable depth testing
   glEnable(GL_DEPTH_TEST);
@@ -418,7 +431,7 @@ void Graphics::Render()
           depthModelMatrix = m_object[i]->GetModel();
           depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
          
-          glUniformMatrix4fv(pointLight->m_shadow_map->depthMVP, 1, GL_FALSE, glm::value_ptr(depthMVP));
+          glUniformMatrix4fv(pointLight[0]->m_shadow_map->depthMVP, 1, GL_FALSE, glm::value_ptr(depthMVP));
 
           m_object[i]->ShadowRender();
         }
@@ -433,19 +446,19 @@ void Graphics::Render()
 
       //Iterate over Point Lights
 
-      glm::mat4 pointProjectionMatrix = pointLight->depthProjectionMatrix;
+      glm::mat4 pointProjectionMatrix = pointLight[0]->depthProjectionMatrix;
 
       //Iterate over all sides of cube
       for (uint i = 0; i < 6; i++)
       {
-        glm::mat4 pointViewMatrix = glm::lookAt(pointLight->light_position, 
-                                                pointLight->m_shadow_map->gCameraDirections[i].Target + pointLight->light_position,
-                                                pointLight->m_shadow_map->gCameraDirections[i].Up);
+        glm::mat4 pointViewMatrix = glm::lookAt(pointLight[0]->light_position, 
+                                                pointLight[0]->m_shadow_map->gCameraDirections[i].Target + pointLight[0]->light_position,
+                                                pointLight[0]->m_shadow_map->gCameraDirections[i].Up);
 
-        pointLight->m_shadow_map->Enable(pointLight->m_shadow_map->gCameraDirections[i].CubemapFace);
+        pointLight[0]->m_shadow_map->Enable(pointLight[0]->m_shadow_map->gCameraDirections[i].CubemapFace);
 
-        glm::vec3 light = pointLight->light_position;
-        glUniform3f(pointLight->m_shadow_map->gWorldPos, light.x, light.y, light.z);
+        glm::vec3 light = pointLight[0]->light_position;
+        glUniform3f(pointLight[0]->m_shadow_map->gWorldPos, light.x, light.y, light.z);
 
 
         //Iterate over Physics Objects
@@ -454,8 +467,8 @@ void Graphics::Render()
           glm::mat4 depModelMatrix = m_physics->GetModelMatrixAtIndex(object_index);
           depthMVP = pointProjectionMatrix * pointViewMatrix * depModelMatrix;
 
-          glUniformMatrix4fv(pointLight->m_shadow_map->depthMVP, 1, GL_FALSE, glm::value_ptr(depthMVP));
-          glUniformMatrix4fv(pointLight->m_shadow_map->model, 1, GL_FALSE, glm::value_ptr(depModelMatrix));
+          glUniformMatrix4fv(pointLight[0]->m_shadow_map->depthMVP, 1, GL_FALSE, glm::value_ptr(depthMVP));
+          glUniformMatrix4fv(pointLight[0]->m_shadow_map->model, 1, GL_FALSE, glm::value_ptr(depModelMatrix));
 
           m_physicsObjects[object_index]->ShadowRender();
         }
@@ -468,8 +481,8 @@ void Graphics::Render()
           glm::mat4 depModelMatrix = m_object[i]->GetModel();
           depthMVP = pointProjectionMatrix * pointViewMatrix * depModelMatrix;
          
-          glUniformMatrix4fv(pointLight->m_shadow_map->depthMVP, 1, GL_FALSE, glm::value_ptr(depthMVP));
-          glUniformMatrix4fv(pointLight->m_shadow_map->model, 1, GL_FALSE, glm::value_ptr(depModelMatrix)); 
+          glUniformMatrix4fv(pointLight[0]->m_shadow_map->depthMVP, 1, GL_FALSE, glm::value_ptr(depthMVP));
+          glUniformMatrix4fv(pointLight[0]->m_shadow_map->model, 1, GL_FALSE, glm::value_ptr(depModelMatrix)); 
 
           m_object[i]->ShadowRender();
         }*/
@@ -477,10 +490,10 @@ void Graphics::Render()
         //The Character is a separate object (not a rigid body)
         depthMVP = pointProjectionMatrix * pointViewMatrix * modelMatrix;
 
-        glUniformMatrix4fv(pointLight->m_shadow_map->depthMVP, 1, GL_FALSE, glm::value_ptr(depthMVP));
-        glUniformMatrix4fv(pointLight->m_shadow_map->model, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+        glUniformMatrix4fv(pointLight[0]->m_shadow_map->depthMVP, 1, GL_FALSE, glm::value_ptr(depthMVP));
+        glUniformMatrix4fv(pointLight[0]->m_shadow_map->model, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 
-        characterObject->ShadowRender(pointLight->m_shadow_map->shadow_tex);
+        characterObject->ShadowRender(pointLight[0]->m_shadow_map->shadow_tex);
       }
 
 
@@ -532,21 +545,20 @@ void Graphics::Render()
 
       //Point Texture
       glActiveTexture(GL_TEXTURE2);
-      glBindTexture(GL_TEXTURE_CUBE_MAP, pointLight->m_shadow_map->shadow_tex);
+      glBindTexture(GL_TEXTURE_CUBE_MAP, pointLight[0]->m_shadow_map->shadow_tex);
       //glUniform1i(current_shader->uniforms[CUBESAMPLER], 2);
 
 
-
-      float newStrength = (float(rand()) / RAND_MAX) + 4.0;
-      //newStrength = 10.0;
-      glUniform1f(current_shader->uniforms[LIGHTSTR], newStrength);
 
 
       // Send in the projection and view to the shader
       glUniformMatrix4fv(current_shader->m_projectionMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetProjection())); 
       glUniformMatrix4fv(current_shader->m_viewMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetView())); 
 
-      glUniform3fv(current_shader->light_positions, 1, glm::value_ptr(pointLight->light_position));
+      for (uint i = 0; i < 3; i++)
+      {
+        glUniform3fv(current_shader->light_positions + i, 1, glm::value_ptr(pointLight[i]->light_position));
+      }
 
       //Render Non-Physics Objects    
       for (unsigned int i = 0; i < m_object.size(); i++)
@@ -593,14 +605,14 @@ void Graphics::Render()
         passThroughShader->Enable(); 
 
 
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pointLight->m_shadow_map->shadow_buffer);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pointLight[0]->m_shadow_map->shadow_buffer);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X, 
-            pointLight->m_shadow_map->shadow_tex, 0);
+            pointLight[0]->m_shadow_map->shadow_tex, 0);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, pointLight->m_shadow_map->depth_buffer); 
+        glBindTexture(GL_TEXTURE_2D, pointLight[0]->m_shadow_map->depth_buffer); 
 
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
@@ -625,8 +637,8 @@ void Graphics::Render()
           //Render Gui
 	      m_gui->NewFrame(m_window);
 	     
-        ImGui::SetNextWindowPos(ImVec2(0,388)); 
-        ImGui::SetNextWindowSize(ImVec2(256, 122)); 
+        ImGui::SetNextWindowPos(ImVec2(0,363)); 
+        ImGui::SetNextWindowSize(ImVec2(256, 147)); 
 	      ImGui::Begin("Stat Window", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
 
 	      //ambient handling
@@ -656,17 +668,17 @@ void Graphics::Render()
 	        glUniform3f(current_shader->uniforms[SPECULARALB], specular.x, specular.y, specular.z);
 
 	        //point light strength handling
-	        /*
+	        
 	        float newStrength = lightStrength;
-	        ImGui::SliderFloat("Light Strength", &newStrength, 0.0f, 100.0f);
+	        ImGui::SliderFloat("Light Strength", &newStrength, 0.0f, 10.0f);
 	        lightStrength = newStrength;
-	        */
+	        
 	      }
 
 	      ImGui::End();
 
         ImGui::SetNextWindowPos(ImVec2(0,0)); 
-        ImGui::SetNextWindowSize(ImVec2(189,24)); 
+        ImGui::SetNextWindowSize(ImVec2(215,24)); 
         ImGui::Begin("CharLocation", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
 
         std::string char_location = "X: ";
@@ -701,6 +713,8 @@ void Graphics::Render()
       }
 
       current_shader->Enable();
+
+      glUniform1f(current_shader->uniforms[LIGHTSTR], lightStrength);
   }
 
   if (renderPhysics)

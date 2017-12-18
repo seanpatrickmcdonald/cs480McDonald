@@ -244,6 +244,7 @@ bool Shader::Finalize()
   num_lights = GetUniformLocation("num_lights");
   light_positions = GetUniformLocation("light_positions");
   
+
   if (num_lights >= 0)
   {
     Enable();

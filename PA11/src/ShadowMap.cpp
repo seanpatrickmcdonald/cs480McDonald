@@ -126,6 +126,8 @@ void ShadowMap::MakeCube()
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_R32F, SHADOWMAP_SIZE, SHADOWMAP_SIZE, 0, GL_RED, GL_FLOAT, NULL);
     }
 
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
     glBindFramebuffer(GL_FRAMEBUFFER, shadow_buffer);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth_buffer, 0);
 
